@@ -1,0 +1,4 @@
+#!/bin/csh
+
+ifort -g -traceback -o ckintrp3seiser ckintrp3seiser.for
+

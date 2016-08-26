@@ -1,0 +1,9 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Thu Nov 11 12:25:31 2010
+        MODULE IPPLEN__genmod
+          INTERFACE 
+            FUNCTION IPPLEN(LINE) RESULT(IPPLEN_0)
+              CHARACTER(*) :: LINE
+              INTEGER(KIND=4) :: IPPLEN_0
+            END FUNCTION IPPLEN
+          END INTERFACE 
+        END MODULE IPPLEN__genmod

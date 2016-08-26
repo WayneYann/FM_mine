@@ -1,0 +1,79 @@
+Note: The following installation instructions install the FlameMaster program
+to ~/FlameMaster and are based on the use of csh, tcsh, or bash. If you are
+using a different environment or want to install in a different location
+appropriate changes have to be made in the Install script or after
+installation.
+
+1.  Rename the FlameMaster archive to ~/FlameMaster  . If you prefer a different location for the
+FlameMaster package, rename the FlameMaster folder appropriately and change the path
+in FlameManExports.csh or FlameManExports.bash (see installation step 2). The description
+below assumes the location to be ~/FlameMaster. If you choose a different location, some
+of the commands have to be changed appropriately.
+
+2.  If you are using csh, tcsh, copy the file
+~/FlameMaster/FlameManExports.csh to ~/.FlameManExports.csh. If you are using
+bash, copy the file ~/FlameMaster/FlameManExports.bash to
+~/.FlameManExports.bash
+
+3.  If you are using csh, tcsh, add the line source
+~/.FlameManExports.csh to the file ~/.cshrc. If you are using bash,
+ add the line source ~/.FlameManExports.bash to the file ~/.bashrc.
+
+4.  Choose the correct settings for flex and the machine in the file
+~/.FlameManExports.csh or in ~/.FlameManExports.bash, if you are using
+bash.
+
+5.  Source the file ~/.FlameManExports.csh or ~/.cshrc if you are using csh, or
+source the file ~/.FlameManExports.bash or ~/.bashrc. You can do this, for instance,
+by executing the command
+
+source ~/.FlameManExports.csh
+
+Instead, you can also log out and in again. It is important to do that in the shell you are using. The
+installation script and all other scripts and programs invoked won't recognize
+the variables defined in the .FlameManExports.{whateveryouuse} file otherwise.
+
+6.  If flex is not installed on the machine and the second flex option in
+~/.FlameManExports.{whateveryouuse} has been used, install flex now using the
+commands chmod 755 ~/FlameMaster/InstallFlex ~/FlameMaster/InstallFlex
+
+7.  Choose the correct machine settings in the file
+~/FlameMaster/FlameManTools/ListTool/FLReader/Makefile 
+I have problems to install the ListTool package on SGIs, but ListTool is not essential, although
+very helpful.
+
+8.  To install the package, use the script Install.csh or Install.bash depending on the shell
+you are using. Change the file mode of this script to executable by performing, for instance the command
+
+chmod 755 ~/FlameMaster/Install.csh
+
+9. Install package using the command 
+
+~/FlameMaster/Install.csh
+
+or 
+
+~/FlameMaster/Install.bash
+ 
+depending on your shell. Make sure that your
+current shell is newer than installation step 4 or you properly executed step 5.
+
+10. Check out some examples in ~/FlameMaster/FlameManRun. In each directory under
+FlameManRun, look at the Readme files, if present. These have descriptions of how
+to run the code and pre- and post-process the data. Also some additional helpful 
+features are documented in the Readme files. Start with
+~/FlameMaster/FlameManRun/Diff/Steady/H2. Then go
+to ~/FlameMaster/FlameManRun/Diff/Steady/CH4 and look at the Readme file.
+Continue through the other examples.
+Note that if the FlameMaster program is not installed in ~/FlameMaster, you have 
+to change the path to the mechanism files appropriately in the input files.
+
+For the generation of flamelet libraries, look at the file ~/Documentation/FlameletLibraries.pdf
+
+Another good exercise is to convert the GRI2.11 mechanism from chemkin to
+FlameMaster format. This is described in ~/FlameMaster/FlameManTools/CK2FMReinh
+in a Readme file.
+
+11. If you come across any problems during the installation, please send me the
+complete output of running the install script the FlameMaster relevant results
+of just typing the command 'env' and I can try to give you some clues.

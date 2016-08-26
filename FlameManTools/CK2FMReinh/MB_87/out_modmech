@@ -1,0 +1,1398 @@
+
+chthermfile: 1, translatefile: 0
+reading from transportdata file mb_trans.dat
+reading transport data: 'H' epsilon: 1450.000 sigma: 2.050
+reading transport data: 'H2' epsilon: 38.000 sigma: 2.920
+reading transport data: 'CH2OCH2O2H' epsilon: 395.000 sigma: 4.037
+reading transport data: 'C4H8O1-4' epsilon: 496.000 sigma: 5.200
+reading transport data: 'IC4KETIT' epsilon: 436.400 sigma: 5.352
+reading transport data: 'O' epsilon: 80.000 sigma: 2.750
+reading transport data: 'CH3OCH2O2H' epsilon: 395.000 sigma: 4.037
+reading transport data: 'C4H8O2-3' epsilon: 496.000 sigma: 5.200
+reading transport data: 'IC4H7OH' epsilon: 502.200 sigma: 5.356
+reading transport data: 'O2' epsilon: 107.400 sigma: 3.458
+reading transport data: 'CH3OCH2O' epsilon: 395.000 sigma: 4.037
+reading transport data: 'C4H8OH-1' epsilon: 496.000 sigma: 5.200
+reading transport data: 'IC4H6OH' epsilon: 502.200 sigma: 5.356
+reading transport data: 'OH' epsilon: 80.000 sigma: 2.750
+reading transport data: 'O2CH2OCH2O2H' epsilon: 395.000 sigma: 4.037
+reading transport data: 'C4H8OH-2' epsilon: 496.000 sigma: 5.200
+reading transport data: 'IC3H5CHO' epsilon: 436.400 sigma: 5.352
+reading transport data: 'H2O' epsilon: 572.400 sigma: 2.605
+reading transport data: 'HO2CH2OCHO' epsilon: 395.000 sigma: 4.037
+reading transport data: 'C4H8OH-1O2' epsilon: 502.200 sigma: 5.356
+reading transport data: 'IC3H5CO' epsilon: 436.400 sigma: 5.352
+reading transport data: 'N2' epsilon: 97.530 sigma: 3.621
+reading transport data: 'OCH2OCHO' epsilon: 395.000 sigma: 4.037
+reading transport data: 'C4H8OH-2O2' epsilon: 502.200 sigma: 5.356
+reading transport data: 'TC3H6OCHO' epsilon: 436.400 sigma: 5.352
+reading transport data: 'HO2' epsilon: 107.400 sigma: 3.458
+reading transport data: 'HOCH2OCO' epsilon: 395.000 sigma: 4.037
+reading transport data: 'C4H8OOH1-1' epsilon: 357.100 sigma: 4.720
+reading transport data: 'IC3H6CO' epsilon: 436.400 sigma: 5.352
+reading transport data: 'H2O2' epsilon: 107.400 sigma: 3.458
+reading transport data: 'CH3OCHO' epsilon: 395.000 sigma: 4.037
+reading transport data: 'C4H8OOH1-2' epsilon: 496.000 sigma: 5.200
+reading transport data: 'IC4H7OOH' epsilon: 436.400 sigma: 5.352
+reading transport data: 'AR' epsilon: 136.500 sigma: 3.330
+reading transport data: 'CH3OCO' epsilon: 395.000 sigma: 4.037
+reading transport data: 'C4H8OOH1-3' epsilon: 496.000 sigma: 5.200
+reading transport data: 'TC3H6OHCHO' epsilon: 436.400 sigma: 5.352
+reading transport data: 'CO' epsilon: 98.100 sigma: 3.650
+reading transport data: 'CH2OCHO' epsilon: 395.000 sigma: 4.037
+reading transport data: 'C4H8OOH1-4' epsilon: 496.000 sigma: 5.200
+reading transport data: 'TC3H6OH' epsilon: 459.500 sigma: 5.036
+reading transport data: 'CO2' epsilon: 244.000 sigma: 3.763
+reading transport data: 'HE' epsilon: 10.200 sigma: 2.576
+reading transport data: 'C4H8OOH2-1' epsilon: 496.000 sigma: 5.200
+reading transport data: 'IC3H5OH' epsilon: 459.500 sigma: 5.036
+reading transport data: 'CH2O' epsilon: 498.000 sigma: 3.590
+reading transport data: 'C3H8' epsilon: 303.400 sigma: 4.810
+reading transport data: 'C4H8OOH2-2' epsilon: 357.100 sigma: 4.720
+reading transport data: 'TC3H6O2CHO' epsilon: 436.400 sigma: 5.352
+reading transport data: 'HCO' epsilon: 498.000 sigma: 3.590
+reading transport data: 'IC3H7' epsilon: 303.400 sigma: 4.810
+reading transport data: 'C4H8OOH2-3' epsilon: 496.000 sigma: 5.200
+reading transport data: 'TC3H6O2HCO' epsilon: 436.400 sigma: 5.352
+reading transport data: 'HO2CHO' epsilon: 436.000 sigma: 3.970
+reading transport data: 'NC3H7' epsilon: 303.400 sigma: 4.810
+reading transport data: 'C4H8OOH2-4' epsilon: 496.000 sigma: 5.200
+reading transport data: 'IC3H5O2HCHO' epsilon: 436.400 sigma: 5.352
+reading transport data: 'O2CHO' epsilon: 436.000 sigma: 3.970
+reading transport data: 'C3H6' epsilon: 307.800 sigma: 4.140
+reading transport data: 'C4H8OOH1-2O2' epsilon: 496.000 sigma: 5.200
+reading transport data: 'CH2CCH2OH' epsilon: 481.500 sigma: 4.997
+reading transport data: 'HOCHO' epsilon: 436.000 sigma: 3.970
+reading transport data: 'C4H8OOH1-3O2' epsilon: 496.000 sigma: 5.200
+reading transport data: 'TC4H8CHO' epsilon: 476.000 sigma: 5.778
+reading transport data: 'OCHO' epsilon: 498.000 sigma: 3.590
+reading transport data: 'C3H5-S' epsilon: 316.000 sigma: 4.220
+reading transport data: 'C4H8OOH1-4O2' epsilon: 496.000 sigma: 5.200
+reading transport data: 'O2C4H8CHO' epsilon: 476.000 sigma: 5.778
+reading transport data: 'HOCH2O2H' epsilon: 481.800 sigma: 3.626
+reading transport data: 'C3H5-T' epsilon: 316.000 sigma: 4.220
+reading transport data: 'C4H8OOH2-1O2' epsilon: 496.000 sigma: 5.200
+reading transport data: 'O2HC4H8CO' epsilon: 476.000 sigma: 5.778
+reading transport data: 'HOCH2O2' epsilon: 481.800 sigma: 3.626
+reading transport data: 'C3H4-P' epsilon: 324.800 sigma: 4.290
+reading transport data: 'C3H4-A' epsilon: 324.800 sigma: 4.290
+reading transport data: 'C4H8OOH2-3O2' epsilon: 496.000 sigma: 5.200
+reading transport data: 'C3H5OH' epsilon: 481.500 sigma: 4.997
+reading transport data: 'OCH2O2H' epsilon: 481.800 sigma: 3.626
+reading transport data: 'C4H8OOH2-4O2' epsilon: 496.000 sigma: 5.200
+reading transport data: 'MB' epsilon: 468.000 sigma: 2.050
+reading transport data: 'HOCH2O' epsilon: 470.600 sigma: 4.410
+reading transport data: 'C3H3' epsilon: 324.800 sigma: 4.290
+reading transport data: 'NC4KET12' epsilon: 476.000 sigma: 5.778
+reading transport data: 'MB2D' epsilon: 468.500 sigma: 5.230
+reading transport data: 'CH3OH' epsilon: 481.800 sigma: 3.626
+reading transport data: 'C3H2' epsilon: 209.000 sigma: 4.100
+reading transport data: 'NC4KET13' epsilon: 476.000 sigma: 5.778
+reading transport data: 'MB2J' epsilon: 468.500 sigma: 5.230
+reading transport data: 'CH2OH' epsilon: 417.000 sigma: 3.690
+reading transport data: 'C3H5O' epsilon: 411.000 sigma: 4.820
+reading transport data: 'NC4KET14' epsilon: 476.000 sigma: 5.778
+reading transport data: 'MB2O' epsilon: 523.600 sigma: 5.960
+reading transport data: 'CH3O' epsilon: 417.000 sigma: 3.690
+reading transport data: 'C3H6OOH-21' epsilon: 357.100 sigma: 4.720
+reading transport data: 'NC4KET21' epsilon: 476.000 sigma: 5.778
+reading transport data: 'MB2OH3J' epsilon: 523.600 sigma: 5.960
+reading transport data: 'CH3O2H' epsilon: 481.800 sigma: 3.626
+reading transport data: 'C3H6OOH-31' epsilon: 357.100 sigma: 4.720
+reading transport data: 'NC4KET23' epsilon: 476.000 sigma: 5.778
+reading transport data: 'MB2OH3OO' epsilon: 541.500 sigma: 5.674
+reading transport data: 'CH3O2' epsilon: 481.800 sigma: 3.626
+reading transport data: 'C3H6OOH-12' epsilon: 357.100 sigma: 4.720
+reading transport data: 'NC4KET24' epsilon: 476.000 sigma: 5.778
+reading transport data: 'MB3D' epsilon: 468.500 sigma: 5.230
+reading transport data: 'CH4' epsilon: 141.400 sigma: 3.746
+reading transport data: 'C3H6OOH1-2O2' epsilon: 435.200 sigma: 4.662
+reading transport data: 'C2H5COCH3' epsilon: 454.000 sigma: 5.413
+reading transport data: 'MB3J' epsilon: 468.500 sigma: 5.230
+reading transport data: 'CH3' epsilon: 144.000 sigma: 3.800
+reading transport data: 'C3H6OOH1-3O2' epsilon: 435.200 sigma: 4.662
+reading transport data: 'C2H5COCH2' epsilon: 454.000 sigma: 5.413
+reading transport data: 'MB3O' epsilon: 523.600 sigma: 5.960
+reading transport data: 'CH2' epsilon: 144.000 sigma: 3.800
+reading transport data: 'C3H6OOH2-1O2' epsilon: 435.200 sigma: 4.662
+reading transport data: 'CH2CH2COCH3' epsilon: 454.000 sigma: 5.413
+reading transport data: 'MB3OH4J' epsilon: 523.600 sigma: 5.960
+reading transport data: 'CH2(S)' epsilon: 144.000 sigma: 3.800
+reading transport data: 'C3H6OOH2-2' epsilon: 435.200 sigma: 4.662
+reading transport data: 'CH3CHCOCH3' epsilon: 454.000 sigma: 5.413
+reading transport data: 'MB3OH4OO' epsilon: 541.500 sigma: 5.674
+reading transport data: 'C' epsilon: 71.400 sigma: 3.298
+reading transport data: 'NC3H7O2H' epsilon: 481.500 sigma: 4.997
+reading transport data: 'C2H3COCH3' epsilon: 454.000 sigma: 5.413
+reading transport data: 'MB4*O' epsilon: 523.600 sigma: 5.960
+reading transport data: 'MB4J*O' epsilon: 523.600 sigma: 5.960
+reading transport data: 'CH' epsilon: 80.000 sigma: 2.750
+reading transport data: 'IC3H7O2H' epsilon: 459.500 sigma: 5.036
+reading transport data: 'CH3CHOOCOCH3' epsilon: 454.000 sigma: 5.413
+reading transport data: 'MB4J' epsilon: 468.500 sigma: 5.230
+reading transport data: 'C2H6' epsilon: 247.500 sigma: 4.350
+reading transport data: 'NC3H7O2' epsilon: 481.500 sigma: 4.997
+reading transport data: 'CH2CHOOHCOCH3' epsilon: 454.000 sigma: 5.413
+reading transport data: 'MB4O' epsilon: 523.600 sigma: 5.960
+reading transport data: 'C2H5' epsilon: 247.500 sigma: 4.350
+reading transport data: 'IC3H7O2' epsilon: 459.500 sigma: 5.036
+reading transport data: 'NC3H7CHO' epsilon: 464.200 sigma: 5.009
+reading transport data: 'MBM*O' epsilon: 523.600 sigma: 5.960
+reading transport data: 'C2H4' epsilon: 238.400 sigma: 3.496
+reading transport data: 'NC3H7O' epsilon: 481.500 sigma: 4.997
+reading transport data: 'NC3H7CO' epsilon: 464.200 sigma: 5.009
+reading transport data: 'MBMJ' epsilon: 468.500 sigma: 5.230
+reading transport data: 'C2H3' epsilon: 265.300 sigma: 3.721
+reading transport data: 'IC3H7O' epsilon: 459.500 sigma: 5.036
+reading transport data: 'C3H6CHO-1' epsilon: 464.200 sigma: 5.009
+reading transport data: 'MBMJ*O' epsilon: 523.600 sigma: 5.960
+reading transport data: 'C2H2' epsilon: 265.300 sigma: 3.721
+reading transport data: 'C3H6O1-2' epsilon: 403.600 sigma: 4.968
+reading transport data: 'C3H6CHO-2' epsilon: 464.200 sigma: 5.009
+reading transport data: 'MBMO' epsilon: 523.600 sigma: 5.960
+reading transport data: 'C2H' epsilon: 265.300 sigma: 3.721
+reading transport data: 'C3H6O1-3' epsilon: 403.600 sigma: 4.968
+reading transport data: 'C3H6CHO-3' epsilon: 464.200 sigma: 5.009
+reading transport data: 'ME2*O' epsilon: 523.600 sigma: 5.960
+reading transport data: 'C3KET12' epsilon: 464.200 sigma: 5.009
+reading transport data: 'C2H5CHCO' epsilon: 464.200 sigma: 5.009
+reading transport data: 'ME2J' epsilon: 496.000 sigma: 5.200
+reading transport data: 'CH3CO' epsilon: 436.000 sigma: 3.970
+reading transport data: 'C3KET13' epsilon: 464.200 sigma: 5.009
+reading transport data: 'SC3H5CHO' epsilon: 464.200 sigma: 5.009
+reading transport data: 'MP2D' epsilon: 430.100 sigma: 5.833
+reading transport data: 'CH2CHO' epsilon: 436.000 sigma: 3.970
+reading transport data: 'C3KET21' epsilon: 464.200 sigma: 5.009
+reading transport data: 'SC3H5CO' epsilon: 464.200 sigma: 5.009
+reading transport data: 'MP2D3J' epsilon: 468.500 sigma: 5.230
+reading transport data: 'CH2CO' epsilon: 436.000 sigma: 3.970
+reading transport data: 'C3H51-23OOH' epsilon: 481.500 sigma: 4.997
+reading transport data: 'CH2CH2CHO' epsilon: 424.600 sigma: 4.820
+reading transport data: 'MP2OH3J' epsilon: 523.600 sigma: 5.960
+reading transport data: 'HCCO' epsilon: 150.000 sigma: 2.500
+reading transport data: 'C3H52-13OOH' epsilon: 357.100 sigma: 4.720
+reading transport data: 'IC4H10' epsilon: 335.700 sigma: 5.208
+reading transport data: 'MP2OH3OO' epsilon: 468.500 sigma: 5.230
+reading transport data: 'HCCOH' epsilon: 436.000 sigma: 3.970
+reading transport data: 'C3H6OH' epsilon: 487.900 sigma: 4.820
+reading transport data: 'IC4H9' epsilon: 352.000 sigma: 5.240
+reading transport data: 'MP3*O' epsilon: 523.600 sigma: 5.960
+reading transport data: 'CH3CO3H' epsilon: 436.000 sigma: 3.970
+reading transport data: 'HOC3H6O2' epsilon: 487.900 sigma: 4.820
+reading transport data: 'TC4H9' epsilon: 352.000 sigma: 5.240
+reading transport data: 'MP3J' epsilon: 430.100 sigma: 5.833
+reading transport data: 'CH3CO3' epsilon: 436.000 sigma: 3.970
+reading transport data: 'CH3CHCO' epsilon: 443.200 sigma: 4.120
+reading transport data: 'IC4H8' epsilon: 344.500 sigma: 5.089
+reading transport data: 'CH2CHCHCO' epsilon: 357.000 sigma: 5.180
+reading transport data: 'CH3CO2' epsilon: 436.000 sigma: 3.970
+reading transport data: 'AC3H5OOH' epsilon: 481.500 sigma: 4.997
+reading transport data: 'IC4H7' epsilon: 355.000 sigma: 4.650
+reading transport data: 'CHOOCO' epsilon: 395.000 sigma: 4.037
+reading transport data: 'C2H5OH' epsilon: 470.600 sigma: 4.410
+reading transport data: 'C2H3OOH' epsilon: 428.800 sigma: 4.958
+reading transport data: 'TC4H9O2' epsilon: 476.000 sigma: 5.778
+reading transport data: 'BAOJ' epsilon: 430.100 sigma: 5.833
+reading transport data: 'C2H5O' epsilon: 470.600 sigma: 4.410
+reading transport data: 'C4H10' epsilon: 350.900 sigma: 5.206
+reading transport data: 'IC4H9O2' epsilon: 436.400 sigma: 5.352
+reading transport data: 'C5H7O2' epsilon: 468.500 sigma: 5.230
+reading transport data: 'PC2H4OH' epsilon: 470.600 sigma: 4.410
+reading transport data: 'C4H8-1' epsilon: 355.000 sigma: 4.650
+reading transport data: 'TC4H8O2H-I' epsilon: 502.200 sigma: 5.356
+reading transport data: 'MP3J*O' epsilon: 523.600 sigma: 5.960
+reading transport data: 'SC2H4OH' epsilon: 470.600 sigma: 4.410
+reading transport data: 'C4H8-2' epsilon: 355.000 sigma: 4.650
+reading transport data: 'IC4H8O2H-I' epsilon: 502.200 sigma: 5.356
+reading transport data: 'CJHCHCHCO' epsilon: 470.600 sigma: 4.410
+reading transport data: 'O2C2H4OH' epsilon: 523.200 sigma: 5.664
+reading transport data: 'PC4H9' epsilon: 352.000 sigma: 5.240
+reading transport data: 'IC4H8O2H-T' epsilon: 502.200 sigma: 5.356
+reading transport data: 'CH3CHCHO' epsilon: 428.800 sigma: 4.958
+reading transport data: 'C2H5O2H' epsilon: 470.600 sigma: 4.410
+reading transport data: 'SC4H9' epsilon: 352.000 sigma: 5.240
+reading transport data: 'IC4H8O' epsilon: 436.400 sigma: 5.352
+reading transport data: 'ME' epsilon: 357.100 sigma: 4.720
+reading transport data: 'C2H5O2' epsilon: 470.600 sigma: 4.410
+reading transport data: 'C4H71-1' epsilon: 357.100 sigma: 4.720
+reading transport data: 'CC4H8O' epsilon: 447.300 sigma: 5.078
+reading transport data: 'BA4J' epsilon: 357.100 sigma: 4.720
+reading transport data: 'C2H4O2H' epsilon: 470.600 sigma: 4.410
+reading transport data: 'C4H71-2' epsilon: 357.100 sigma: 4.720
+reading transport data: 'IC4H9O' epsilon: 496.000 sigma: 5.200
+reading transport data: 'CH2COOH' epsilon: 357.100 sigma: 4.720
+reading transport data: 'C2H4O1-2' epsilon: 436.000 sigma: 3.970
+reading transport data: 'C4H71-3' epsilon: 357.100 sigma: 4.720
+reading transport data: 'TC4H9O' epsilon: 496.000 sigma: 5.200
+reading transport data: 'MEMJ' epsilon: 357.100 sigma: 4.720
+reading transport data: 'C2H3O1-2' epsilon: 436.000 sigma: 3.970
+reading transport data: 'C4H71-4' epsilon: 357.100 sigma: 4.720
+reading transport data: 'IC4H9O2H' epsilon: 436.400 sigma: 5.352
+reading transport data: 'C2H3CO2' epsilon: 357.100 sigma: 4.720
+reading transport data: 'CH3COCH3' epsilon: 435.500 sigma: 4.860
+reading transport data: 'C4H72-1' epsilon: 357.100 sigma: 4.720
+reading transport data: 'TC4H9O2H' epsilon: 476.000 sigma: 5.778
+reading transport data: 'MP2DMJ' epsilon: 357.100 sigma: 4.720
+reading transport data: 'CH3COCH2' epsilon: 435.500 sigma: 4.860
+reading transport data: 'C4H72-2' epsilon: 357.100 sigma: 4.720
+reading transport data: 'IC4H7O' epsilon: 496.000 sigma: 5.200
+reading transport data: 'MP2D2J' epsilon: 357.100 sigma: 4.720
+reading transport data: 'CH3COCH2O2' epsilon: 435.200 sigma: 4.662
+reading transport data: 'C4H6' epsilon: 357.000 sigma: 4.720
+reading transport data: 'IC4H8OH' epsilon: 496.000 sigma: 5.200
+reading transport data: 'MM1O' epsilon: 523.600 sigma: 5.960
+reading transport data: 'CH3COCH2O2H' epsilon: 435.200 sigma: 4.662
+reading transport data: 'PC4H9O2H' epsilon: 496.000 sigma: 5.200
+reading transport data: 'IO2C4H8OH' epsilon: 496.000 sigma: 5.200
+reading transport data: 'MMMO' epsilon: 523.600 sigma: 5.960
+reading transport data: 'CH3COCH2O' epsilon: 435.200 sigma: 4.662
+reading transport data: 'SC4H9O2H' epsilon: 496.000 sigma: 5.200
+reading transport data: 'IC3H7CHO' epsilon: 436.400 sigma: 5.352
+reading transport data: 'CH3CHOCHO' epsilon: 427.000 sigma: 5.117
+reading transport data: 'C2H3CHO' epsilon: 428.800 sigma: 4.958
+reading transport data: 'PC4H9O2' epsilon: 496.000 sigma: 5.200
+reading transport data: 'TC3H6CHO' epsilon: 436.400 sigma: 5.352
+reading transport data: 'ME2J*O' epsilon: 523.600 sigma: 5.960
+reading transport data: 'C2H3CO' epsilon: 443.200 sigma: 4.120
+reading transport data: 'SC4H9O2' epsilon: 496.000 sigma: 5.200
+reading transport data: 'IC3H7CO' epsilon: 436.400 sigma: 5.352
+reading transport data: 'MB4OO' epsilon: 52Use of uninitialized value $atom[1] in uc at ./modmech.perl line 610, <FILETHERMIN> line 42.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 42.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 42.
+
+HOCO not in transportdata file, -1 is used
+CH2O2H not in transportdata file, -1 is usedUse of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 134.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 134.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 134.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 134.
+
+CH2[S] not in transportdata file, -1 is used
+CH3CHO2H not in transportdata file, -1 is used3.600 sigma: 5.960
+reading transport data: 'C2H5CHO' epsilon: 435.200 sigma: 4.662
+reading transport data: 'PC4H9O' epsilon: 496.000 sigma: 5.200
+reading transport data: 'IC3H6CHO' epsilon: 436.400 sigma: 5.352
+reading transport data: 'MBMOO' epsilon: 523.600 sigma: 5.960
+reading transport data: 'C2H5CO' epsilon: 424.600 sigma: 4.820
+reading transport data: 'SC4H9O2' epsilon: 496.000 sigma: 5.200
+reading transport data: 'TC4H8OOH-IO2' epsilon: 476.000 sigma: 5.778
+reading transport data: 'MB3OO' epsilon: 523.600 sigma: 5.960
+reading transport data: 'CH3OCH3' epsilon: 395.000 sigma: 4.037
+reading transport data: 'C4H7O' epsilon: 496.000 sigma: 5.200
+reading transport data: 'IC4H8OOH-IO2' epsilon: 436.400 sigma: 5.352
+reading transport data: 'MB2OO' epsilon: 523.600 sigma: 5.960
+reading transport data: 'CH3OCH2' epsilon: 395.000 sigma: 4.037
+reading transport data: 'C4H8O1-2' epsilon: 496.000 sigma: 5.200
+reading transport data: 'IC4H8OOH-TO2' epsilon: 436.400 sigma: 5.352
+reading transport data: 'CH3OCH2O2' epsilon: 395.000 sigma: 4.037
+reading transport data: 'C4H8O1-3' epsilon: 496.000 sigma: 5.200
+reading transport data: 'IC4KETII' epsilon: 436.400 sigma: 5.352
+reading transport data: 'C3H5-A' epsilon: 316.000 sigma: 4.220
+reading transport data: 'CH3CHO' epsilon: 436.000 sigma: 3.970
+reading transport data: 'SC4H9O' epsilon: 496.000 sigma: 5.200
+reading transport data: 'C3H6OOH-2,1' epsilon: 435.200 sigma: 4.662
+reading transport data: 'C3H6OOH-3,1' epsilon: 435.200 sigma: 4.662
+reading transport data: 'C3H6OOH-1,2' epsilon: 435.200 sigma: 4.662
+reading transport data: 'C3H51-2,3OOH' epsilon: 435.200 sigma: 4.662
+reading transport data: 'C3H52-1,3OOH' epsilon: 435.200 sigma: 4.662
+Reading thermodata file
+reading thermofile
+'H'    =>    	'H'
+'H2'    =>    	'H2'
+'O'    =>    	'O'
+'O2'    =>    	'O2'
+OH: Dev at 1000K: cp(rel.): -0.007, H0/RT: -0.004, S0/R: -0.003, comm. T.: 1710K 
+...refit upper thd down to 1000K
+'OH'    =>    	'OH'
+'H2O'    =>    	'H2O'
+'N2'    =>    	'N2'
+'HO2'    =>    	'HO2'
+'H2O2'    =>    	'H2O2'
+'AR'    =>    	'AR'
+CH2O: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.018, S0/R: -0.016, comm. T.: 1486K 
+...refit upper thd down to 1000K
+'CH2O'    =>    	'CH2O'
+'CO'    =>    	'CO'
+CO2: Dev at 1000K: cp(rel.): 0.014, H0/RT: -0.013, S0/R: -0.012, comm. T.: 1380K 
+...refit upper thd down to 1000K
+'CO2'    =>    	'CO2'
+HCO: Dev at 1000K: cp(rel.): 0.007, H0/RT: 0.007, S0/R: 0.005, comm. T.: 1690K 
+...refit upper thd down to 1000K
+'HCO'    =>    	'HCO'
+HO2CHO: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.031, S0/R: -0.028, comm. T.: 1378K 
+...refit upper thd down to 1000K
+'HO2CHO'    =>    	'HO2CHO'
+O2CHO: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.026, S0/R: -0.024, comm. T.: 1368K 
+...refit upper thd down to 1000K
+'O2CHO'    =>    	'O2CHO'
+HOCHO: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.022, S0/R: -0.021, comm. T.: 1419K 
+...refit upper thd down to 1000K
+'HOCHO'    =>    	'HOCHO'
+HOCO: Dev at 1000K: cp(rel.): 0.016, H0/RT: -0.015, S0/R: -0.014, comm. T.: 1549K 
+...refit upper thd down to 1000K
+'HOCO'    =>    	'HOCO'
+OCHO: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.016, S0/R: -0.015, comm. T.: 1412K 
+...refit upper thd down to 1000K
+'OCHO'    =>    	'OCHO'
+HOCH2O2H: Dev at 1000K: cp(rel.): 0.012, H0/RT: -0.027, S0/R: -0.024, comm. T.: 1422K 
+...refit upper thd down to 1000K
+'HOCH2O2H'    =>    	'HOCH2O2H'
+HOCH2O2: Dev at 1000K: cp(rel.): 0.011, H0/RT: -0.024, S0/R: -0.021, comm. T.: 1412K 
+...refit upper thd down to 1000K
+'HOCH2O2'    =>    	'HOCH2O2'
+OCH2O2H: Dev at 1000K: cp(rel.): 0.012, H0/RT: -0.025, S0/R: -0.022, comm. T.: 1420K 
+...refit upper thd down to 1000K
+'OCH2O2H'    =>    	'OCH2O2H'
+HOCH2O: Dev at 1000K: cp(rel.): 0.017, H0/RT: -0.021, S0/R: -0.020, comm. T.: 1452K 
+...refit upper thd down to 1000K
+'HOCH2O'    =>    	'HOCH2O'
+CH3OH: Dev at 1000K: cp(rel.): 0.007, H0/RT: 0.014, S0/R: 0.010, comm. T.: 1985K 
+...refit upper thd down to 1000K
+'CH3OH'    =>    	'CH3OH'
+CH2OH: Dev at 1000K: cp(rel.): 0.011, H0/RT: -0.018, S0/R: -0.016, comm. T.: 1399K 
+...refit upper thd down to 1000K
+'CH2OH'    =>    	'CH2OH'
+CH3O: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.024, S0/R: -0.022, comm. T.: 1381K 
+...refit upper thd down to 1000K
+'CH3O'    =>    	'CH3O'
+CH3O2H: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.043, S0/R: -0.039, comm. T.: 1367K 
+...refit upper thd down to 1000K
+'CH3O2H'    =>    	'CH3O2H'
+CH3O2: Dev at 1000K: cp(rel.): 0.024, H0/RT: -0.039, S0/R: -0.035, comm. T.: 1365K 
+...refit upper thd down to 1000K
+'CH3O2'    =>    	'CH3O2'
+CH2O2H: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.031, S0/R: -0.028, comm. T.: 1357K 
+...refit upper thd down to 1000K
+'CH2O2H'    =>    	'CH2O2H'
+CH4: Dev at 1000K: cp(rel.): 0.034, H0/RT: -0.030, S0/R: -0.028, comm. T.: 1462K 
+...refit upper thd down to 1000K
+'CH4'    =>    	'CH4'
+CH3: Dev at 1000K: cp(rel.): 0.011, H0/RT: -0.013, S0/R: -0.011, comm. T.: 1389K 
+...refit upper thd down to 1000K
+'CH3'    =>    	'CH3'
+'CH2'    =>    	'CH2'
+'CH2[S]'    =>    	'CH2[S]-CH2'
+'CH'    =>    	'CH'
+C2H6: Dev at 1000K: cp(rel.): 0.025, H0/RT: -0.055, S0/R: -0.050, comm. T.: 1383K 
+...refit upper thd down to 1000K
+'C2H6'    =>    	'C2H6'
+C2H5: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.032, S0/R: -0.029, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'C2H5'    =>    	'C2H5'
+C2H4: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.034, S0/R: -0.030, comm. T.: 1395K 
+...refit upper thd down to 1000K
+'C2H4'    =>    	'C2H4'
+C2H3: Dev at 1000K: cp(rel.): 0.017, H0/RT: -0.026, S0/R: -0.024, comm. T.: 1395K 
+...refit upper thd down to 1000K
+'C2H3'    =>    	'C2H3'
+C2H2: Dev at 1000K: cp(rel.): 0.006, H0/RT: -0.014, S0/R: -0.012, comm. T.: 1407K 
+...refit upper thd down to 1000K
+'C2H2'    =>    	'C2H2'
+C2H: Dev at 1000K: cp(rel.): 0.011, H0/RT: -0.010, S0/R: -0.009, comm. T.: 1361K 
+...refit upper thd down to 1000K
+'C2H'    =>    	'C2H'
+CH3CHO: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.038, S0/R: -0.034, comm. T.: 1377K 
+...refit upper thd down to 1000K
+'CH3CHO'    =>    	'CH3CHO'
+CH3CO: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.030, S0/R: -0.027, comm. T.: 1371K 
+...refit upper thd down to 1000K
+'CH3CO'    =>    	'CH3CO'
+CH2CHO: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.033, S0/R: -0.030, comm. T.: 1388K 
+...refit upper thd down to 1000K
+'CH2CHO'    =>    	'CH2CHO'
+'CH2CO'    =>    	'CH2CO'
+'HCCO'    =>    	'HCCO'
+'HCCOH'    =>    	'HCCOH'
+CH3CO3H: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.047, S0/R: -0.043, comm. T.: 1391K 
+...refit upper thd down to 1000K
+'CH3CO3H'    =>    	'CH3CO3H'
+CH3CO3: Dev at 1000K: cp(rel.): 0.016, H0/RT: -0.042, S0/R: -0.038, comm. T.: 1391K 
+...refit upper thd down to 1000K
+'CH3CO3'    =>    	'CH3CO3'
+CH3CO2: Dev at 1000K: cp(rel.): 0.017, H0/RT: -0.034, S0/R: -0.031, comm. T.: 1395K 
+...refit upper thd down to 1000K
+'CH3CO2'    =>    	'CH3CO2'
+C2H5OH: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.048, S0/R: -0.043, comm. T.: 1395K 
+...refit upper thd down to 1000K
+'C2H5OH'    =>    	'C2H5OH'
+PC2H4OH: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.040, S0/R: -0.036, comm. T.: 1396K 
+...refit upper thd down to 1000K
+'PC2H4OH'    =>    	'P-C2H4OH'
+SC2H4OH: Dev at 1000K: cp(rel.): 0.016, H0/RT: -0.038, S0/R: -0.035, comm. T.: 1397K 
+...refit upper thd down to 1000K
+'SC2H4OH'    =>    	'S-C2H4OH'
+C2H5O: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.044, S0/R: -0.040, comm. T.: 1393K 
+...refit upper thd down to 1000K
+'C2H5O'    =>    	'C2H5O'
+O2C2H4OH: Dev at 1000K: cp(rel.): 0.017, H0/RT: -0.050, S0/R: -0.046, comm. T.: 1392K 
+...refit upper thd down to 1000K
+'O2C2H4OH'    =>    	'O2C2H4OH'
+C2H5O2H: Dev at 1000K: cp(rel.): 0.015, H0/RT: -0.042, S0/R: -0.038, comm. T.: 1391K 
+...refit upper thd down to 1000K
+'C2H5O2H'    =>    	'C2H5O2H'
+C2H5O2: Dev at 1000K: cp(rel.): 0.015, H0/RT: -0.038, S0/R: -0.035, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'C2H5O2'    =>    	'C2H5O2'
+C2H4O2H: Dev at 1000K: cp(rel.): 0.013, H0/RT: -0.034, S0/R: -0.031, comm. T.: 1397K 
+...refit upper thd down to 1000K
+'C2H4O2H'    =>    	'C2H4O2H'
+CH3CHO2H: Dev at 1000K: cp(rel.): 0.014, H0/RT: -0.035, S0/R: -0.032, comm. T.: 1385K 
+...refit upper thd down to 1000K
+'CH3CHO2H'    =>    	'CH3CHO2H'
+C2H4O1-2: Dev at 1000K: cp(rel.): 0.021, H0/Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 238.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 238.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 242.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 242.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 358.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 358.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 358.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 358.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 362.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 362.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 362.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 362.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 366.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 366.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 366.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 366.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 370.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 370.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 370.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 370.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 374.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 374.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 374.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 374.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 390.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 390.
+
+C3H6OOH1-3 not in transportdata file, -1 is usedUse of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 394.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 394.
+
+C3H6OOH1-2 not in transportdata file, -1 is usedUse of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 398.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 398.
+
+C3H6OOH2-1 not in transportdata file, -1 is usedUse of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 402.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 402.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 406.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 406.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 410.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 410.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 414.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 414.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 442.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 442.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 446.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 446.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 450.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 450.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 454.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 454.
+RT: -0.040, S0/R: -0.037, comm. T.: 1399K 
+...refit upper thd down to 1000K
+'C2H4O1-2'    =>    	'C2H4O1-2-C2H4O'
+C2H3O1-2: Dev at 1000K: cp(rel.): 0.011, H0/RT: -0.017, S0/R: -0.015, comm. T.: 1492K 
+...refit upper thd down to 1000K
+'C2H3O1-2'    =>    	'C2H3O1-2-C2H3O'
+CH3COCH3: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.056, S0/R: -0.051, comm. T.: 1382K 
+...refit upper thd down to 1000K
+'CH3COCH3'    =>    	'CH3COCH3'
+CH3COCH2: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.050, S0/R: -0.045, comm. T.: 1388K 
+...refit upper thd down to 1000K
+'CH3COCH2'    =>    	'CH3COCH2'
+CH3COCH2O2: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.066, S0/R: -0.060, comm. T.: 1379K 
+...refit upper thd down to 1000K
+'CH3COCH2O2'    =>    	'CH3COCH2O2'
+CH3COCH2O2H: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.071, S0/R: -0.064, comm. T.: 1381K 
+...refit upper thd down to 1000K
+'CH3COCH2O2H'    =>    	'CH3COCH2O2H'
+CH3COCH2O: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.059, S0/R: -0.054, comm. T.: 1370K 
+...refit upper thd down to 1000K
+'CH3COCH2O'    =>    	'CH3COCH2O'
+C2H3CHO: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.050, S0/R: -0.045, comm. T.: 1393K 
+...refit upper thd down to 1000K
+'C2H3CHO'    =>    	'C2H3CHO'
+C2H3CO: Dev at 1000K: cp(rel.): 0.013, H0/RT: -0.037, S0/R: -0.033, comm. T.: 1402K 
+...refit upper thd down to 1000K
+'C2H3CO'    =>    	'C2H3CO'
+C2H5CHO: Dev at 1000K: cp(rel.): 0.045, H0/RT: -0.138, S0/R: -0.125, comm. T.: 1375K 
+...refit upper thd down to 1000K
+'C2H5CHO'    =>    	'C2H5CHO'
+C2H5CO: Dev at 1000K: cp(rel.): 0.057, H0/RT: -0.154, S0/R: -0.140, comm. T.: 1362K 
+...refit upper thd down to 1000K
+'C2H5CO'    =>    	'C2H5CO'
+CH2CH2CHO: Dev at 1000K: cp(rel.): 0.057, H0/RT: -0.153, S0/R: -0.139, comm. T.: 1363K 
+...refit upper thd down to 1000K
+'CH2CH2CHO'    =>    	'CH2CH2CHO'
+CH3CHCHO: Dev at 1000K: cp(rel.): 0.040, H0/RT: -0.091, S0/R: -0.085, comm. T.: 1253K 
+...refit upper thd down to 1000K
+'CH3CHCHO'    =>    	'CH3CHCHO'
+CH3OCH3: Dev at 1000K: cp(rel.): 0.024, H0/RT: -0.056, S0/R: -0.051, comm. T.: 1368K 
+...refit upper thd down to 1000K
+'CH3OCH3'    =>    	'CH3OCH3'
+CH3OCH2: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.054, S0/R: -0.049, comm. T.: 1376K 
+...refit upper thd down to 1000K
+'CH3OCH2'    =>    	'CH3OCH2'
+CH3OCH2O2: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.056, S0/R: -0.051, comm. T.: 1389K 
+...refit upper thd down to 1000K
+'CH3OCH2O2'    =>    	'CH3OCH2O2'
+CH2OCH2O2H: Dev at 1000K: cp(rel.): 0.016, H0/RT: -0.051, S0/R: -0.046, comm. T.: 1393K 
+...refit upper thd down to 1000K
+'CH2OCH2O2H'    =>    	'CH2OCH2O2H'
+CH3OCH2O2H: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.059, S0/R: -0.054, comm. T.: 1392K 
+...refit upper thd down to 1000K
+'CH3OCH2O2H'    =>    	'CH3OCH2O2H'
+CH3OCH2O: Dev at 1000K: cp(rel.): 0.009, H0/RT: 0.021, S0/R: 0.015, comm. T.: 2012K 
+...refit upper thd down to 1000K
+'CH3OCH2O'    =>    	'CH3OCH2O'
+O2CH2OCH2O2H: Dev at 1000K: cp(rel.): 0.014, H0/RT: -0.059, S0/R: -0.053, comm. T.: 1402K 
+...refit upper thd down to 1000K
+'O2CH2OCH2O2H'    =>    	'O2CH2OCH2O2H'
+HO2CH2OCHO: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.054, S0/R: -0.049, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'HO2CH2OCHO'    =>    	'HO2CH2OCHO'
+OCH2OCHO: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.041, S0/R: -0.038, comm. T.: 1475K 
+...refit upper thd down to 1000K
+'OCH2OCHO'    =>    	'OCH2OCHO'
+HOCH2OCO: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.041, S0/R: -0.038, comm. T.: 1603K 
+...refit upper thd down to 1000K
+'HOCH2OCO'    =>    	'HOCH2OCO'
+CH3OCHO: Dev at 1000K: cp(rel.): 0.011, H0/RT: 0.032, S0/R: 0.021, comm. T.: 1686K 
+...refit upper thd down to 1000K
+'CH3OCHO'    =>    	'CH3OCHO'
+CH3OCO: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.038, S0/R: -0.035, comm. T.: 1601K 
+...refit upper thd down to 1000K
+'CH3OCO'    =>    	'CH3OCO'
+CH2OCHO: Dev at 1000K: cp(rel.): 0.008, H0/RT: 0.016, S0/R: 0.012, comm. T.: 2018K 
+...refit upper thd down to 1000K
+'CH2OCHO'    =>    	'CH2OCHO'
+C3H8: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.070, S0/R: -0.063, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'C3H8'    =>    	'C3H8'
+NC3H7: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.062, S0/R: -0.056, comm. T.: 1386K 
+...refit upper thd down to 1000K
+'NC3H7'    =>    	'N-C3H7'
+IC3H7: Dev at 1000K: cp(rel.): 0.024, H0/RT: -0.060, S0/R: -0.055, comm. T.: 1373K 
+...refit upper thd down to 1000K
+'IC3H7'    =>    	'I-C3H7'
+C3H6: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.052, S0/R: -0.047, comm. T.: 1388K 
+...refit upper thd down to 1000K
+'C3H6'    =>    	'C3H6'
+C3H5-A: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.047, S0/R: -0.043, comm. T.: 1397K 
+...refit upper thd down to 1000K
+'C3H5-A'    =>    	'C3H5-A-C3H5'
+C3H5-T: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.043, S0/R: -0.039, comm. T.: 1382K 
+...refit upper thd down to 1000K
+'C3H5-T'    =>    	'C3H5-T-C3H5'
+C3H5-S: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.044, S0/R: -0.040, comm. T.: 1390K 
+...refit upper thd down to 1000K
+'C3H5-S'    =>    	'C3H5-S-C3H5'
+C3H4-A: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.027, S0/R: -0.025, comm. T.: 1400K 
+...refit upper thd down to 1000K
+'C3H4-A'    =>    	'C3H4-A-H4C3'
+C3H4-P: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.037, S0/R: -0.034, comm. T.: 1400K 
+...refit upper thd down to 1000K
+'C3H4-P'    =>    	'C3H4-P-H4C3'
+'C3H3'    =>    	'C3H3'
+'C3H2'    =>    	'C3H2'
+C3H5O: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.042, S0/R: -0.038, comm. T.: 1380K 
+...refit upper thd down to 1000K
+'C3H5O'    =>    	'C3H5O'
+C3H6OOH1-3: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.078, S0/R: -0.071, comm. T.: 1384K 
+...refit upper thd down to 1000K
+'C3H6OOH1-3'    =>    	'C3H6OOH1-3-C3H7O2'
+C3H6OOH1-2: Dev at 1000K: cp(rel.): 0.016, H0/RT: -0.052, S0/R: -0.047, comm. T.: 1402K 
+...refit upper thd down to 1000K
+'C3H6OOH1-2'    =>    	'C3H6OOH1-2-C3H7O2'
+C3H6OOH2-1: Dev at 1000K: cp(rel.): 0.013, H0/RT: -0.051, S0/R: -0.046, comm. T.: 1407K 
+...refit upper thd down to 1000K
+'C3H6OOH2-1'    =>    	'C3H6OOH2-1-C3H7O2'
+C3H6OOH2-2: Dev at 1000K: cp(rel.): 0.013, H0/RT: -0.051, S0/R: -0.046, comm. T.: 1407K 
+...refit upper thd down to 1000K
+'C3H6OOH2-2'    =>    	'C3H6OOH2-2-C3H7O2'
+C3H6OOH1-2O2: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.096, S0/R: -0.086, comm. T.: 1386K 
+...refit upper thd down to 1000K
+'C3H6OOH1-2O2'    =>    	'C3H6OOH1-2O2-C3H7O4'
+C3H6OOH1-3O2: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.098, S0/R: -0.089, comm. T.: 1382K 
+...refit upper thd down to 1000K
+'C3H6OOH1-3O2'    =>    	'C3H6OOH1-3O2-C3H7O4'
+C3H6OOH2-1O2: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.096, S0/R: -0.086, comm. T.: 1386K 
+...refit upper thd down to 1000K
+'C3H6OOH2-1O2'    =>    	'C3H6OOH2-1O2-C3H7O4'
+NC3H7O: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.060, S0/R: -0.055, comm. T.: 1398K 
+...refit upper thd down to 1000K
+'NC3H7O'    =>    	'N-C3H7O'
+IC3H7O: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.059, S0/R: -0.054, comm. T.: 1393K 
+...refit upper thd down to 1000K
+'IC3H7O'    =>    	'I-C3H7O'
+NC3H7O2H: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.087, S0/R: -0.079, comm. T.: 1385K 
+...refit upper thd down to 1000K
+'NC3H7O2H'    =>    	'N-C3H7O2H'
+IC3H7O2H: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.085, S0/R: -0.077, comm. T.: 1389K 
+...refit upper thd down to 1000K
+'IC3H7O2H'    =>    	'I-C3H7O2H'
+NC3H7O2: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.082, S0/R: -0.074, comm. T.: 1384K 
+...refit upper thd down to 1000K
+'NC3H7O2'    =>    	'N-C3H7O2'
+IC3H7O2: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.080, S0/R: -0.073, comm. T.: 1388K 
+...refit upper thd down to 1000K
+'IC3H7O2'    =>    	'I-C3H7O2'
+C3H6O1-3: Dev at 1000K: cp(rel.): 0.011, H0/RT: 0.031, S0/R: 0.023, comm. T.: 2035K 
+...refit upper thd down to 1000K
+'C3H6O1-3'    =>    	'C3H6O1-3-C3H6O'
+C3H6O1-2: Dev at 1000K: cp(rel.): 0.026, H0/RT: -0.076, S0/R: -0.069, comm. T.: 1379K 
+...refit upper thd down to 1000K
+'C3H6O1-2'    =>    	'C3H6O1-2-C3H6O'
+C3KET12: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.078, S0/R: -0.071, comm. T.: 1388K 
+...refit upper thd down to 1000K
+'C3KET12'    =>    	'C3KET12-C3H6O3'
+C3KET13: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.081, S0/R: -0.074, comm. T.: 1379K 
+...refit upper thd down to 1000K
+'C3KET13'    =>    	'C3KET13-C3H6O3'
+C3KET21: Dev at 1000K: cp(rel.): 0.023, H0/RT: Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 458.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 458.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 462.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 462.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 466.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 466.
+Use of uninitialized value $atom[1] in uc at ./modmech.perl line 610, <FILETHERMIN> line 490.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 490.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 490.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 498.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 498.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 498.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 498.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 514.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 514.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 514.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 514.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 518.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 518.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 518.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 518.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 522.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 522.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 522.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 522.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 526.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 526.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 526.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 526.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 530.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 530.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 530.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 530.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 534.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 534.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 534.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 534.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 538.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 538.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 538.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 538.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 574.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 574.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 578.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 578.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 582.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 582.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 586.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 586.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 590.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 590.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 594.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 594.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 598.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 598.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 602.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 602.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 606.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 606.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 610.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 610.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 614.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 614.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 618.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 618.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 622.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 622.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 626.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 626.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 630.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 630.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 634.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 634.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 638.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 638.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 642.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 642.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 646.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 646.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 650.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 650.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 654.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 654.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 658.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 658.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 662.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 662.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 666.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 666.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 670.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 670.
+-0.081, S0/R: -0.074, comm. T.: 1371K 
+...refit upper thd down to 1000K
+'C3KET21'    =>    	'C3KET21-C3H6O3'
+C3H51-2,3OOH: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.090, S0/R: -0.082, comm. T.: 1386K 
+...refit upper thd down to 1000K
+'C3H51-2,3OOH'    =>    	'C3H51-2J3OOH-C3H7O4'
+C3H52-1,3OOH: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.091, S0/R: -0.083, comm. T.: 1379K 
+...refit upper thd down to 1000K
+'C3H52-1,3OOH'    =>    	'C3H52-1J3OOH-C3H7O4'
+C3H6OH: Dev at 1000K: cp(rel.): 0.007, H0/RT: 0.034, S0/R: 0.024, comm. T.: 1674K 
+...refit upper thd down to 1000K
+'C3H6OH'    =>    	'C3H6OH'
+HOC3H6O2: Dev at 1000K: cp(rel.): 0.017, H0/RT: -0.068, S0/R: -0.061, comm. T.: 1397K 
+...refit upper thd down to 1000K
+'HOC3H6O2'    =>    	'HOC3H6O2'
+CH3CHCO: Dev at 1000K: cp(rel.): 0.016, H0/RT: -0.042, S0/R: -0.038, comm. T.: 1400K 
+...refit upper thd down to 1000K
+'CH3CHCO'    =>    	'CH3CHCO'
+AC3H5OOH: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.061, S0/R: -0.055, comm. T.: 1394K 
+...refit upper thd down to 1000K
+'AC3H5OOH'    =>    	'A-C3H5OOH'
+C2H3OOH: Dev at 1000K: cp(rel.): 0.016, H0/RT: -0.051, S0/R: -0.045, comm. T.: 1397K 
+...refit upper thd down to 1000K
+'C2H3OOH'    =>    	'C2H3OOH'
+'HE'    =>    	'HE'
+'C'    =>    	'C'
+'CH2(S)'    =>    	'CH2GSG-CH2'
+C4H10: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.084, S0/R: -0.076, comm. T.: 1392K 
+...refit upper thd down to 1000K
+'C4H10'    =>    	'C4H10'
+PC4H9: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.076, S0/R: -0.069, comm. T.: 1391K 
+...refit upper thd down to 1000K
+'PC4H9'    =>    	'P-C4H9'
+SC4H9: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.066, S0/R: -0.060, comm. T.: 1381K 
+...refit upper thd down to 1000K
+'SC4H9'    =>    	'S-C4H9'
+C4H8-1: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.074, S0/R: -0.067, comm. T.: 1391K 
+...refit upper thd down to 1000K
+'C4H8-1'    =>    	'C4H8-1-C4H8'
+C4H8-2: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.069, S0/R: -0.063, comm. T.: 1384K 
+...refit upper thd down to 1000K
+'C4H8-2'    =>    	'C4H8-2-C4H8'
+C4H71-1: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.064, S0/R: -0.058, comm. T.: 1393K 
+...refit upper thd down to 1000K
+'C4H71-1'    =>    	'C4H71-1-C4H7'
+C4H71-2: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.064, S0/R: -0.058, comm. T.: 1389K 
+...refit upper thd down to 1000K
+'C4H71-2'    =>    	'C4H71-2-C4H7'
+C4H71-3: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.067, S0/R: -0.061, comm. T.: 1392K 
+...refit upper thd down to 1000K
+'C4H71-3'    =>    	'C4H71-3-C4H7'
+C4H71-4: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.065, S0/R: -0.058, comm. T.: 1392K 
+...refit upper thd down to 1000K
+'C4H71-4'    =>    	'C4H71-4-C4H7'
+C4H72-2: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.061, S0/R: -0.055, comm. T.: 1379K 
+...refit upper thd down to 1000K
+'C4H72-2'    =>    	'C4H72-2-C4H7'
+C4H6: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.065, S0/R: -0.059, comm. T.: 1398K 
+...refit upper thd down to 1000K
+'C4H6'    =>    	'C4H6'
+PC4H9O2H: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.108, S0/R: -0.098, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'PC4H9O2H'    =>    	'P-C4H9O2H'
+SC4H9O2H: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.105, S0/R: -0.095, comm. T.: 1390K 
+...refit upper thd down to 1000K
+'SC4H9O2H'    =>    	'S-C4H9O2H'
+PC4H9O2: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.102, S0/R: -0.092, comm. T.: 1385K 
+...refit upper thd down to 1000K
+'PC4H9O2'    =>    	'P-C4H9O2'
+SC4H9O2: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.100, S0/R: -0.090, comm. T.: 1389K 
+...refit upper thd down to 1000K
+'SC4H9O2'    =>    	'S-C4H9O2'
+PC4H9O: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.072, S0/R: -0.066, comm. T.: 1403K 
+...refit upper thd down to 1000K
+'PC4H9O'    =>    	'P-C4H9O'
+SC4H9O: Dev at 1000K: cp(rel.): 0.007, H0/RT: 0.044, S0/R: 0.031, comm. T.: 1679K 
+...refit upper thd down to 1000K
+'SC4H9O'    =>    	'S-C4H9O'
+C4H7O: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.060, S0/R: -0.054, comm. T.: 1395K 
+...refit upper thd down to 1000K
+'C4H7O'    =>    	'C4H7O'
+C4H8O1-2: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.079, S0/R: -0.071, comm. T.: 1399K 
+...refit upper thd down to 1000K
+'C4H8O1-2'    =>    	'C4H8O1-2-C4H8O'
+C4H8O1-3: Dev at 1000K: cp(rel.): 0.029, H0/RT: -0.102, S0/R: -0.093, comm. T.: 1371K 
+...refit upper thd down to 1000K
+'C4H8O1-3'    =>    	'C4H8O1-3-C4H8O'
+C4H8O1-4: Dev at 1000K: cp(rel.): 0.031, H0/RT: -0.103, S0/R: -0.094, comm. T.: 1361K 
+...refit upper thd down to 1000K
+'C4H8O1-4'    =>    	'C4H8O1-4-C4H8O'
+C4H8O2-3: Dev at 1000K: cp(rel.): 0.025, H0/RT: -0.103, S0/R: -0.093, comm. T.: 1384K 
+...refit upper thd down to 1000K
+'C4H8O2-3'    =>    	'C4H8O2-3-C4H8O'
+C4H8OH-1: Dev at 1000K: cp(rel.): 0.007, H0/RT: 0.031, S0/R: 0.023, comm. T.: 2017K 
+...refit upper thd down to 1000K
+'C4H8OH-1'    =>    	'C4H8OH-1-C4H9O'
+C4H8OH-2: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.071, S0/R: -0.064, comm. T.: 1390K 
+...refit upper thd down to 1000K
+'C4H8OH-2'    =>    	'C4H8OH-2-C4H9O'
+C4H8OH-1O2: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.087, S0/R: -0.079, comm. T.: 1396K 
+...refit upper thd down to 1000K
+'C4H8OH-1O2'    =>    	'C4H8OH-1O2-C4H9O3'
+C4H8OH-2O2: Dev at 1000K: cp(rel.): 0.017, H0/RT: -0.086, S0/R: -0.078, comm. T.: 1399K 
+...refit upper thd down to 1000K
+'C4H8OH-2O2'    =>    	'C4H8OH-2O2-C4H9O3'
+C4H8OOH1-1: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.082, S0/R: -0.075, comm. T.: 1379K 
+...refit upper thd down to 1000K
+'C4H8OOH1-1'    =>    	'C4H8OOH1-1-C4H9O2'
+C4H8OOH1-2: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.089, S0/R: -0.081, comm. T.: 1393K 
+...refit upper thd down to 1000K
+'C4H8OOH1-2'    =>    	'C4H8OOH1-2-C4H9O2'
+C4H8OOH1-3: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.084, S0/R: -0.077, comm. T.: 1377K 
+...refit upper thd down to 1000K
+'C4H8OOH1-3'    =>    	'C4H8OOH1-3-C4H9O2'
+C4H8OOH1-4: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.100, S0/R: -0.090, comm. T.: 1386K 
+...refit upper thd down to 1000K
+'C4H8OOH1-4'    =>    	'C4H8OOH1-4-C4H9O2'
+C4H8OOH2-1: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.097, S0/R: -0.088, comm. T.: 1390K 
+...refit upper thd down to 1000K
+'C4H8OOH2-1'    =>    	'C4H8OOH2-1-C4H9O2'
+C4H8OOH2-2: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.085, S0/R: -0.078, comm. T.: 1383K 
+...refit upper thd down to 1000K
+'C4H8OOH2-2'    =>    	'C4H8OOH2-2-C4H9O2'
+C4H8OOH2-3: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.089, S0/R: -0.081, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'C4H8OOH2-3'    =>    	'C4H8OOH2-3-C4H9O2'
+C4H8OOH2-4: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.097, S0/R: -0.088, comm. T.: 1390K 
+...refit upper thd down to 1000K
+'C4H8OOH2-4'    =>    	'C4H8OOH2-4-C4H9O2'
+C4H8OOH1-2O2: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.117, S0/R: -0.106, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'C4H8OOH1-2O2'    =>    	'C4H8OOH1-2O2-C4H9O4'
+C4H8OOH1-3O2: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.117, S0/R: -0.106, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'C4H8OOH1-3O2'    =>    	'C4H8OOH1-3O2-C4H9O4'
+C4H8OOH1-4O2: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.118, S0/R: -0.107, comm. T.: 1383K 
+...refit upper thd down to 1000K
+'C4H8OOH1-4O2'    =>    	'C4H8OOH1-4O2-C4H9O4'
+C4H8OOH2-1O2: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.117, S0/R: -0.106, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'C4H8OOH2-1O2'    =>    	'C4H8OOH2-1O2-C4H9O4'
+C4H8OOH2-3O2: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.115, S0/R: -0.104, comm. T.: 1389K 
+...refit upper thd down to 1000K
+'C4H8OOH2-3O2'    =>    	'C4H8OOH2-3O2-C4H9O4'
+C4H8OOH2-4O2: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.117, S0/R: -0.106, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'C4H8OOH2-4O2'    =>    	'C4H8OOH2-4O2-C4H9O4'
+NC4KET12: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.099, S0/R: -0.089, comm. T.: 1388K 
+...refit upper thd down to 1000K
+'NC4KET12'    =>    	'NC4KET12-C4H8O3'
+NC4KET13: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.100, S0/R: -0.090, comm. T.: 1386K 
+...refit upper thd down to 1000K
+'NC4KET13'    =>    	'NC4KET13-C4H8O3'
+NC4KET14: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.101, S0/R: -0.092, comm. T.: 1382K 
+...refit upper thd down to 1000K
+'NC4KET14'    =>    	'NC4KET14-C4H8O3'
+NC4KET21: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.107, S0/R: -0.097, comm. T.: 1376K 
+...refit upper thd down to 1000K
+'NC4KET21'    =>    	Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 674.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 674.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 678.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 678.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 682.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 682.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 722.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 722.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 726.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 726.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 730.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 730.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 774.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 774.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 778.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 778.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 782.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 782.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 838.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 838.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 842.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 842.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 846.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 846.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 850.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 850.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 854.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 854.
+'NC4KET21-C4H8O3'
+NC4KET23: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.102, S0/R: -0.092, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'NC4KET23'    =>    	'NC4KET23-C4H8O3'
+NC4KET24: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.105, S0/R: -0.095, comm. T.: 1380K 
+...refit upper thd down to 1000K
+'NC4KET24'    =>    	'NC4KET24-C4H8O3'
+C2H5COCH3: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.086, S0/R: -0.078, comm. T.: 1381K 
+...refit upper thd down to 1000K
+'C2H5COCH3'    =>    	'C2H5COCH3'
+C2H5COCH2: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.081, S0/R: -0.073, comm. T.: 1383K 
+...refit upper thd down to 1000K
+'C2H5COCH2'    =>    	'C2H5COCH2'
+CH2CH2COCH3: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.079, S0/R: -0.071, comm. T.: 1380K 
+...refit upper thd down to 1000K
+'CH2CH2COCH3'    =>    	'CH2CH2COCH3'
+CH3CHCOCH3: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.079, S0/R: -0.072, comm. T.: 1384K 
+...refit upper thd down to 1000K
+'CH3CHCOCH3'    =>    	'CH3CHCOCH3'
+C2H3COCH3: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.073, S0/R: -0.066, comm. T.: 1386K 
+...refit upper thd down to 1000K
+'C2H3COCH3'    =>    	'C2H3COCH3'
+CH3CHOOCOCH3: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.088, S0/R: -0.079, comm. T.: 1393K 
+...refit upper thd down to 1000K
+'CH3CHOOCOCH3'    =>    	'CH3CHOOCOCH3'
+CH2CHOOHCOCH3: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.083, S0/R: -0.075, comm. T.: 1394K 
+...refit upper thd down to 1000K
+'CH2CHOOHCOCH3'    =>    	'CH2CHOOHCOCH3'
+NC3H7CHO: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.075, S0/R: -0.068, comm. T.: 1378K 
+...refit upper thd down to 1000K
+'NC3H7CHO'    =>    	'N-C3H7CHO'
+NC3H7CO: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.068, S0/R: -0.062, comm. T.: 1380K 
+...refit upper thd down to 1000K
+'NC3H7CO'    =>    	'N-C3H7CO'
+C3H6CHO-1: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.068, S0/R: -0.062, comm. T.: 1379K 
+...refit upper thd down to 1000K
+'C3H6CHO-1'    =>    	'C3H6CHO-1-C4H7O'
+C3H6CHO-2: Dev at 1000K: cp(rel.): 0.008, H0/RT: 0.040, S0/R: 0.027, comm. T.: 1682K 
+...refit upper thd down to 1000K
+'C3H6CHO-2'    =>    	'C3H6CHO-2-C4H7O'
+C3H6CHO-3: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.073, S0/R: -0.066, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'C3H6CHO-3'    =>    	'C3H6CHO-3-C4H7O'
+C2H5CHCO: Dev at 1000K: cp(rel.): 0.017, H0/RT: -0.062, S0/R: -0.056, comm. T.: 1400K 
+...refit upper thd down to 1000K
+'C2H5CHCO'    =>    	'C2H5CHCO'
+SC3H5CHO: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.067, S0/R: -0.061, comm. T.: 1390K 
+...refit upper thd down to 1000K
+'SC3H5CHO'    =>    	'S-C3H5CHO'
+SC3H5CO: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.060, S0/R: -0.054, comm. T.: 1392K 
+...refit upper thd down to 1000K
+'SC3H5CO'    =>    	'S-C3H5CO'
+IC4H10: Dev at 1000K: cp(rel.): 0.024, H0/RT: -0.098, S0/R: -0.089, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'IC4H10'    =>    	'I-C4H10'
+IC4H9: Dev at 1000K: cp(rel.): 0.024, H0/RT: -0.090, S0/R: -0.082, comm. T.: 1386K 
+...refit upper thd down to 1000K
+'IC4H9'    =>    	'I-C4H9'
+TC4H9: Dev at 1000K: cp(rel.): 0.026, H0/RT: -0.087, S0/R: -0.079, comm. T.: 1372K 
+...refit upper thd down to 1000K
+'TC4H9'    =>    	'T-C4H9'
+IC4H8: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.071, S0/R: -0.065, comm. T.: 1388K 
+...refit upper thd down to 1000K
+'IC4H8'    =>    	'I-C4H8'
+IC4H7: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.067, S0/R: -0.061, comm. T.: 1393K 
+...refit upper thd down to 1000K
+'IC4H7'    =>    	'I-C4H7'
+IC4H9O2: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.102, S0/R: -0.092, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'IC4H9O2'    =>    	'I-C4H9O2'
+TC4H9O2: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.103, S0/R: -0.093, comm. T.: 1388K 
+...refit upper thd down to 1000K
+'TC4H9O2'    =>    	'T-C4H9O2'
+TC4H8O2H-I: Dev at 1000K: cp(rel.): 0.015, H0/RT: -0.069, S0/R: -0.062, comm. T.: 1405K 
+...refit upper thd down to 1000K
+'TC4H8O2H-I'    =>    	'TC4H8O2H-I-C4H9O2'
+IC4H8O2H-I: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.098, S0/R: -0.089, comm. T.: 1388K 
+...refit upper thd down to 1000K
+'IC4H8O2H-I'    =>    	'IC4H8O2H-I-C4H9O2'
+IC4H8O2H-T: Dev at 1000K: cp(rel.): 0.017, H0/RT: -0.069, S0/R: -0.063, comm. T.: 1397K 
+...refit upper thd down to 1000K
+'IC4H8O2H-T'    =>    	'IC4H8O2H-T-C4H9O2'
+IC4H8O: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.081, S0/R: -0.073, comm. T.: 1399K 
+...refit upper thd down to 1000K
+'IC4H8O'    =>    	'I-C4H8O'
+CC4H8O: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.080, S0/R: -0.072, comm. T.: 1401K 
+...refit upper thd down to 1000K
+'CC4H8O'    =>    	'C-C4H8O'
+TC4H9O: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.079, S0/R: -0.071, comm. T.: 1397K 
+...refit upper thd down to 1000K
+'TC4H9O'    =>    	'T-C4H9O'
+IC4H9O: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.087, S0/R: -0.078, comm. T.: 1393K 
+...refit upper thd down to 1000K
+'IC4H9O'    =>    	'I-C4H9O'
+IC4H9O2H: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.106, S0/R: -0.096, comm. T.: 1388K 
+...refit upper thd down to 1000K
+'IC4H9O2H'    =>    	'I-C4H9O2H'
+TC4H9O2H: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.108, S0/R: -0.097, comm. T.: 1390K 
+...refit upper thd down to 1000K
+'TC4H9O2H'    =>    	'T-C4H9O2H'
+IC4H7O: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.060, S0/R: -0.055, comm. T.: 1386K 
+...refit upper thd down to 1000K
+'IC4H7O'    =>    	'I-C4H7O'
+IC4H8OH: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.073, S0/R: -0.067, comm. T.: 1376K 
+...refit upper thd down to 1000K
+'IC4H8OH'    =>    	'I-C4H8OH'
+IO2C4H8OH: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.091, S0/R: -0.082, comm. T.: 1395K 
+...refit upper thd down to 1000K
+'IO2C4H8OH'    =>    	'I-O2C4H8OH'
+IC3H7CHO: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.076, S0/R: -0.069, comm. T.: 1391K 
+...refit upper thd down to 1000K
+'IC3H7CHO'    =>    	'I-C3H7CHO'
+TC3H6CHO: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.069, S0/R: -0.062, comm. T.: 1389K 
+...refit upper thd down to 1000K
+'TC3H6CHO'    =>    	'T-C3H6CHO'
+IC3H6CHO: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.069, S0/R: -0.063, comm. T.: 1390K 
+...refit upper thd down to 1000K
+'IC3H6CHO'    =>    	'I-C3H6CHO'
+IC3H7CO: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.068, S0/R: -0.062, comm. T.: 1390K 
+...refit upper thd down to 1000K
+'IC3H7CO'    =>    	'I-C3H7CO'
+TC4H8OOH-IO2: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.119, S0/R: -0.108, comm. T.: 1386K 
+...refit upper thd down to 1000K
+'TC4H8OOH-IO2'    =>    	'TC4H8OOH-IO2-C4H9O4'
+IC4H8OOH-IO2: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.118, S0/R: -0.107, comm. T.: 1385K 
+...refit upper thd down to 1000K
+'IC4H8OOH-IO2'    =>    	'IC4H8OOH-IO2-C4H9O4'
+IC4H8OOH-TO2: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.119, S0/R: -0.108, comm. T.: 1386K 
+...refit upper thd down to 1000K
+'IC4H8OOH-TO2'    =>    	'IC4H8OOH-TO2-C4H9O4'
+IC4KETII: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.097, S0/R: -0.088, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'IC4KETII'    =>    	'IC4KETII-C4H8O3'
+IC4KETIT: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.092, S0/R: -0.084, comm. T.: 1388K 
+...refit upper thd down to 1000K
+'IC4KETIT'    =>    	'IC4KETIT-C4H8O3'
+IC4H7OH: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.064, S0/R: -0.058, comm. T.: 1384K 
+...refit upper thd down to 1000K
+'IC4H7OH'    =>    	'I-C4H7OH'
+IC4H6OH: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.070, S0/R: -0.063, comm. T.: 1390K 
+...refit upper thd down to 1000K
+'IC4H6OH'    =>    	'I-C4H6OH'
+IC3H5CHO: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.064, S0/R: -0.057, comm. T.: 1396K 
+...refit upper thd down to 1000K
+'IC3H5CHO'    =>    	'I-C3H5CHO'
+IC3H5CO: Dev at 1000K: cp(rel.): 0.016, H0/RT: -0.055, S0/R: -0.050, comm. T.: 1397K 
+...refit upper thd down to 1000K
+'IC3H5CO'    =>    	'I-C3H5CO'
+TC3H6OCHO: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.065, S0/R: -0.059, comm. T.: 1394K 
+...refit upper thd down to 1000K
+'TC3H6OCHO'    =>    	'T-C3H6OCHO'
+IC3H6CO: Dev at 1000K: cp(rel.): 0.017, H0/RT: -0.061, S0/R: -0.055, comm. T.: 1397K 
+...refit upper thd down to 1000K
+'IC3H6CO'    =>    	'I-C3H6CO'
+IC4H7OOH: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.080, S0/R: -0.072, comm. T.: 1392K 
+...refit upper thd down to 1000K
+'IC4H7OOH'    =>    	'I-C4H7OOH'
+TC3H6OHCHO: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.070, S0/R: -0.064, comm. T.: 1396K 
+...refit upper thd down to 1000K
+'TC3H6OHCHO' Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 930.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 930.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 934.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 934.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 938.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 938.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 942.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 942.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 946.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 946.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 950.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 950.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 954.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 954.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 958.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 958.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 962.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 962.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 966.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 966.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 970.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 970.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 974.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 974.
+
+MB4OH3J not in transportdata file, -1 is usedUse of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 978.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 978.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 982.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 982.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 986.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 986.
+
+MB3OOH3J not in transportdata file, -1 is usedUse of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 990.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 990.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 994.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 994.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 998.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 998.
+
+MB4OOHMOO not in transportdata file, -1 is usedUse of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1002.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1002.
+
+MBMOOH4OO not in transportdata file, -1 is usedUse of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1006.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1006.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1010.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1010.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1014.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1014.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1018.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1018.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1026.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1026.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1030.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1030.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1034.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1034.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1038.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1038.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1042.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1042.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1046.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1046.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1050.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1050.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1054.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1054.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1058.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1058.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1062.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1062.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1066.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1066.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1070.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1070.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1098.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1098.
+Use of uninitialized value $atom[2] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1098.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1098.
+   =>    	'T-C3H6OHCHO'
+TC3H6OH: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.063, S0/R: -0.057, comm. T.: 1389K 
+...refit upper thd down to 1000K
+'TC3H6OH'    =>    	'T-C3H6OH'
+IC3H5OH: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.050, S0/R: -0.045, comm. T.: 1374K 
+...refit upper thd down to 1000K
+'IC3H5OH'    =>    	'I-C3H5OH'
+TC3H6O2CHO: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.087, S0/R: -0.079, comm. T.: 1386K 
+...refit upper thd down to 1000K
+'TC3H6O2CHO'    =>    	'T-C3H6O2CHO'
+TC3H6O2HCO: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.083, S0/R: -0.075, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'TC3H6O2HCO'    =>    	'T-C3H6O2HCO'
+IC3H5O2HCHO: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.083, S0/R: -0.076, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'IC3H5O2HCHO'    =>    	'I-C3H5O2HCHO'
+CH2CCH2OH: Dev at 1000K: cp(rel.): 0.017, H0/RT: -0.037, S0/R: -0.034, comm. T.: 1372K 
+...refit upper thd down to 1000K
+'CH2CCH2OH'    =>    	'CH2CCH2OH'
+TC4H8CHO: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.084, S0/R: -0.076, comm. T.: 1397K 
+...refit upper thd down to 1000K
+'TC4H8CHO'    =>    	'T-C4H8CHO'
+O2C4H8CHO: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.096, S0/R: -0.087, comm. T.: 1395K 
+...refit upper thd down to 1000K
+'O2C4H8CHO'    =>    	'O2C4H8CHO'
+O2HC4H8CO: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.091, S0/R: -0.083, comm. T.: 1394K 
+...refit upper thd down to 1000K
+'O2HC4H8CO'    =>    	'O2HC4H8CO'
+C3H5OH: Dev at 1000K: cp(rel.): 0.017, H0/RT: -0.044, S0/R: -0.040, comm. T.: 1388K 
+...refit upper thd down to 1000K
+'C3H5OH'    =>    	'C3H5OH'
+MB: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.113, S0/R: -0.103, comm. T.: 1380K 
+...refit upper thd down to 1000K
+'MB'    =>    	'MB-C5H10O2'
+MB4J*O: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.100, S0/R: -0.091, comm. T.: 1373K 
+...refit upper thd down to 1000K
+'MB4J*O'    =>    	'MB4JDO-C5H7O3'
+MBMJ*O: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.093, S0/R: -0.084, comm. T.: 1386K 
+...refit upper thd down to 1000K
+'MBMJ*O'    =>    	'MBMJDO-C5H7O3'
+MB2D: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.102, S0/R: -0.093, comm. T.: 1382K 
+...refit upper thd down to 1000K
+'MB2D'    =>    	'MB2D-C5H8O2'
+MB3D: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.102, S0/R: -0.092, comm. T.: 1384K 
+...refit upper thd down to 1000K
+'MB3D'    =>    	'MB3D-C5H8O2'
+MB4*O: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.109, S0/R: -0.099, comm. T.: 1375K 
+...refit upper thd down to 1000K
+'MB4*O'    =>    	'MB4DO-C5H8O3'
+MBM*O: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.101, S0/R: -0.091, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'MBM*O'    =>    	'MBMDO-C5H8O3'
+MB4O: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.112, S0/R: -0.102, comm. T.: 1382K 
+...refit upper thd down to 1000K
+'MB4O'    =>    	'MB4O-C5H9O3'
+MB3O: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.112, S0/R: -0.101, comm. T.: 1385K 
+...refit upper thd down to 1000K
+'MB3O'    =>    	'MB3O-C5H9O3'
+MB2O: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.111, S0/R: -0.100, comm. T.: 1388K 
+...refit upper thd down to 1000K
+'MB2O'    =>    	'MB2O-C5H9O3'
+MBMO: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.109, S0/R: -0.100, comm. T.: 1377K 
+...refit upper thd down to 1000K
+'MBMO'    =>    	'MBMO-C5H9O3'
+MB4OH3J: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.089, S0/R: -0.082, comm. T.: 1365K 
+...refit upper thd down to 1000K
+'MB4OH3J'    =>    	'MB4OH3J-C5H9O3'
+MB2OH3J: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.089, S0/R: -0.081, comm. T.: 1377K 
+...refit upper thd down to 1000K
+'MB2OH3J'    =>    	'MB2OH3J-C5H9O3'
+MB3OH4J: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.108, S0/R: -0.098, comm. T.: 1386K 
+...refit upper thd down to 1000K
+'MB3OH4J'    =>    	'MB3OH4J-C5H9O3'
+MB3OOH3J: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.105, S0/R: -0.096, comm. T.: 1378K 
+...refit upper thd down to 1000K
+'MB3OOH3J'    =>    	'MB3OOH3J-C5H9O4'
+MB3OH4OO: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.115, S0/R: -0.104, comm. T.: 1386K 
+...refit upper thd down to 1000K
+'MB3OH4OO'    =>    	'MB3OH4OO-C5H9O5'
+MB2OH3OO: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.113, S0/R: -0.102, comm. T.: 1392K 
+...refit upper thd down to 1000K
+'MB2OH3OO'    =>    	'MB2OH3OO-C5H9O5'
+MB4OOHMOO: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.115, S0/R: -0.104, comm. T.: 1391K 
+...refit upper thd down to 1000K
+'MB4OOHMOO'    =>    	'MB4OOHMOO-C5H9O6'
+MBMOOH4OO: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.115, S0/R: -0.104, comm. T.: 1391K 
+...refit upper thd down to 1000K
+'MBMOOH4OO'    =>    	'MBMOOH4OO-C5H9O6'
+MB2OO: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.110, S0/R: -0.100, comm. T.: 1389K 
+...refit upper thd down to 1000K
+'MB2OO'    =>    	'MB2OO-C5H9O4'
+MB3OO: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.116, S0/R: -0.105, comm. T.: 1382K 
+...refit upper thd down to 1000K
+'MB3OO'    =>    	'MB3OO-C5H9O4'
+MB4OO: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.117, S0/R: -0.106, comm. T.: 1378K 
+...refit upper thd down to 1000K
+'MB4OO'    =>    	'MB4OO-C5H9O4'
+MBMOO: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.110, S0/R: -0.099, comm. T.: 1390K 
+...refit upper thd down to 1000K
+'MBMOO'    =>    	'MBMOO-C5H9O4'
+MB3D: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.102, S0/R: -0.092, comm. T.: 1384K 
+...refit upper thd down to 1000K
+already found in translation: 'MB3D' => `MB3D-C5H8O2`
+ME2*O: Dev at 1000K: cp(rel.): 0.009, H0/RT: 0.026, S0/R: 0.019, comm. T.: 2036K 
+...refit upper thd down to 1000K
+'ME2*O'    =>    	'ME2DO-C3H4O3'
+ME2J: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.062, S0/R: -0.057, comm. T.: 1376K 
+...refit upper thd down to 1000K
+'ME2J'    =>    	'ME2J-C3H5O2'
+ME2J*O: Dev at 1000K: cp(rel.): 0.008, H0/RT: 0.035, S0/R: 0.024, comm. T.: 1666K 
+...refit upper thd down to 1000K
+'ME2J*O'    =>    	'ME2JDO-C3H3O3'
+MM1O: Dev at 1000K: cp(rel.): 0.021, H0/RT: -0.047, S0/R: -0.043, comm. T.: 1369K 
+...refit upper thd down to 1000K
+'MM1O'    =>    	'MM1O-C2H3O3'
+MMMO: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.041, S0/R: -0.038, comm. T.: 1475K 
+...refit upper thd down to 1000K
+'MMMO'    =>    	'MMMO-C2H3O3'
+MP2D: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.080, S0/R: -0.072, comm. T.: 1382K 
+...refit upper thd down to 1000K
+'MP2D'    =>    	'MP2D-C4H6O2'
+MP2OH3J: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.088, S0/R: -0.079, comm. T.: 1388K 
+...refit upper thd down to 1000K
+'MP2OH3J'    =>    	'MP2OH3J-C4H7O3'
+MP2OH3OO: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.094, S0/R: -0.085, comm. T.: 1388K 
+...refit upper thd down to 1000K
+'MP2OH3OO'    =>    	'MP2OH3OO-C4H7O5'
+MP3*O: Dev at 1000K: cp(rel.): 0.010, H0/RT: 0.037, S0/R: 0.026, comm. T.: 2021K 
+...refit upper thd down to 1000K
+'MP3*O'    =>    	'MP3DO-C4H6O3'
+MP3J: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.086, S0/R: -0.078, comm. T.: 1376K 
+...refit upper thd down to 1000K
+'MP3J'    =>    	'MP3J-C4H7O2'
+MP3J*O: Dev at 1000K: cp(rel.): 0.009, H0/RT: 0.049, S0/R: 0.033, comm. T.: 1674K 
+...refit upper thd down to 1000K
+'MP3J*O'    =>    	'MP3JDO-C4H5O3'
+CJHCHCHCO: Dev at 1000K: cp(rel.): 0.012, H0/RT: -0.047, S0/R: -0.041, comm. T.: 1402K 
+...refit upper thd down to 1000K
+'CJHCHCHCO'    =>    	'CJHCHCHCO-C4H3O'
+CHOOCO: Dev at 1000K: cp(rel.): 0.014, H0/RT: -0.024, S0/R: -0.022, comm. T.: 1400K 
+...refit upper thd down to 1000K
+'CHOOCO'    =>    	'CHOOCO'
+C5H7O2: Dev at 1000K: cp(rel.): 0.024, H0/RT: -0.096, S0/R: -0.087, comm. T.: 1379K 
+...refit upper thd down to 1000K
+'C5H7O2'    =>    	'C5H7O2'
+CH2CHCHCO: Dev at 1000K: cp(rel.): 0.015, H0/RT: -0.054, S0/R: -0.048, comm. T.: 1401K 
+...refit upper thd down to 1000K
+'CH2CHCHCO'    =>    	'CH2CHCHCO'
+CH2COOH: Dev at 1000K: cp(rel.): 0.017, H0/RT: -0.036, S0/R: -0.032, comm. T.: 1390K 
+...refit upper thd down to 1000K
+'CH2COOH'    =>    	'CH2COOH'
+C2H3CO2: Dev at 1000K: cp(rel.): 0.017, H0/RT: -0.048, S0/R: -0.043, comm. T.: 1397K 
+...refit upper thd down to 1000K
+'C2H3CO2'    =>    	'C2H3CO2'
+CH3COCH3: Dev at 1000K: cp(rel.): 0.024, H0/RT: -0.063, S0/R: -0.058, comm. T.: 1374K 
+...refit upper thd down to 1000K
+already found in translation: 'CH3COCH3' => `CH3COCH3`
+C4H72-1: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.065, S0/R: -0.059, comm. T.: 1392K 
+...refit upper thd down to 1000K
+'C4H72-1'    =>    	'C4H72-1-C4H7'
+CH3CHOCHO: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.060, S0/R: -0.054, cUse of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1106.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1106.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1110.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1110.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1114.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1114.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1118.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1118.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1122.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1122.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1126.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1126.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1130.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1130.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1134.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1134.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1138.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1138.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1142.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1142.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1146.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1146.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1150.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1150.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1154.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1154.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1158.
+Use of uninitialized value $atom[3] in uc at ./modmech.perl line 610, <FILETHERMIN> line 1158.
+
+omm. T.: 1395K 
+...refit upper thd down to 1000K
+'CH3CHOCHO'    =>    	'CH3CHOCHO'
+C3H6OOH-3,1: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.078, S0/R: -0.071, comm. T.: 1384K 
+...refit upper thd down to 1000K
+'C3H6OOH-3,1'    =>    	'C3H6OOH-3J1-C3H7O2'
+C3H6OOH-2,1: Dev at 1000K: cp(rel.): 0.016, H0/RT: -0.052, S0/R: -0.047, comm. T.: 1402K 
+...refit upper thd down to 1000K
+'C3H6OOH-2,1'    =>    	'C3H6OOH-2J1-C3H7O2'
+C3H6OOH-1,2: Dev at 1000K: cp(rel.): 0.013, H0/RT: -0.051, S0/R: -0.046, comm. T.: 1407K 
+...refit upper thd down to 1000K
+'C3H6OOH-1,2'    =>    	'C3H6OOH-1J2-C3H7O2'
+MB4J: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.106, S0/R: -0.096, comm. T.: 1379K 
+...refit upper thd down to 1000K
+'MB4J'    =>    	'MB4J-C5H9O2'
+MB3J: Dev at 1000K: cp(rel.): 0.022, H0/RT: -0.088, S0/R: -0.081, comm. T.: 1360K 
+...refit upper thd down to 1000K
+'MB3J'    =>    	'MB3J-C5H9O2'
+MB2J: Dev at 1000K: cp(rel.): 0.023, H0/RT: -0.111, S0/R: -0.100, comm. T.: 1378K 
+...refit upper thd down to 1000K
+'MB2J'    =>    	'MB2J-C5H9O2'
+MBMJ: Dev at 1000K: cp(rel.): 0.020, H0/RT: -0.093, S0/R: -0.084, comm. T.: 1390K 
+...refit upper thd down to 1000K
+'MBMJ'    =>    	'MBMJ-C5H9O2'
+MP2D3J: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.066, S0/R: -0.060, comm. T.: 1392K 
+...refit upper thd down to 1000K
+'MP2D3J'    =>    	'MP2D3J-4H5O2'
+MP2D2J: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.068, S0/R: -0.061, comm. T.: 1387K 
+...refit upper thd down to 1000K
+'MP2D2J'    =>    	'MP2D2J-C4H5O2'
+MP2DMJ: Dev at 1000K: cp(rel.): 0.017, H0/RT: -0.060, S0/R: -0.054, comm. T.: 1391K 
+...refit upper thd down to 1000K
+'MP2DMJ'    =>    	'MP2DMJ-C4H5O2'
+ME: Dev at 1000K: cp(rel.): 0.019, H0/RT: -0.062, S0/R: -0.056, comm. T.: 1388K 
+...refit upper thd down to 1000K
+'ME'    =>    	'ME-C3H6O2'
+MEMJ: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.057, S0/R: -0.051, comm. T.: 1392K 
+...refit upper thd down to 1000K
+'MEMJ'    =>    	'MEMJ-C3H5O2'
+BA4J: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.069, S0/R: -0.062, comm. T.: 1390K 
+...refit upper thd down to 1000K
+'BA4J'    =>    	'BA4J-C4H7O2'
+BAOJ: Dev at 1000K: cp(rel.): 0.018, H0/RT: -0.071, S0/R: -0.064, comm. T.: 1390K 
+...refit upper thd down to 1000K
+'BAOJ'    =>    	'BAOJ-C4H7O2'

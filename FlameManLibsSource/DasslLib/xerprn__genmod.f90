@@ -1,0 +1,11 @@
+        !COMPILER-GENERATED INTERFACE MODULE: Wed May 18 11:05:28 2011
+        MODULE XERPRN__genmod
+          INTERFACE 
+            SUBROUTINE XERPRN(PREFIX,NPREF,MESSG,NWRAP)
+              CHARACTER(*) :: PREFIX
+              INTEGER(KIND=4) :: NPREF
+              CHARACTER(*) :: MESSG
+              INTEGER(KIND=4) :: NWRAP
+            END SUBROUTINE XERPRN
+          END INTERFACE 
+        END MODULE XERPRN__genmod

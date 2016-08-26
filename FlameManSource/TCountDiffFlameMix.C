@@ -1,0 +1,3211 @@
+//#define FOOL_SOFTBENCH( x ) 
+
+//Soot
+#undef V
+#define VS
+
+// For full transport model insteady of constant Lewis numbers use the following three options
+#define MOLARDIFF // #undef these for unity Le
+#define CONVECTION
+#define COOLTRANSPORT
+
+// Undefining CENTRALDIFF gives better convergence. However,
+// small mass conservation errors occur due to different discretization
+// of convection and convection term by the use of upwind differencing, which
+// are in the order of 1e-3 and essentially don't influence the solution. These
+// errors are first order discretization errors and can hence be linearly decreased
+// with increasing number of gridpoints. However, for strongly varying Lewis numbers
+// such as for H2 flames, undefining CENTRALDIFF can lead to severe errors.
+
+// It seems to be the case that diffusivitycorrection can only run if mole fraction
+// diffusion is used. This has been found for methane at unity Lewis numbers. Therefore
+// diffcorr is unabled if MOLARDIFF is undefined
+
+#define CENTRALDIFF
+
+#undef LAMBDAOVERCPAPPROX
+#undef ZDRHOMU
+#undef RHODCONST
+#undef RHOSQUAREDCONST
+#ifdef RHOSQUAREDCONST
+#	define RHODZCONST
+#endif
+#define ZDIFFFACT 1.0
+#define ZDIFFFACTOLD 1.0
+#undef READCHI
+#undef CHIKW
+
+#define ENTFLUX
+#define HEATCAPGRAD
+
+#undef CONSTZREF
+//#define CONSTZREF 0.13
+
+#define EXACTCHI
+#define NEWCHI
+
+#undef CHECKRHS
+
+#undef SIZEDEPDIFFUSION
+
+#include "FlameMaster.h"
+#include "ListTool.h"
+#include "Spline.h"
+#include "TCountDiffFlameMix.h"
+
+//Mueller
+#undef UQ
+
+void TCountDiffFlameMix::InitTCountDiffFlameMix( void )
+{
+	int i, j, k;
+	TBVPSolverPtr	solver = GetSolver();
+	TNewtonPtr		bt = solver->bt;
+	TGridPtr		fine = bt->GetGrid()->GetFine();
+	TGridPtr		coarse = bt->GetGrid()->GetCoarse();
+	int				nSpeciesInSystem = fSpecies->GetNSpeciesInSystem();
+
+	fDeltaArcLength = 0.0;
+	fdTds = 0.0;
+	fdlnChids = 0.0;
+	fDeltaTRef = 20.0;
+	fNFlameletsCount = 0;
+	fMaxFlamelets = 500;
+//	fDeltaChiRef = 1.3/exp(1.0); // will give chi/chiold = 1.3
+	fDeltaChiRef = log( 1.3 ); // will give chi/chiold = 1.3
+	fArcLengthContin = fInputData->fArcLengthContin;
+
+	fCl = fInputData->fCl;
+	fHv = fInputData->fHv;
+	fT_B = fInputData->fT_B;
+
+	if ( fSoot ) {
+		fSoot->SetMomentsOffset( fSootMoments );
+	}
+
+	fVariableNames = new String[fVariablesWithoutSpecies + nSpeciesInSystem];
+
+	fVariableNames[fTemperature] = new char[2];
+	strcpy( fVariableNames[fTemperature], "T" );
+	fPrintMolarFractions = fInputData->fPrintMolarFractions;
+	
+	for ( i = 0; i < nSpeciesInSystem; ++i ) {
+		fVariableNames[fFirstSpecies + i] = new char[strlen( fSpecies->GetNames()[i] ) + 1];
+		strcpy( fVariableNames[fFirstSpecies + i], fSpecies->GetNames()[i] );
+	}
+	fVariableNames[fLnChi] = new char[5];
+	strcpy( fVariableNames[fLnChi], "lnChi" );
+	fVariableNames[fProg] = new char[5];
+	strcpy( fVariableNames[fProg], "prog" );
+	fVariableNames[fEnth] = new char[5];
+	strcpy( fVariableNames[fEnth], "enth" );
+  if (fSoot)
+  {
+    int	offset = fSoot->GetOffsetSootMoments();
+    for (i = 0; i < fSoot->GetNSootMoments(); ++i)
+    {
+      j = fSoot->Geti(i);
+      k = fSoot->Getj(i);
+#ifdef V
+      fVariableNames[offset + i] = new char[8];
+      sprintf(fVariableNames[offset + i], "M%dORHO", j);
+#endif
+#ifdef VS
+      fVariableNames[offset + i] = new char[11];
+      sprintf(fVariableNames[offset + i], "M%d-%dORHO", j, k);
+#endif
+    }
+  }
+	
+//	always solve for some extra equation now
+	fSolLnChi = NewVector( bt->GetMaxGridPoints() + 2 );
+	fSolLnChi->vec = &fSolLnChi->vec[kNext];
+	fSolLnChi->len -= 2;
+	fSavedLnChi = NewVector( bt->GetMaxGridPoints() + 2 );
+	fSavedLnChi->vec = &fSavedLnChi->vec[kNext];
+	fSavedLnChi->len -= 2;
+
+	fSolProg = NewVector( bt->GetMaxGridPoints() + 2 );
+	fSolProg->vec = &fSolProg->vec[kNext];
+	fSolProg->len -= 2;
+	fSavedProg = NewVector( bt->GetMaxGridPoints() + 2 );
+	fSavedProg->vec = &fSavedProg->vec[kNext];
+	fSavedProg->len -= 2;
+
+	fSolEnth = NewVector( bt->GetMaxGridPoints() + 2 );
+	fSolEnth->vec = &fSolEnth->vec[kNext];
+	fSolEnth->len -= 2;
+	fSavedEnth = NewVector( bt->GetMaxGridPoints() + 2 );
+	fSavedEnth->vec = &fSavedEnth->vec[kNext];
+	fSavedEnth->len -= 2;
+
+#ifdef READCHI
+	Double	*ZIn = New1DArray( 1000 );
+	Double	*chiIn = New1DArray( 1000 );
+	char 	dummy[128];
+	int		conv;
+
+//	FILE *fpChiCount = fopen( "../../hydrogenrun/Chi.tout", "r" );
+	FILE *fpChiCount = fopen( "Chi.tout", "r" );
+	if ( !fpChiCount ) {
+		fprintf( stderr, "#error: couldn't open input file 'Chi.tout'\n" );
+		exit( 2 );
+	}
+
+	fscanf( fpChiCount, "%s%s", dummy, dummy );
+	for ( j = 0; j < 1000; ++j ) {
+		conv = fscanf( fpChiCount, "%lg%lg", &ZIn[j], &chiIn[j] );
+		if ( !conv || conv == EOF ) {
+			break;
+		}
+	}
+	fclose( fpChiCount );
+
+	fZCount = NewVector( j );
+	fChiCount = NewVector( j );
+	for ( j = 0; j < fZCount->len; ++j ) {
+		fZCount->vec[j] = ZIn[j];
+		fChiCount->vec[j] = chiIn[j];
+	}
+/*	fprintf( stderr, "*\nZ\tChi\n" );
+	for ( j = 0; j < fZCount->len; ++j ) {
+		fprintf( stderr, "%g\t%g\n", fZCount->vec[j], fChiCount->vec[j] );
+	}*/
+#endif
+
+//	set dissipation rate vector from input file or command line;
+	if ( fInputData->fParameterComm >= 0.0 ) {
+		fDissRate = NewVector( 1 );
+		fDissRate->vec[0] = fInputData->fParameterComm;
+		fDissRate->len = 0;
+		cerr << "initial scalar dissipation rate from command line is " << fInputData->fParameterComm << NEWL;
+	}
+	else {
+		if ( fInputData->fDissRate ) {
+			fDissRate = NewVector( fInputData->fDissRate->len );
+			copy_vec( fDissRate, fInputData->fDissRate );
+			fDissRate->len = 0;
+			cerr << "initial scalar dissipation rate is from FM input " << fInputData->fDissRate->vec[0] << NEWL;
+		}
+		else {
+			// set dissrate vector from start profiles file
+			fDissRate = NULL;
+		}
+	}
+
+	if ( GetArcLengthCont() ) {
+		if ( fDissRate && fDissRate->phys_len > 1 ) {
+			if (fDissRate->vec[1] >= fDissRate->vec[0] ) {
+				fArcUp = TRUE;
+			}
+			else {
+				fArcUp = FALSE;
+			}
+		}
+		else {
+			fArcUp = TRUE;
+		}
+	}
+
+//	cerr << "initial dissipation rate is " << fChi << NEWL;
+
+	if ( fUseNumericalJac ) {
+		bt->SetUtFuncs( NULL, NULL, NULL
+						, CountDiffMixRHSRest, CountDiffMixRHSRest, CountDiffMixRHSRest
+						, CountDiffMixOutput, CountDiffMixPostIter
+						, SetCountDiffMixNodeInfo, CountDiffMixPostConv
+						, GetCountDiffMixVarNames 
+						, CountDiffMixUpdateBoundary, CountDiffMixUpdateBoundary );
+	}
+	else {
+		bt->SetUtFuncs( CountDiffMixJacRest, CountDiffMixJacRest, CountDiffMixJacRest
+						, CountDiffMixRHSRest, CountDiffMixRHSRest, CountDiffMixRHSRest
+						, CountDiffMixOutput, CountDiffMixPostIter
+						, SetCountDiffMixNodeInfo, CountDiffMixPostConv
+						, GetCountDiffMixVarNames 
+						, CountDiffMixUpdateBoundary, CountDiffMixUpdateBoundary );
+	}
+	SetInitialBC( fine, fInputData );
+	SetInitialBC( coarse, fInputData );
+
+	ReadStartProfiles( fInputData );
+	CheckBC();
+	CheckInitialGuess();
+	UpdateSolution( fine->GetY(), fine->GetYLeft(), fine->GetYRight() );	
+
+	fLnChiContStart = log( fDissRate->vec[0] );
+	fTempContStart = fSolTemp->vec[fTmaxLoc];
+
+/* 	for ( i = -1; i <= bt->GetMaxGridPoints(); ++i ) { */
+/* 		fSolLnChi->vec[i] = fLnChiContStart; */
+/* 	} */
+
+//	fTmaxLoc = GetZRefLoc( bt->GetMaxGridPoints()+2, &fSolTemp->vec[kPrev] ) - 1;
+//	fTmaxLoc = LocationOfMax( bt->GetMaxGridPoints()+2, &fSolTemp->vec[kPrev] ) - 1;
+//	fTempContStart = fSolTemp->vec[fTmaxLoc];
+//	fprintf(stderr, "MaxTemp @ k = %d = %g\tChiStart = %g\n", fTmaxLoc, fTempContStart, exp(fLnChiContStart) );
+	
+    SaveSolution();
+
+	fprintf( stderr, "ZRef = %g\n", GetZRef() );
+	if ( !UseDiffCorr() ) {
+		fprintf( stderr, "### WARNING: Diffusivity Correction disabled\n" );;
+	}
+	else {
+#ifndef MOLARDIFF
+	#ifdef CONVECTION
+		fprintf( stderr, "### WARNING: If MOLARDIFF is undefined, CONVECTION should also be undefined\n    -> CONVECTION undefined\n" );
+		#undef CONVECTION
+	#endif
+//		fprintf( stderr, "### WARNING: If MOLARDIFF is undefined, diffusivity correction should be disabled\n    -> diffusivity correction disabled\n" );
+		UnSetDiffCorr();
+#endif
+	}
+	//	if ( !UseDiffCorr() ) {
+	//		fprintf( stderr, "### WARNING: Diffusivity Correction disabled\n" );;
+	//	}
+
+	if ( fCl > 0.0 ) {   // means fuel is liquid
+		Double	T_L = fine->GetYRight()->vec[fTemperature];
+		Double	h_Ref = 0.0;
+		
+		Double	h2, cpSum, entSum, deltaT, dummyPressure = 0.0;
+		Double	temp = MAX( 200.0, T_L - fHv / fCl );
+		int		i, count = 0, nOfSpeciesIn = fSpecies->GetNSpeciesInSystem();
+		int		gridPoints = fSolver->bt->GetGrid()->GetCurrentGrid()->GetNGridPoints();
+
+		SetFlameNode( gridPoints );
+
+		// entSum is vapor enthalpy at T_b
+		for( i = 0, entSum = 0.0; i < nOfSpeciesIn; ++i ) {
+			fSpecies->ComputeSpeciesProperties( fFlameNode, fT_B, dummyPressure, i );
+			entSum += fFlameNode->Y[kCurr][i] * fFlameNode->enthalpy[i];
+		}
+		
+		h2 = fCl * (T_L - fT_B) - fHv + entSum;
+		
+		do {
+			for( i = 0, entSum = cpSum = 0; i < nOfSpeciesIn; ++i ) {
+				fSpecies->ComputeSpeciesProperties( fFlameNode, temp, dummyPressure, i );
+				cpSum += fFlameNode->Y[kCurr][i] * fFlameNode->heatCapacity[i];
+				entSum += fFlameNode->Y[kCurr][i] * fFlameNode->enthalpy[i];
+			}
+			
+			deltaT = -( entSum - h2 ) / cpSum;
+			temp += deltaT;
+			
+			if ( ++count > 1000 ) {
+				fprintf( stderr, "#Error: temperature iteration for h = %g, T = %g not converged\n", h2, temp );
+				exit( 2 );
+			}
+		} while ( fabs( deltaT / temp ) > 1.0e-3 );
+
+		fprintf(stderr, "Initial fuel temperature is T_f = %g K\n", temp );
+
+		fine->GetYRight()->vec[fTemperature] = temp;
+		UpdateSolution( fine->GetY(), fine->GetYLeft(), fine->GetYRight() );	
+	}
+}
+
+TCountDiffFlameMix::~TCountDiffFlameMix( void )
+{
+// 	fSolLnChi->vec = &fSolLnChi->vec[kPrev];
+// 	DisposeVector( fSolLnChi );
+// 	fSavedLnChi->vec = &fSavedLnChi->vec[kPrev];
+// 	DisposeVector( fSavedLnChi );
+
+// 	fSolProg->vec = &fSolProg->vec[kPrev];
+// 	DisposeVector( fSolProg );
+// 	fSavedProg->vec = &fSavedProg->vec[kPrev];
+// 	DisposeVector( fSavedProg );
+
+// 	fSolEnth->vec = &fSolEnth->vec[kPrev];
+// 	DisposeVector( fSolEnth );
+// 	fSavedEnth->vec = &fSavedEnth->vec[kPrev];
+// 	DisposeVector( fSavedEnth );
+	
+// 	if ( fDissRate ) {
+// 		DisposeVector( fDissRate );
+// 	}
+// 	int	nSpeciesInSystem = fSpecies->GetNSpeciesInSystem();
+// 	for ( int i = 0; i < nSpeciesInSystem+fVariablesWithoutSpecies; ++i ) {
+// 		delete fVariableNames[i];
+// 	}
+// 	delete fVariableNames;
+// #ifdef READCHI
+// 	DisposeVector( fChiCount );
+// 	DisposeVector( fZCount );
+// #endif
+}
+
+Double TCountDiffFlameMix::GetDissRate( Double z )
+{
+/*#ifdef READCHI*/
+/*	fprintf( stderr, "error: instance 'TCountDiffFlameMix::GetDissRate( Double z )' currently not defined\n" );*/
+/*	exit( 2 );*/
+/*#endif*/
+//	Double	zStoi = GetZStoich();
+	Double	zStoi = GetZRef();
+	Double	chi = GetDissRate();
+	
+#ifdef NEWCHI
+	if ( z > 0.5 ) {
+		z = 1.0 - z;
+	}
+	Double	chiNow, fofZst;
+	if ( zStoi <= 0.0547 ) {
+		fofZst = 8.0 * zStoi * zStoi;
+	}
+	else if ( zStoi <= 0.2811 ) {
+		fofZst = ( 0.8752 * zStoi - 0.02394 );
+	}
+	else {
+		fofZst = -2.0 * ( zStoi - 0.5 ) * ( zStoi - 0.5 ) + 0.318;
+	}
+
+	if ( z <= 0.0547 ) {
+		chiNow = chi * 8.0 * z * z / fofZst;
+	}
+	else if ( z <= 0.2811 ) {
+		chiNow = chi * ( 0.8752 * z - 0.02394 ) / fofZst;
+	}
+	else {
+		chiNow = chi * ( -2.0 * ( z - 0.5 ) * ( z - 0.5 ) + 0.318 ) / fofZst;
+	}
+#else
+	Double	zStoiNew = zStoi - 0.5;
+	Double	zStoiNew2 = zStoiNew * zStoiNew;
+	Double	zStoiNew4 = zStoiNew2 * zStoiNew2;
+	Double	zStoiNew6 = zStoiNew4 * zStoiNew2;
+	Double	zStoiNew8 = zStoiNew6 * zStoiNew2;
+	Double	zNew = z - 0.5;
+	Double	zNew2 = zNew * zNew;
+	Double	zNew4 = zNew2 * zNew2;
+	Double	zNew6 = zNew4 * zNew2;
+	Double	zNew8 = zNew6 * zNew2;
+	Double	duedxst = chi / ( 1.00539 * ( 12.9041 - 
+					82.123 * zStoiNew2 +
+                    115.29 * zStoiNew4 -
+                    201.898 * zStoiNew6 +
+                    912.136 * zStoiNew8 ) );
+	Double	chiNow = 1.00539       *  duedxst *
+                    (12.9041       - 
+                    82.123  * zNew2 +
+                    115.29  * zNew4 -
+                    201.898 * zNew6 +
+                    912.136 * zNew8 );
+
+    if ( chiNow < 1.0e-10 ) {
+		chiNow = 1.0e-10;
+	}
+#endif
+
+	return chiNow;
+}
+
+#ifdef READCHI
+Double TCountDiffFlameMix::GetDissRate( Double z, Double rho )
+{
+	int	i = 1;
+	int	len = fZCount->len;
+	Double	*zCount = fZCount->vec;
+	Double	*chiCount = fChiCount->vec;
+
+	while ( i < len && z > zCount[i] ) ++i;
+	if ( i == len && z > zCount[len-1] ) {
+		fprintf( stderr, "z = %g out of range[%g,%g]\n", z, zCount[0]
+								, zCount[len-1] );
+	}
+	
+	if ( zCount[i] == zCount[i-1] ) {
+		return 0.0;
+	}
+	else {
+	  return GetDissRate() * (chiCount[i-1] + ( chiCount[i] - chiCount[i-1] ) / ( zCount[i] - zCount[i-1] ) * ( z - zCount[i-1] ));
+	}
+}
+Double TCountDiffFlameMix::GetDissRate( Double z, Double rho, Double chiStoich )
+{
+	int	i = 1;
+	int	len = fZCount->len;
+	Double	*zCount = fZCount->vec;
+	Double	*chiCount = fChiCount->vec;
+
+	while ( i < len && z > zCount[i] ) ++i;
+	if ( i == len && z > zCount[len-1] ) {
+		fprintf( stderr, "z = %g out of range[%g,%g]\n", z, zCount[0]
+								, zCount[len-1] );
+	}
+	
+	if ( zCount[i] == zCount[i-1] ) {
+		return 0.0;
+	}
+	else {
+	  return chiStoich * (chiCount[i-1] + ( chiCount[i] - chiCount[i-1] ) / ( zCount[i] - zCount[i-1] ) * ( z - zCount[i-1] ));
+	}
+}
+#else
+Double TCountDiffFlameMix::GetDissRate( Double z, Double rho )
+{
+#ifdef EXACTCHI
+//   if (z<1.0e-10)
+//     return 0.0;
+//   else
+//     return GetDissRate() * z*z*log(z)/GetZRef()/GetZRef()/log(GetZRef());
+  return GetDissRate() * DissRateFact( rho ) / DissRateFact( fRhoRef ) *  ExactChi( z ) / ExactChi( GetZRef() );
+#else
+  return DissRateFact( rho ) / DissRateFact( fRhoRef ) * GetDissRate( z );
+#endif
+}
+
+Double TCountDiffFlameMix::GetDissRate( Double z, Double rho, Double chiStoich )
+{
+#ifdef EXACTCHI
+//   if (z<1.0e-10)
+//     return 0.0;
+//   else
+//     return chiStoich * z*z*log(z)/GetZRef()/GetZRef()/log(GetZRef());
+  return chiStoich * DissRateFact( rho ) / DissRateFact( fRhoRef ) *  ExactChi( z ) / ExactChi( GetZRef() );
+#else
+  return DissRateFact( rho ) / DissRateFact( fRhoRef ) * GetDissRate( z );
+#endif
+}
+#endif
+
+Double TCountDiffFlameMix::ExactChi( Double Z )
+{
+	int				i;
+	const int		nSteps = 100;
+	Double			twoZ = 2.0 * Z;
+	Double			deltax = 4.0 / ( ( Double ) nSteps ), twoErfc;
+	static Double	erFunc[4*nSteps];
+	static Flag		init = FALSE;
+
+	if ( !init ) {
+		init = TRUE;
+		for ( i = 0; i < 4 * nSteps; ++i ) {
+			erFunc[i] = erfc( i*deltax );
+		}
+	}
+	
+	if ( Z > 0.5 ) {
+		twoZ = 2.0 * ( 1.0 - Z );
+	}
+	if ( twoZ < 1.0e-7 ) {
+		return 0.0;
+	}
+	
+	i = 0;
+	while ( erFunc[i] > twoZ ) ++i;
+	
+	twoErfc = Interpol( twoZ, erFunc[i-1], (i-1)*deltax, erFunc[i], i*deltax );
+	
+	return exp( -2.0 * twoErfc * twoErfc );
+}
+
+Double TCountDiffFlameMix::Interpol( Double x, Double xOld, Double yOld, Double xNew, Double yNew )
+{
+	if ( yNew == yOld ) {
+		return yNew;
+	}
+	return yOld + ( yNew - yOld ) / ( xNew - xOld ) * ( x - xOld );
+}
+
+Double TCountDiffFlameMix::DissRateFact( Double rho )
+{
+#ifdef CHIKW
+	Double	densRatio = sqrt( fRhoInf / rho );
+
+	return 1.5 * ( densRatio + 1 ) * ( densRatio + 1 ) / ( 2.0 * densRatio + 1 );
+#else
+	return 1.0;
+#endif
+}
+
+void CountDiffMixJacRest( void *object, NodeInfoPtr nodeInfo )
+{
+	TCountDiffFlameMixPtr	flame = ( TCountDiffFlameMixPtr )object;
+	TFlameNodePtr	flameNode = flame->fFlameNode;
+	int 	fFirstSpecies = flame->GetOffsetFirstSpecies();
+	int 	fTemperature = flame->GetOffsetTemperature();
+	int		speciesEq, speciesVar, speciesIndexEq, speciesIndexVar;
+	int		nSpeciesInSystem = flame->GetSpecies()->GetNSpeciesInSystem();
+	int		lastSpeciesEq = fFirstSpecies + nSpeciesInSystem;
+    Double  h = nodeInfo->h;
+    Double  hm = nodeInfo->hm;
+    Double  hnenn = nodeInfo->hnenn;
+	Double	**a = nodeInfo->a;
+	Double	*yPrev = nodeInfo->yPrev;
+	Double	*y = nodeInfo->y;
+	Double	*yNext = nodeInfo->yNext;
+	Double	*enthalpy = flameNode->enthalpy;
+	Double	*molarMass = flame->GetSpecies()->GetMolarMass()->vec;
+	Double	**dMdY = flameNode->dMdY;
+	Double	*dMdT = flameNode->dMdY[nSpeciesInSystem];
+	Double	*productionRate = flameNode->productionRate;
+	Double	*heatCapacity = flameNode->heatCapacity;
+	Double	*lewis = flame->GetSpecies()->GetLewisNumber()->vec;
+	Double	mixDensity = flameNode->mixDensity[kCurr];
+	Double	speciesCoeff = 0.5 * mixDensity * flame->GetDissRate( nodeInfo->x[kCurr] );
+	Double	energyCoeff = speciesCoeff * flameNode->mixHeatCapacity[kCurr];
+
+#ifdef COOLTRANSPORT
+	Double	coeff = flameNode->mixConductivity[kCurr] 
+			/ ( flameNode->mixHeatCapacity[kCurr] * flameNode->mixDensity[kCurr] );
+	for ( speciesEq = 0; speciesEq < nSpeciesInSystem; ++speciesEq ) {
+		lewis[speciesEq] = coeff / flameNode->diffusivity[speciesEq];
+	}
+#endif
+
+	flame->FilldMdYOnePoint( flameNode );
+	flame->FilldMdTOnePoint( flameNode );
+
+	if ( flame->GetSoot() ) {
+		if ( !flame->fUseNumericalDM )  {
+			flame->GetSoot()->UpdateJacobian( flame );
+		}
+		flame->GetSoot()->FillJacobi( flame, nodeInfo, kMixtureFraction );
+
+		int		nSootMoments = flame->GetSoot()->GetNSootMoments();
+		int		sootOff = flame->fSootMoments;
+		Double	sootCoeff = flame->GetDissRate() / ( 2.0 * flame->GetSoot()->GetLewis1() );
+
+		for ( int i = 0; i < nSootMoments; ++i ) {
+#ifdef SIZEDEPDIFFUSION
+			int		ioff, joff;
+			Double	fracIndex;
+			Double	wMinus = 2.0 * h;
+			Double	wCurr = - 2.0 * ( h + hm );
+			Double	wPlus = 2.0 * hm;
+			ioff = sootOff + i;
+			fracIndex = i - 2.0 / 3.0;
+/*			a[ioff][ioff] += sootCoeff * wCurr / y[ioff] 
+						* flame->GetSoot()->GetAlphaI2( i, fracIndex )
+						* flame->GetSoot()->FracMom2( fracIndex, &y[sootOff] );*/
+			for ( int j = 0; j < nSootMoments; ++j ) {
+				joff = sootOff + j;
+				a[joff][ioff] += sootCoeff * wCurr / y[joff] 
+							* flame->GetSoot()->GetAlphaI2( j, fracIndex )
+							* flame->GetSoot()->FracMom2( fracIndex, &y[sootOff] );
+				if ( !nodeInfo->lastPoint ) {
+					b[joff][ioff] += sootCoeff * wPlus / yNext[joff] 
+							* flame->GetSoot()->GetAlphaI2( j, fracIndex )
+							* flame->GetSoot()->FracMom2( fracIndex, &yNext[sootOff] );
+				}
+				if ( !nodeInfo->firstPoint ) {
+					c[joff][ioff] += sootCoeff * wMinus / yPrev[joff] 
+							* flame->GetSoot()->GetAlphaI2( j, fracIndex )
+							* flame->GetSoot()->FracMom2( fracIndex, &yPrev[sootOff] );
+				}
+			}
+#else
+			FillJacSecondDerivCentral( sootOff+i, sootOff+i, sootCoeff, nodeInfo );
+#endif
+		}
+	}
+
+//	flame->DMdYNumerical( nodeInfo );
+
+//	species equations
+	for ( speciesEq = fFirstSpecies; speciesEq < lastSpeciesEq; ++speciesEq ) {
+		speciesIndexEq = speciesEq - fFirstSpecies;
+/*		lew = ( speciesIndexEq == flame->GetFuelIndex( 0 ) ) 
+				? lewis[speciesIndexEq] + ( 1.0 - lewis[speciesIndexEq] ) * nodeInfo->x[kCurr]
+				: lewis[speciesIndexEq];
+*/
+		FillJacSecondDerivCentral( speciesEq, speciesEq, speciesCoeff / lewis[speciesIndexEq], nodeInfo );
+//		if ( flame->UseDiffCorr() ) {
+//			flame->FillJacDiffCorr( speciesEq, speciesCoeff, nodeInfo, kNegative );
+//		}
+		a[fTemperature][speciesEq] -= speciesCoeff / ( y[fTemperature] * lewis[speciesIndexEq] )
+					 * SecondDeriv( yPrev[speciesEq], y[speciesEq], yNext[speciesEq], hm, h ) * hnenn;
+		a[fTemperature][speciesEq] += dMdT[speciesIndexEq] * hnenn;
+		for ( speciesVar = fFirstSpecies; speciesVar < lastSpeciesEq; ++speciesVar ) {
+			speciesIndexVar = speciesVar - fFirstSpecies;
+			a[speciesVar][speciesEq] += dMdY[speciesIndexVar][speciesIndexEq] * hnenn;
+		}
+	}
+	
+//	energy equation
+	FillJacSecondDerivCentral( fTemperature, fTemperature, energyCoeff, nodeInfo );
+	a[fTemperature][fTemperature] -= energyCoeff / y[fTemperature]
+				 * SecondDeriv( yPrev[fTemperature], y[fTemperature], yNext[fTemperature], hm, h ) * hnenn;
+
+	for ( speciesIndexEq = 0; speciesIndexEq < nSpeciesInSystem; ++speciesIndexEq ) {
+		a[fTemperature][fTemperature] -= dMdT[speciesIndexEq] * enthalpy[speciesIndexEq] * hnenn;
+		a[fTemperature][fTemperature] -= productionRate[speciesIndexEq] * heatCapacity[speciesIndexEq] * hnenn;
+		for ( speciesIndexVar = 0; speciesIndexVar < nSpeciesInSystem; ++speciesIndexVar ) {
+			a[speciesIndexVar + fFirstSpecies][fTemperature] -= dMdY[speciesIndexVar][speciesIndexEq] * enthalpy[speciesIndexEq] * hnenn;
+		}
+	}
+	
+	if ( flame->fProperties->GetRadiation() ) {
+		flame->fProperties->GetRadiation()->FillJacRadiation( 1.0, flame, nodeInfo );
+	}
+}
+
+void CountDiffMixRHSRest(void * object, NodeInfoPtr nodeInfo, RHSMode rhsMode)
+{
+  TCountDiffFlameMixPtr flame = (TCountDiffFlameMixPtr)object;
+  if (!flame->RHSAction(nodeInfo, rhsMode))
+  {
+    return;
+  }
+  TFlameNodePtr	flameNode = flame->fFlameNode;
+
+  int speciesEq, speciesInd;
+  int M = nodeInfo->nOfEquations;
+  int nSpeciesInSystem = flame->GetSpecies()->GetNSpeciesInSystem();
+  int fFirstSpecies = flame->GetOffsetFirstSpecies();
+  int fTemperature = flame->GetOffsetTemperature();
+  int fLnChi = flame->GetOffsetLnChi();
+  int fProg = flame->GetOffsetProg();
+  int fEnth = flame->GetOffsetEnth();
+  int lastSpeciesEq = fFirstSpecies + nSpeciesInSystem;
+
+  double h = nodeInfo->h;
+  double hm = nodeInfo->hm;
+  double hnenn = nodeInfo->hnenn;
+
+  double * yPrev = nodeInfo->yPrev;
+  double * y = nodeInfo->y;
+  double * yNext = nodeInfo->yNext;
+  double * rhs = nodeInfo->rhs;
+
+  double * enthalpy = flameNode->enthalpy;
+  double * molarMass = flame->GetSpecies()->GetMolarMass()->vec;
+  double * productionRate = flameNode->productionRate;
+  double * lewisIn = flame->GetSpecies()->GetLewisNumber()->vec;
+  double * lewis = New1DArray(nSpeciesInSystem);
+  double * lewisPrev = New1DArray(nSpeciesInSystem);
+  double * lewisNext = New1DArray(nSpeciesInSystem);
+  double MMPrev = flameNode->mixMolarMass[kPrev];
+  double MM = flameNode->mixMolarMass[kCurr];
+  double MMNext = flameNode->mixMolarMass[kNext];
+
+  double speciesCoeff = 0.5 * flameNode->mixDensity[kCurr] * flame->GetDissRate(nodeInfo->x[kCurr], flameNode->mixDensity[kCurr], exp(y[fLnChi]));
+  double energyCoeff = speciesCoeff * flameNode->mixHeatCapacity[kCurr];
+
+  // Compute Density Correction
+  double rhodot;
+  double enthdot;
+  if (flame->GetSoot())
+  {
+    rhodot = flameNode->rhodot[kCurr];
+    enthdot = flameNode->enthdot[kCurr];
+  }
+  else
+  {
+    rhodot = 0.0;
+    enthdot = 0.0;
+  }
+
+  //double ** massFracs = flame->GetMassFracs()->mat;
+  //int gridPoints = flame->GetSolver()->bt->GetGrid()->GetCurrentGrid()->GetNGridPoints();
+  double * yLeft = flame->GetSolver()->bt->GetGrid()->GetCurrentGrid()->GetYLeft()->vec;
+  double * yRight = flame->GetSolver()->bt->GetGrid()->GetCurrentGrid()->GetYRight()->vec;
+  double mixfracsrc = flame->ComputeZBilgerSource(productionRate, &yRight[fFirstSpecies], &yLeft[fFirstSpecies], rhodot);
+
+  double paramMDiff = 1.0; //flame->GetSolver()->bt->GetParameter();
+  double paramDiffTerms = 1.0; //flame->GetSolver()->bt->GetParameter();
+  double paramDiffCorr = 1.0; //flame->GetSolver()->bt->GetParameter();
+  double paramNow = flame->GetSolver()->bt->GetParameter();
+  double paramCool = 1.0;//flame->GetSolver()->bt->GetParameter();
+
+#ifdef RHODCONST
+  double lambdaOverCpInf = flame->GetProperties()->GetConductivity()->vec[kPrev] / flame->GetProperties()->GetHeatCapacity()->vec[kPrev];
+#  ifdef RHOSQUAREDCONST
+#    ifdef ZDRHOMU
+  double Le_ZPrev = flameNode->mixConductivity[kPrev] / flameNode->mixHeatCapacity[kPrev] / flame->GetProperties()->GetViscosity()->vec[kPrev] * flameNode->mixDensity[kPrev] / flame->fRhoInf / ZDIFFFACT;
+  double Le_ZCurr = flameNode->mixConductivity[kCurr] / flameNode->mixHeatCapacity[kCurr] / flame->GetProperties()->GetViscosity()->vec[kPrev] * flameNode->mixDensity[kCurr] / flame->fRhoInf / ZDIFFFACT;
+  double Le_ZNext = flameNode->mixConductivity[kNext] / flameNode->mixHeatCapacity[kNext] / flame->GetProperties()->GetViscosity()->vec[kPrev] * flameNode->mixDensity[kNext] / flame->fRhoInf / ZDIFFFACT;
+#    else
+  double Le_ZPrev = flameNode->mixConductivity[kPrev] / flameNode->mixHeatCapacity[kPrev] / lambdaOverCpInf * flameNode->mixDensity[kPrev] / flame->fRhoInf / ZDIFFFACT;
+  double Le_ZCurr = flameNode->mixConductivity[kCurr] / flameNode->mixHeatCapacity[kCurr] / lambdaOverCpInf * flameNode->mixDensity[kCurr] / flame->fRhoInf / ZDIFFFACT;
+  double Le_ZNext = flameNode->mixConductivity[kNext] / flameNode->mixHeatCapacity[kNext] / lambdaOverCpInf * flameNode->mixDensity[kNext] / flame->fRhoInf / ZDIFFFACT;
+#    endif
+#  else
+  double Le_ZPrev = flameNode->mixConductivity[kPrev] / flameNode->mixHeatCapacity[kPrev] / lambdaOverCpInf;
+  double Le_ZCurr = flameNode->mixConductivity[kCurr] / flameNode->mixHeatCapacity[kCurr] / lambdaOverCpInf;
+  double Le_ZNext = flameNode->mixConductivity[kNext] / flameNode->mixHeatCapacity[kNext] / lambdaOverCpInf;
+#  endif
+#else
+  double Le_ZPrev = 1.0 / (paramNow * ZDIFFFACT + (1.0 - paramNow) * ZDIFFFACTOLD);
+  double Le_ZCurr = 1.0 / (paramNow * ZDIFFFACT + (1.0 - paramNow) * ZDIFFFACTOLD);
+  double Le_ZNext = 1.0 / (paramNow * ZDIFFFACT + (1.0 - paramNow) * ZDIFFFACTOLD);
+#endif
+
+#ifdef COOLTRANSPORT
+  double coeff = flameNode->mixConductivity[kCurr] / (flameNode->mixHeatCapacity[kCurr] * flameNode->mixDensity[kCurr]);
+  double coeffPrev = flameNode->mixConductivity[kPrev] / (flameNode->mixHeatCapacity[kPrev] * flameNode->mixDensity[kPrev]);
+  double coeffNext = flameNode->mixConductivity[kNext] / (flameNode->mixHeatCapacity[kNext] * flameNode->mixDensity[kNext]);
+#endif
+
+  for (speciesEq = 0; speciesEq < nSpeciesInSystem; ++speciesEq)
+  {
+#ifdef COOLTRANSPORT
+    lewis[speciesEq] = coeff / ((flameNode->diffusivity[speciesEq]==0.0) ? 0.001 : flameNode->diffusivity[speciesEq]) / Le_ZCurr;
+    lewisPrev[speciesEq] = coeffPrev / ((flameNode->diffusivityPrev[speciesEq]==0.0) ? 0.001 : flameNode->diffusivityPrev[speciesEq]) / Le_ZPrev;
+    lewisNext[speciesEq] = coeffNext / ((flameNode->diffusivityNext[speciesEq]==0.0) ? 0.001 : flameNode->diffusivityNext[speciesEq]) / Le_ZNext;
+#else
+    lewis[speciesEq] = lewisPrev[speciesEq] = lewisNext[speciesEq] = lewisIn[speciesEq]/Le_ZCurr;
+#endif
+  }
+
+  // Species Equations
+  double * rho = flameNode->mixDensity;
+  double chiPrev = (nodeInfo->firstPoint) ? flame->GetDissRate(flame->GetSolver()->bt->GetLeft(), flameNode->mixDensity[kPrev], exp(y[fLnChi])) : flame->GetDissRate(nodeInfo->x[kPrev], flameNode->mixDensity[kPrev], exp(y[fLnChi]));
+  double chiCurr = flame->GetDissRate(nodeInfo->x[kCurr], flameNode->mixDensity[kCurr], exp(y[fLnChi]));
+  double chiNext = (nodeInfo->lastPoint) ? flame->GetDissRate(flame->GetSolver()->bt->GetRight(), flameNode->mixDensity[kNext], exp(y[fLnChi])) : flame->GetDissRate(nodeInfo->x[kNext], flameNode->mixDensity[kNext], exp(y[fLnChi]));
+  double rhoChiPrev = rho[kPrev] * chiPrev;
+  double rhoChi = rho[kCurr] * chiCurr;
+  double rhoChiNext = rho[kNext] * chiNext;
+  double lambdaOverCpLeZCurr = flameNode->mixConductivity[kCurr] / (flameNode->mixHeatCapacity[kCurr] * Le_ZCurr);
+#ifdef LAMBDAOVERCPAPPROX
+  double lambdaOverCpLeZPrev = lambdaOverCpLeZCurr / Le_ZPrev * pow(yPrev[fTemperature] / y[fTemperature], 0.7);
+  double lambdaOverCpLeZNext = lambdaOverCpLeZCurr / Le_ZNext * pow(yNext[fTemperature] / y[fTemperature], 0.7);;
+#else
+  double lambdaOverCpLeZPrev = flameNode->mixConductivity[kPrev] / (flameNode->mixHeatCapacity[kPrev] * Le_ZPrev);
+  double lambdaOverCpLeZNext = flameNode->mixConductivity[kNext] / (flameNode->mixHeatCapacity[kNext] * Le_ZNext);
+#endif
+
+#ifdef CONVECTION
+  double drhoChidZ = FirstDeriv(rhoChiPrev, rhoChi, rhoChiNext, hm, h);
+  double dlambdaOverCpLeZdZ = FirstDeriv(lambdaOverCpLeZPrev, lambdaOverCpLeZCurr, lambdaOverCpLeZNext, hm, h);
+#endif
+
+  double dY_kdZ;
+  double dLe_kdZ;
+
+  double sum1 = 0.0;
+  double sum2 = 0.0;
+  double sum3 = 0.0;
+  double sum4 = 0.0;
+#ifndef CENTRALDIFF
+  double sum4back = 0.0;
+  double sum4forw = 0.0;
+#endif
+  double sum5 = 0.0;
+
+  // Soot Equations
+  if (flame->GetSoot())
+  {
+    double dRhoChi_dZ = FirstDeriv(rhoChiPrev, rhoChi, rhoChiNext, hm, h);
+
+    double RhoDiffPrev = flameNode->mixConductivity[kPrev] / flameNode->mixHeatCapacity[kPrev];
+    double RhoDiff = flameNode->mixConductivity[kCurr] / flameNode->mixHeatCapacity[kCurr];
+    double RhoDiffNext = flameNode->mixConductivity[kNext] / flameNode->mixHeatCapacity[kNext];
+    double dRhoDiff_dZ = FirstDeriv(RhoDiffPrev, RhoDiff, RhoDiffNext, hm, h);
+      
+    double SootVel = 0.25 * (dRhoChi_dZ + rhoChi / RhoDiff * dRhoDiff_dZ);
+
+    double MuPrev = flameNode->mixViscosity[kPrev];
+    double Mu = flameNode->mixViscosity[kCurr];
+    double MuNext = flameNode->mixViscosity[kNext];
+
+    double dT_dZ = FirstDeriv(yPrev[fTemperature], y[fTemperature], yNext[fTemperature], hm, h);
+    double d2T_dZ2 = SecondDeriv(yPrev[fTemperature], y[fTemperature], yNext[fTemperature], hm, h);
+
+    double ThermVel = 0.5 * 0.55 * Mu/RhoDiff * rhoChi / y[fTemperature] * dT_dZ;
+
+    double RhoChi_TPrev = rhoChiPrev / yPrev[fTemperature];
+    double RhoChi_T = rhoChi / y[fTemperature];
+    double RhoChi_TNext = rhoChiNext / yNext[fTemperature];
+    double dRhoChi_T_dZ = FirstDeriv(RhoChi_TPrev, RhoChi_T, RhoChi_TNext, hm, h);
+
+    double dMu_dZ = FirstDeriv(MuPrev, Mu, MuNext, hm, h);
+
+    SootVel = SootVel - nodeInfo->x[kCurr] * rhodot + mixfracsrc;
+    if (flame->GetSoot()->WithThermoPhoresis())
+      SootVel = SootVel - ThermVel;
+    
+    for (int k = 0; k < flame->GetSoot()->GetNSootMoments(); ++k)
+    {
+      int koff = k + flame->fSootMoments;
+      // Differential Diffusion (Infinite Lewis Number): Convective Term
+      rhs[koff] -= NonlinearConvectUpwind(SootVel, yPrev[koff], y[koff], yNext[koff], hm, h);
+
+      // Diffusion (Unity Lewis Number)
+      //rhs[koff] += NonlinearConvectUpwind(ThermVel, yPrev[koff], y[koff], yNext[koff], hm, h);
+      //rhs[koff] += speciesCoeff * SecondDeriv(yPrev[koff], y[koff], yNext[koff], hm, h);
+
+      // Thermophoresis Source Term
+      if (flame->GetSoot()->WithThermoPhoresis())
+      {
+	rhs[koff] += 0.5 * (0.55 * Mu/RhoDiff) * (dT_dZ*dRhoChi_T_dZ + RhoChi_T * d2T_dZ2);
+	rhs[koff] -= 0.25 * (0.55 * Mu/RhoDiff) * dRhoChi_dZ / y[fTemperature] * dT_dZ;
+	rhs[koff] -= 0.25 * (0.55 / y[fTemperature] * Mu/RhoDiff/RhoDiff * dT_dZ * rhoChi * dRhoDiff_dZ);
+	rhs[koff] += 0.5 * 0.55 / y[fTemperature] / RhoDiff * rhoChi * dT_dZ * dMu_dZ;
+      }
+
+      // Density Correction: Source and Convective Term
+      // Convective term put into convective velocity
+      rhs[koff] -= rhodot;
+    }
+    flame->GetSoot()->FillRHS(flame, nodeInfo, kMixtureFraction);
+  }
+
+  // Normalized progress variable equation
+  rhs[fProg] += speciesCoeff * SecondDeriv(yPrev[fProg], y[fProg], yNext[fProg], hm, h);
+  int f_CO2 = flame->GetSpecies()->FindSpecies("CO2");
+  int f_CO = flame->GetSpecies()->FindSpecies("CO");
+  int f_H2O = flame->GetSpecies()->FindSpecies("H2O");
+  int f_H2 = flame->GetSpecies()->FindSpecies("H2");
+  double C_MAX = flame->ComputeCMAX(&y[fFirstSpecies], &yRight[fFirstSpecies], &yLeft[fFirstSpecies]);
+  double CC = y[fFirstSpecies+f_CO2] + y[fFirstSpecies+f_CO] + y[fFirstSpecies+f_H2O] + y[fFirstSpecies+f_H2];
+  //cerr << CC << "\t" << C_MAX << "\t" << CC/C_MAX << endl;
+  rhs[fProg] += (productionRate[f_CO2] + productionRate[f_CO] + productionRate[f_H2O] + productionRate[f_H2]) / C_MAX;
+  rhs[fProg] -= y[fProg] * rhodot;
+  rhs[fProg] += nodeInfo->x[kCurr] * rhodot * FirstDeriv(yPrev[fProg], y[fProg], yNext[fProg], hm, h);
+  rhs[fProg] -= mixfracsrc * FirstDeriv(yPrev[fProg], y[fProg], yNext[fProg], hm, h);
+  //Extra terms
+  //double C_MAXprev = flame->ComputeCMAX(&yPrev[fFirstSpecies], &yRight[fFirstSpecies], &yLeft[fFirstSpecies]);
+  //if (nodeInfo->x[kPrev] < 1.0e-10) C_MAXprev = C_MAX;
+  //double C_MAXnext = flame->ComputeCMAX(&yNext[fFirstSpecies], &yRight[fFirstSpecies], &yLeft[fFirstSpecies]);
+  //rhs[fProg] += speciesCoeff*(2.0/C_MAX*FirstDeriv(C_MAXprev,C_MAX,C_MAXnext,hm,h)*FirstDeriv(yPrev[fProg],y[fProg],yNext[fProg],hm,h)+y[fProg]/C_MAX*SecondDeriv(C_MAXprev,C_MAX,C_MAXnext,hm,h));
+
+  // Unity Lewis number enthalpy equation
+  rhs[fEnth] += speciesCoeff * SecondDeriv(yPrev[fEnth], y[fEnth], yNext[fEnth], hm, h);
+  //rhs[fEnth] += enthdot; // / 1.0e20;
+  //rhs[fEnth] -= y[fEnth] * rhodot;
+  rhs[fEnth] += nodeInfo->x[kCurr] * rhodot * FirstDeriv(yPrev[fEnth], y[fEnth], yNext[fEnth], hm, h);
+  rhs[fEnth] -= mixfracsrc * FirstDeriv(yPrev[fEnth], y[fEnth], yNext[fEnth], hm, h);
+  if (flame->fProperties->GetRadiation())
+  {
+    rhs[fEnth] += flameNode->radiation[kCurr];
+    
+    if (flame->GetSoot() && flame->GetSoot()->WithSootRadiation())
+    {
+	rhs[fEnth] -= flame->GetSoot()->GetSootRadiation( y[fTemperature], flameNode->moments );
+    }
+  }
+
+  // Compute Partial Sums Needed for Diffusion Correction Terms
+  if (flame->UseDiffCorr())
+  {
+    for (speciesEq = fFirstSpecies; speciesEq < lastSpeciesEq; ++speciesEq)
+    {
+      speciesInd = speciesEq-fFirstSpecies;
+
+      dY_kdZ = FirstDeriv(yPrev[speciesEq], y[speciesEq], yNext[speciesEq], hm, h);
+      dLe_kdZ = FirstDeriv(lewisPrev[speciesInd], lewis[speciesInd], lewisNext[speciesInd], hm, h);
+
+      sum1 += SecondDeriv(yPrev[speciesEq], y[speciesEq], yNext[speciesEq], hm, h) / lewis[speciesInd];
+      sum2 += y[speciesEq] / lewis[speciesInd];
+      sum3 += dLe_kdZ * dY_kdZ / (lewis[speciesInd] * lewis[speciesInd]);
+      sum4 += dY_kdZ / lewis[speciesInd];
+#ifndef CENTRALDIFF
+      sum4back += (y[speciesEq] - yPrev[speciesEq]) / hm / lewis[speciesInd];
+      sum4forw += (yNext[speciesEq] - y[speciesEq]) / h / lewis[speciesInd];
+#endif
+      sum5 += speciesCoeff * dLe_kdZ * y[speciesEq] / MM / (lewis[speciesInd] * lewis[speciesInd]);
+    }
+  }
+
+  // Start Species Equations Loop
+  for (speciesEq = fFirstSpecies; speciesEq < lastSpeciesEq; ++speciesEq)
+  {
+    speciesInd = speciesEq-fFirstSpecies;
+
+    // Diffusion
+    rhs[speciesEq] += speciesCoeff / lewis[speciesInd] * SecondDeriv(yPrev[speciesEq], y[speciesEq], yNext[speciesEq], hm, h);
+
+    // Chemical Source Terms
+    rhs[speciesEq] += productionRate[speciesInd];
+
+    // Density Correction: Source and Convective Term
+    rhs[speciesEq] -= y[speciesEq] * rhodot;
+    rhs[speciesEq] += nodeInfo->x[kCurr] * rhodot * FirstDeriv(yPrev[speciesEq], y[speciesEq], yNext[speciesEq], hm, h);
+
+    // Mixture Fraction Source Term: Convective Term
+    rhs[speciesEq] -= mixfracsrc * FirstDeriv(yPrev[speciesEq], y[speciesEq], yNext[speciesEq], hm, h);
+
+#ifdef MOLARDIFF
+    // Molar Diffusion Term 
+    rhs[speciesEq] += paramMDiff * speciesCoeff / lewis[speciesInd] * y[speciesEq] / MM * SecondDeriv(MMPrev, MM, MMNext, hm, h);
+#endif
+    if (flame->UseDiffCorr())
+    {
+      // Diffustion Correction Term
+      rhs[speciesEq] -= speciesCoeff * y[speciesEq] * sum1;
+#ifdef MOLARDIFF
+      // Molar Diffustion Correction Term
+      rhs[speciesEq] -= paramDiffCorr * paramMDiff * speciesCoeff * y[speciesEq] / MM * sum2 * SecondDeriv(MMPrev, MM, MMNext, hm, h);
+#endif
+    }
+		
+#ifdef CONVECTION
+    double convTermMassFrac = 0.0;
+    double convTermXDiff = 0.0;
+    double convTermDiffCorrY = 0.0;
+    double convTermDiffCorrXDiff = 0.0;
+    
+    // Mass Fraction Convection Velocity
+    //double drhoChidZ = FirstDeriv(rhoChiPrev, rhoChi, rhoChiNext, hm, h);
+    //double dlambdaOverCpLeZdZ = FirstDeriv(lambdaOverCpLeZPrev, lambdaOverCpLeZCurr, lambdaOverCpLeZNext, hm, h);
+    double convVeloY = 0.25 * (1.0 - 1.0 / lewis[speciesInd]) * (drhoChidZ + rhoChi / lambdaOverCpLeZCurr * dlambdaOverCpLeZdZ);
+
+#  ifdef COOLTRANSPORT
+    double dlewisdZ = FirstDeriv(lewisPrev[speciesInd], lewis[speciesInd], lewisNext[speciesInd], hm, h);
+    convVeloY += paramCool * 0.5 * rhoChi / (lewis[speciesInd] * lewis[speciesInd]) * dlewisdZ;
+#  endif
+
+    // Molar Mass Convection Velocity
+    double dydZ = FirstDeriv(yPrev[speciesEq], y[speciesEq], yNext[speciesEq], hm, h);
+    double drhoChiOverMMdZ = FirstDeriv(rhoChiPrev / MMPrev, rhoChi / MM, rhoChiNext / MMNext, hm, h);
+    double dlambdaOverCpLeZOverMMdZ = FirstDeriv(lambdaOverCpLeZPrev / MMPrev, lambdaOverCpLeZCurr / MM, lambdaOverCpLeZNext / MMNext, hm, h);
+    double convVeloM = 0.25 / lewis[speciesInd] * (2.0 * rhoChi / MM * dydZ + y[speciesEq] * drhoChiOverMMdZ + rhoChi / lambdaOverCpLeZCurr * y[speciesEq] * dlambdaOverCpLeZOverMMdZ);
+
+#  ifdef COOLTRANSPORT
+    convVeloM -= paramCool * 0.5 * rhoChi / (lewis[speciesInd] * lewis[speciesInd]) * y[speciesEq] / MM * dlewisdZ;
+#  endif
+
+    // Convection Terms
+#  ifdef CENTRALDIFF
+    // Mass Fraction Convection
+    convTermMassFrac = convVeloY * FirstDeriv(yPrev[speciesEq], y[speciesEq], yNext[speciesEq], hm, h);
+#    ifdef MOLARDIFF
+    // Molar Mass Convection
+    convTermXDiff = convVeloM * FirstDeriv(MMPrev, MM, MMNext, hm, h);
+#    endif
+#  else
+    if (convVeloY < 0.0)
+      convTermMassFrac = convVeloY * (y[speciesEq] - yPrev[speciesEq]) / hm;
+    else
+      convTermMassFrac = convVeloY * (yNext[speciesEq] - y[speciesEq]) / h;
+#    ifdef MOLARDIFF
+    if (convVeloM > 0.0)
+      convTermXDiff = convVeloM * (MM - MMPrev) / hm;
+    else
+      convTermXDiff = convVeloM * (MMNext - MM) / h;
+#    endif
+#  endif
+
+    // Diffusion Correction Convection Terms
+    if (flame->UseDiffCorr())
+    {
+#  ifdef CENTRALDIFF
+      // Mass Fraction Convection
+#    ifdef COOLTRANSPORT
+      convTermDiffCorrY -= paramCool * speciesCoeff * y[speciesEq] * sum3;
+#    endif
+      double dyrhoChidZ = FirstDeriv(yPrev[speciesEq] * rhoChiPrev, y[speciesEq] * rhoChi, yNext[speciesEq] * rhoChiNext, hm, h);
+      double dylambdaOverCpLeZdZ = FirstDeriv(yPrev[speciesEq] * lambdaOverCpLeZPrev, y[speciesEq] * lambdaOverCpLeZCurr, yNext[speciesEq] * lambdaOverCpLeZNext, hm, h);
+      convTermDiffCorrY += 0.25 * sum4 * (dyrhoChidZ + rhoChi / lambdaOverCpLeZCurr * dylambdaOverCpLeZdZ);
+#  else
+      double dyrhoChidZ = FirstDeriv(yPrev[speciesEq] * rhoChiPrev, y[speciesEq] * rhoChi, yNext[speciesEq] * rhoChiNext, hm, h);
+      double dylambdaOverCpLeZ = FirstDeriv(yPrev[speciesEq] * lambdaOverCpLeZPrev, y[speciesEq] * lambdaOverCpLeZCurr, yNext[speciesEq] * lambdaOverCpLeZNext, hm, h);
+      double convVeloYCorr23 = 0.25 * (dyrhoChidZ + rhoChi / lambdaOverCpLeZCurr * dylambdaOverCpLeZ);
+
+      if (convVeloYCorr23 > 0.0)
+	convTermDiffCorrY = convVeloYCorr23 * sum4back;
+      else
+	convTermDiffCorrY = convVeloYCorr23 * sum4forw;
+#    ifdef COOLTRANSPORT
+      convTermDiffCorrY -= paramCool * speciesCoeff * y[speciesEq] * sum3;
+#    endif
+#  endif
+      // Molar Mass Convection
+#  ifdef MOLARDIFF
+#    ifdef CENTRALDIFF
+      double dMdZ = FirstDeriv(MMPrev, MM, MMNext, hm, h);
+
+      for (int kc = fFirstSpecies; kc < lastSpeciesEq; ++kc)
+      {
+#      ifdef COOLTRANSPORT
+	double dlewis_kcdZ = FirstDeriv(lewisPrev[kc-fFirstSpecies], lewis[kc-fFirstSpecies], lewisNext[kc-fFirstSpecies], hm, h);
+	convTermDiffCorrXDiff -= paramCool * speciesCoeff * y[speciesEq] / MM * y[kc] / (lewis[kc-fFirstSpecies] * lewis[kc-fFirstSpecies]) * dlewis_kcdZ;
+#      endif
+	double dyy_kcrhoChiOverMMdZ = FirstDeriv(yPrev[speciesEq] / MMPrev * yPrev[kc] * rhoChiPrev, y[speciesEq] / MM * y[kc] * rhoChi, yNext[speciesEq] / MMNext * yNext[kc] * rhoChiNext, hm, h);
+	double dyy_kclambdaOverCpLeZOverMMdZ = FirstDeriv(yPrev[speciesEq]/MMPrev*yPrev[kc]*lambdaOverCpLeZPrev, y[speciesEq]/MM*y[kc]*lambdaOverCpLeZCurr, yNext[speciesEq]/MMNext*yNext[kc]*lambdaOverCpLeZNext, hm, h);
+	convTermDiffCorrXDiff += 0.25 / lewis[kc-fFirstSpecies] * (dyy_kcrhoChiOverMMdZ + rhoChi / lambdaOverCpLeZCurr * dyy_kclambdaOverCpLeZOverMMdZ); 
+      }
+      convTermDiffCorrXDiff *= dMdZ;
+#    else
+      double convVeloMCorr12345 = 0.0;
+#      ifdef COOLTRANSPORT
+      convVeloMCorr12345 -= paramCool * y[speciesEq] * sum5;
+#      endif
+      double dyrhoChiOverMMdZ = FirstDeriv(yPrev[speciesEq] / MMPrev * rhoChiPrev, y[speciesEq] / MM * rhoChi, yNext[speciesEq] / MMNext * rhoChiNext, hm, h);
+      double dlambdaOverCpLeZyOverMMdZ = FirstDeriv(lambdaOverCpLeZPrev * yPrev[speciesEq] / MMPrev, lambdaOverCpLeZCurr * y[speciesEq]  / MM, lambdaOverCpLeZNext * yNext[speciesEq] / MMNext, hm, h);
+      convVeloMCorr12345 += 0.25 * (2.0 * y[speciesEq] / MM * rhoChi * sum4 + sum2 * dyrhoChiOverMMdZ + sum2 * rhoChi / lambdaOverCpLeZCurr * dlambdaOverCpLeZyOverMMdZ);
+
+      if (convVeloM > 0.0)
+	convTermDiffCorrXDiff = convVeloMCorr12345 * (MM - MMPrev) / hm;
+      else
+	convTermDiffCorrXDiff = convVeloMCorr12345 * (MMNext - MM) / h;
+#    endif
+#  endif
+    }
+
+    rhs[speciesEq] += paramDiffTerms * (-convTermMassFrac + convTermXDiff - convTermDiffCorrY - convTermDiffCorrXDiff);
+#endif
+  }
+	
+  // Energy Equation
+
+  // Diffusion
+  rhs[fTemperature] += energyCoeff * Le_ZCurr * SecondDeriv(yPrev[fTemperature], y[fTemperature], yNext[fTemperature], hm, h);
+
+  // Density Correction: Convective Term and Source Term
+  rhs[fTemperature] += rhodot * flameNode->mixHeatCapacity[kCurr] * nodeInfo->x[kCurr] * FirstDeriv(yPrev[fTemperature], y[fTemperature], yNext[fTemperature], hm, h);
+  rhs[fTemperature] += enthdot;
+  
+  // Mixture Fraction Source: Convective Term
+  rhs[fTemperature] -= mixfracsrc * flameNode->mixHeatCapacity[kCurr] * FirstDeriv(yPrev[fTemperature], y[fTemperature], yNext[fTemperature], hm, h);
+
+#ifdef CONVECTION
+  // Mass Fraction Convection Velocity
+  double convVeloT = flameNode->mixHeatCapacity[kCurr] * (0.25 * (Le_ZCurr - 1.0) * (drhoChidZ + rhoChi / lambdaOverCpLeZCurr * dlambdaOverCpLeZdZ));
+#  ifdef COOLTRANSPORT
+  convVeloT += flameNode->mixHeatCapacity[kCurr] * paramCool * 0.5 * rhoChi * FirstDeriv(Le_ZPrev, Le_ZCurr, Le_ZNext, hm, h);
+#  endif
+
+#  ifdef CENTRALDIFF
+  rhs[fTemperature] += convVeloT * FirstDeriv(yPrev[fTemperature], y[fTemperature], yNext[fTemperature], hm, h);
+#  else
+  if (convVeloT < 0.0)
+  {
+    rhs[fTemperature] += convVeloT * (y[fTemperature] - yPrev[fTemperature]) / hm;
+  }
+  else
+  {
+    rhs[fTemperature] += convVeloT * (yNext[fTemperature] - y[fTemperature]) / h;
+  }
+#  endif
+#endif
+
+  // Species Loop: Enthalpy Flux and Chemical Source Terms
+#ifdef ENTFLUX
+  Double * cp = flameNode->heatCapacity;
+  Double entFluxSum = 0.0;
+  Double cpMix = flameNode->mixHeatCapacity[kCurr];
+  if (!flame->UseDiffCorr())
+  {
+    cpMix = 0.0;
+  }
+#endif
+  for (speciesEq = 0; speciesEq < nSpeciesInSystem; ++speciesEq)
+  {
+    speciesInd = speciesEq + fFirstSpecies;
+#ifdef ENTFLUX
+    entFluxSum += (cpMix - cp[speciesEq]) / lewis[speciesEq] * (FirstDeriv(yPrev[speciesInd], y[speciesInd], yNext[speciesInd], hm, h));
+#  ifdef MOLARDIFF
+    entFluxSum += (cpMix - cp[speciesEq]) / lewis[speciesEq] *  y[speciesInd] / MM * FirstDeriv(MMPrev, MM, MMNext, hm, h);
+#  endif
+
+#endif
+    // Chemical Source Terms
+    rhs[fTemperature] -= productionRate[speciesEq] * enthalpy[speciesEq];
+  }
+#ifdef ENTFLUX
+  rhs[fTemperature] -= speciesCoeff * entFluxSum * FirstDeriv(yPrev[fTemperature], y[fTemperature], yNext[fTemperature], hm, h);
+#endif
+
+  // Heat Capacity Gradient
+#ifdef HEATCAPGRAD
+  double dcpdZ = FirstDeriv(flameNode->mixHeatCapacity[kPrev], flameNode->mixHeatCapacity[kCurr], flameNode->mixHeatCapacity[kNext], hm, h);
+  rhs[fTemperature] += speciesCoeff * Le_ZCurr * dcpdZ * FirstDeriv(yPrev[fTemperature], y[fTemperature], yNext[fTemperature], hm, h);
+#endif
+
+  // Radiation: Gas Phase and Soot
+  if (flame->fProperties->GetRadiation())
+  {
+    rhs[fTemperature] += flameNode->radiation[kCurr];
+    
+    if (flame->GetSoot() && flame->GetSoot()->WithSootRadiation())
+    {
+      rhs[fTemperature] -= flame->GetSoot()->GetSootRadiation( y[fTemperature], flameNode->moments );
+    }
+  }
+
+  // Arc Lenght Continuity Method for Generating S-Curve
+  if (flame->GetArcLengthCont())
+  {
+    if (nodeInfo->gridPoint < flame->fTmaxLoc)
+    {
+      rhs[fLnChi] += FirstDerivUpwind(yNext[fLnChi], y[fLnChi], h);
+    }
+    else if (nodeInfo->gridPoint == flame->fTmaxLoc)
+    {
+      double dT = (y[fTemperature] - flame->GetTempContStart()) / flame->GetDeltaTref();
+      double dlnChi = (y[fLnChi] - flame->GetChiContStart()) / flame->GetDeltaChiref();
+      if (flame->GetDeltaArcLength() == 0.0)
+      {
+	rhs[fLnChi] += dlnChi;
+      }
+      else
+      {
+	rhs[fLnChi] += dT * flame->GetdTds() + dlnChi * flame->GetdlnChids() - flame->GetDeltaArcLength();
+      }
+    }
+    else
+    {
+      rhs[fLnChi] += FirstDerivUpwind(y[fLnChi], yPrev[fLnChi], hm);
+    }
+  }
+  else
+  {
+    rhs[fLnChi] += y[fLnChi] - flame->GetChiContStart();
+  }
+
+//	soot equations
+//	if ( flame->GetSoot() ) {
+// 		int		nSootMoments = flame->GetSoot()->GetNSootMoments();
+// 		int		sootOff = flame->fSootMoments;
+// 		Double	sootCoeff = flame->GetDissRate( nodeInfo->x[kCurr]
+// 				, flameNode->mixDensity[kCurr], exp( y[fLnChi] ) ) / ( 2.0 * flame->GetSoot()->GetLewis1() );
+
+//		flame->GetSoot()->FillRHS( flame, nodeInfo, kMixtureFraction );
+// 		for ( int i = 0; i < nSootMoments; ++i ) {
+// #ifdef SIZEDEPDIFFUSION
+// 			Double	fracIndex;
+// 			Double	wMinus = 2.0 * h / hnenn;
+// 			Double	wCurr = - 2.0 * ( h + hm ) / hnenn;
+// 			Double	wPlus = 2.0 * hm / hnenn;
+// 			fracIndex = i - 2.0 / 3.0;
+// 			rhs[sootOff+i] += sootCoeff 
+// 			* ( wMinus * flame->GetSoot()->FracMom2( fracIndex, &yPrev[sootOff] )
+// 			+ wCurr * flame->GetSoot()->FracMom2( fracIndex, &y[sootOff] )
+// 			+ wPlus * flame->GetSoot()->FracMom2( fracIndex, &yNext[sootOff] ) );
+// #else
+// 			rhs[sootOff+i] += sootCoeff 
+// 				* SecondDeriv( yPrev[sootOff+i], y[sootOff+i], yNext[sootOff+i], hm, h );
+// #endif
+// 		}
+//	}
+
+  TTimePtr tim = flame->GetSolver()->time;
+  for (speciesEq = 0; speciesEq < M; ++speciesEq)
+  {
+    if (flame->GetSolver()->bt->GetTimedepFlag() && !flame->GetSolver()->time->GetTimeConverged())
+    {
+      rhs[speciesEq] -= (y[speciesEq] - tim->GetYOld()->mat[nodeInfo->gridPoint][speciesEq]) / tim->GetDeltaT();
+    }
+    rhs[speciesEq] *= - hnenn;
+  }
+
+  Free1DArray(lewis);
+  Free1DArray(lewisNext);
+  Free1DArray(lewisPrev);
+}
+
+void TCountDiffFlameMix::FillJacDiffCorr( int nVariable, Double constCoeff, NodeInfoPtr nodeInfo, Flag sign )
+{
+// fills the jacobian with     constCoeff * sum_j ( Y_k/Le_j d2Y_j/dy2 )
+
+	if ( sign == kNegative ) {
+		constCoeff *= -1.0;
+	}
+
+	int		i, lVar;
+	int		nSpeciesInSystem = fSpecies->GetNSpeciesInSystem();
+	Double	*Y = fFlameNode->Y[kCurr];
+	Double	coeff = constCoeff * Y[nVariable-fFirstSpecies];
+	Double	sumY = 0.0;
+	Double	*lewis = fSpecies->GetLewisNumber()->vec;
+	
+	for ( i = 0; i < nSpeciesInSystem; ++i ) {
+		sumY += Y[i];
+	}
+	coeff /= sumY;
+	
+	for ( i = 0; i < nSpeciesInSystem; ++i ) {
+		lVar = fFirstSpecies + i;
+		// d/dY_l
+		FillJacSecondDerivCentral( lVar, nVariable, coeff/lewis[i], nodeInfo, sign );
+	}
+}
+
+/*void CountDiffMixJacRest( void *object, NodeInfoPtr nodeInfo )
+{
+	TCountDiffFlameMixPtr	flame = ( TCountDiffFlameMixPtr )object;
+	TFlameNodePtr	flameNode = flame->fFlameNode;
+	int 	fFirstSpecies = flame->GetOffsetFirstSpecies();
+	int 	fTemperature = flame->GetOffsetTemperature();
+	int		M = nodeInfo->nOfEquations;
+	int		nOfSpecies = flame->GetSpecies()->GetNOfSpecies();
+	int		speciesEq, speciesVar, speciesIndexEq, speciesIndexVar;
+	int		lastSpeciesEq = fFirstSpecies + nOfSpecies;
+    Double  h = nodeInfo->h;
+    Double  hm = nodeInfo->hm;
+    Double  hnenn = nodeInfo->hnenn;
+	Double	**a = nodeInfo->a;
+	Double	*yPrev = nodeInfo->yPrev;
+	Double	*y = nodeInfo->y;
+	Double	*yNext = nodeInfo->yNext;
+	Double	*enthalpy = flameNode->enthalpy;
+	Double	*molarMass = flame->GetSpecies()->GetMolarMass()->vec;
+	Double	**dMdY = flameNode->dMdY;
+	Double	*dMdT = flameNode->dMdY[nOfSpecies];
+	Double	*productionRate = flameNode->productionRate;
+	Double	*heatCapacity = flameNode->heatCapacity;
+	Double	*lewis = flame->GetSpecies()->GetLewisNumber()->vec;
+	Double	mixDensity = flameNode->mixDensity[kCurr];
+//	Double	speciesCoeff = 0.5 * mixDensity * flame->GetChi();
+	Double	speciesCoeff = 0.5 * mixDensity * flame->GetDissRate();
+	Double	energyCoeff = speciesCoeff * flameNode->mixHeatCapacity[kCurr];
+
+	flame->FilldMdYOnePoint( flameNode );
+	flame->FilldMdTOnePoint( flameNode );
+
+//	flame->DMdYNumerical( nodeInfo );
+
+//	species equations
+	for ( speciesEq = fFirstSpecies; speciesEq < lastSpeciesEq; ++speciesEq ) {
+		speciesIndexEq = speciesEq - fFirstSpecies;
+		FillJacSecondDerivCentral( speciesEq, speciesEq, speciesCoeff / lewis[speciesIndexEq], nodeInfo );
+		a[fTemperature][speciesEq] -= speciesCoeff / ( y[fTemperature] * lewis[speciesIndexEq] )
+					 * SecondDeriv( yPrev[speciesEq], y[speciesEq], yNext[speciesEq], hm, h ) * hnenn;
+//		a[fTemperature][speciesEq] += dMdT[speciesIndexEq] * hnenn;
+		for ( speciesVar = fFirstSpecies; speciesVar < lastSpeciesEq; ++speciesVar ) {
+			speciesIndexVar = speciesVar - fFirstSpecies;
+			a[speciesVar][speciesEq] += dMdY[speciesIndexVar][speciesIndexEq] * hnenn;
+		}
+	}
+	
+//	energy equation
+	FillJacSecondDerivCentral( fTemperature, fTemperature, energyCoeff, nodeInfo );
+	a[fTemperature][fTemperature] -= energyCoeff / y[fTemperature]
+				 * SecondDeriv( yPrev[fTemperature], y[fTemperature], yNext[fTemperature], hm, h ) * hnenn;
+
+	for ( speciesIndexEq = 0; speciesIndexEq < nOfSpecies; ++speciesIndexEq ) {
+//		a[fTemperature][fTemperature] -= dMdT[speciesIndexEq] * enthalpy[speciesIndexEq] * hnenn;
+//		a[fTemperature][fTemperature] -= productionRate[speciesIndexEq] * heatCapacity[speciesIndexEq] * hnenn;
+		for ( speciesIndexVar = 0; speciesIndexVar < nOfSpecies; ++speciesIndexVar ) {
+			a[speciesIndexVar + fFirstSpecies][fTemperature] -= dMdY[speciesIndexVar][speciesIndexEq] * enthalpy[speciesIndexEq] * hnenn;
+		}
+	}
+}
+*/
+
+/*void CountDiffMixRHSRest( void *object, NodeInfoPtr nodeInfo, RHSMode rhsMode )
+{
+	TCountDiffFlameMixPtr	flame = ( TCountDiffFlameMixPtr )object;
+	TFlameNodePtr	flameNode = flame->fFlameNode;
+	int		speciesEq, speciesInd;
+	int		M = nodeInfo->nOfEquations;
+	int		nOfSpecies = flame->GetSpecies()->GetNOfSpecies();
+	int 	fFirstSpecies = flame->GetOffsetFirstSpecies();
+	int 	fTemperature = flame->GetOffsetTemperature();
+	int		lastSpeciesEq = fFirstSpecies + nOfSpecies;
+    Double  h = nodeInfo->h;
+    Double  hm = nodeInfo->hm;
+    Double  hnenn = nodeInfo->hnenn;
+	Double	*yPrev = nodeInfo->yPrev;
+	Double	*y = nodeInfo->y;
+	Double	*yNext = nodeInfo->yNext;
+	Double	*rhs = nodeInfo->rhs;
+	Double	*enthalpy = flameNode->enthalpy;
+	Double	*molarMass = flame->GetSpecies()->GetMolarMass()->vec;
+	Double	*productionRate = flameNode->productionRate;
+	Double	*lewis = flame->GetSpecies()->GetLewisNumber()->vec;
+//	Double	speciesCoeff = 0.5 * flameNode->mixDensity[kCurr] * flame->GetChi();
+	Double	speciesCoeff = 0.5 * flameNode->mixDensity[kCurr] * flame->GetDissRate();
+	Double	energyCoeff = speciesCoeff * flameNode->mixHeatCapacity[kCurr];
+
+//	species equations
+	for ( speciesEq = fFirstSpecies; speciesEq < lastSpeciesEq; ++speciesEq ) {
+		speciesInd = speciesEq-fFirstSpecies;
+		rhs[speciesEq] += speciesCoeff / lewis[speciesInd] * SecondDeriv( yPrev[speciesEq], y[speciesEq], yNext[speciesEq], hm, h );
+		rhs[speciesEq] += productionRate[speciesInd];
+	}
+	
+//	energy equation
+	rhs[fTemperature] += energyCoeff * SecondDeriv( yPrev[fTemperature], y[fTemperature], yNext[fTemperature], hm, h );
+
+	for ( speciesEq = 0; speciesEq < nOfSpecies; ++speciesEq ) {
+		rhs[fTemperature] -= productionRate[speciesEq] * enthalpy[speciesEq];
+	}
+
+	for ( speciesEq = 0; speciesEq < M; ++speciesEq ){
+		rhs[speciesEq] *= - hnenn;
+	}
+}
+*/
+
+void TCountDiffFlameMix::SetInitialValues( TInputDataPtr inp, StartProfilePtr sp )
+{
+	int 				i, j, k, l, m;
+	TBVPSolverPtr		solver = GetSolver();
+	TNewtonPtr			bt = solver->bt;
+	TAdaptiveGridPtr	adapGrid = bt->GetGrid();
+	TGridPtr			grid = adapGrid->GetFine();
+	int					variables = bt->GetNVariables();
+	int					nGridPoints = grid->GetNGridPoints();
+	int					maxGridPoints = bt->GetMaxGridPoints();
+	int					initialGridPoints = bt->GetInitialGridpoints();
+	int					nSpeciesInSystem = fSpecies->GetNSpeciesInSystem();
+	int					speciesIndex;
+	MatrixPtr			yMat = grid->GetY();
+	VectorPtr			yLeftVec = grid->GetYLeft();
+	VectorPtr			yRightVec = grid->GetYRight();
+	Double			 	*yLeft = yLeftVec->vec;
+	Double 				*yRight = yRightVec->vec;
+	Double				left = 0.0;
+	Double				right = 1.0;
+	Double				*locX = grid->GetX()->vec;
+	int					gridPointsIn = sp->gridPoints;	// including boundaries
+	Double				*yWork = adapGrid->GetWorkVector()->vec;
+	Flag				ZSet = FALSE;
+	Flag				chooseInputGrid = FALSE;
+	Double				*xIn = new Double[gridPointsIn];
+	if ( !xIn ) FatalError( "memory allocation of TCountDiffFlamePhys failed" );
+	Double				*yIn =  new Double[gridPointsIn];
+	if ( !yIn ) FatalError( "memory allocation of TCountDiffFlamePhys failed" );
+	Double				*yInFloat = sp->data;
+	Double				**y = grid->GetY()->mat;
+	int					variable;
+	char				*string = sp->labels;
+	SplinePtr			theSpline = NULL;
+	Double				leftSlope;
+	Double				rightSlope;
+	int					oxidizerSide; // this program assumes that oxidizerSide = kRight
+	FILE				*fp;
+	Double				dissRateIn;
+	struct _parameter	*param = GetParameter( "chi" );
+	int prog_found = 0;
+
+	if (!param) param = GetParameter( "chi_ref" );
+	if (!param) param = GetParameter( "chi_st" );
+
+	if ( !fDissRate || fDissRate->vec[0] < 0.0 ) {
+	// get scalar dissipation rate from input file
+		if ( param ) {
+			dissRateIn = (Double)param->what.quantity.value;
+		}
+		else { // choose default
+			cerr << "#warning: no value for 'scalar dissipation rate' in inputfile" << NEWL;
+			dissRateIn = 10.0;
+		}
+		
+		if ( !fDissRate ) {
+			fDissRate = NewVector( 1 );
+		}
+		fDissRate->vec[0] = dissRateIn;
+		fDissRate->len = 0;
+		cerr << "initial scalar dissipation rate is " << GetDissRate() << NEWL;
+	}
+	
+//	choose grid from input or equidistant
+	if ( gridPointsIn <= maxGridPoints+2 && gridPointsIn > initialGridPoints+2 && ( gridPointsIn % 2 ) != 0 ) {
+		grid->AdjustNGridPoints( gridPointsIn-2 );
+		solver->UpdateAllDimensions( gridPointsIn-2 );	
+		nGridPoints = grid->GetNGridPoints();
+		chooseInputGrid = TRUE;
+	}
+	else {
+		nGridPoints = initialGridPoints;
+		grid->AdjustNGridPoints( nGridPoints );
+		solver->UpdateAllDimensions( nGridPoints );	
+		chooseInputGrid = FALSE;
+	}
+
+// find independent coordinate
+	for ( i = 0; i < sp->variables; ++i ) {
+		if ( strncmp( string, "z", 1 ) == 0 && ZSet == FALSE ) {
+			if ( yInFloat[i * gridPointsIn] < yInFloat[(i+1) * gridPointsIn - 1] ) {
+				oxidizerSide = kLeft;
+			}
+			else {
+				oxidizerSide = kRight;
+			}
+			bt->SetLeft( left );
+			bt->SetRight( right );
+			if ( chooseInputGrid ) {
+				cerr << "choose inputGrid" << NEWL;
+				if ( oxidizerSide == kRight ) { // turn vector
+					for ( j = 0; j < gridPointsIn-2; ++j ) {
+						locX[gridPointsIn-j-3] = yInFloat[i*gridPointsIn + j+1];		// implicit cast from float to Double
+					}
+				}
+				else { // copy vector
+					for ( j = 0; j < gridPointsIn-2; ++j ) {
+						locX[j] = yInFloat[i*gridPointsIn + j+1];		// implicit cast from float to Double
+					}
+				}
+				ZSet = TRUE;
+			}
+			else { // choose own Grid, but read x for interpolation
+				cerr << "choose own Grid" << NEWL;
+				if ( oxidizerSide == kRight ) { // turn vector
+					for ( j = 0; j < gridPointsIn; ++j ) {
+						xIn[gridPointsIn - j - 1] = yInFloat[i*gridPointsIn + j];		// implicit cast from float to Double
+					}
+				}
+				else { // copy vector
+					for ( j = 0; j < gridPointsIn; ++j ) {
+						xIn[j] = yInFloat[i*gridPointsIn + j];		// implicit cast from float to Double
+					}
+				}
+				grid->Make_equi_Grid();
+				ZSet = TRUE;
+			}
+		}
+		string += strlen(string) + 1;
+	}
+	
+// set default values
+	for ( i = 0; i < nGridPoints; ++i ) {
+		for ( j = 0; j < variables; ++j ) {
+			y[i][j] = yLeft[j] + ( yRight[j] - yLeft[j] ) / ( right - left ) * locX[i];
+		}
+	}
+
+// error checking
+	if ( !ZSet ) {
+		cerr << "error: can't find coordinate 'Z'" << NEWL;
+		exit(2);
+	}
+
+// reset string
+	string = sp->labels;
+	
+	for ( i = 0; i < sp->variables; ++i ) {
+		if ( strncmp( string, "temperature", 11 ) == 0 ) {
+			variable = fTemperature;
+		}
+		else if ( GetSoot() && strncmp( string, "conc-soot", 9 ) == 0 )
+		{
+			string += 9;
+			char name[5];
+
+			for (m = 0; m < GetSoot()->GetNSootMoments(); ++m)
+			{
+			  l = GetSoot()->Geti(m);
+#ifdef VS
+			  j = GetSoot()->Getj(m);
+#endif
+
+#ifdef V
+			  sprintf(name, "%d", l);
+#endif
+#ifdef VS
+			  sprintf(name, "%d-%d", l, j);
+#endif
+			  if (strncmp(name, string, 3) == 0)
+			  {
+			    variable = m + GetSoot()->GetOffsetSootMoments();
+#ifdef V
+			    string += 1;
+#endif
+#ifdef VS
+			    string += 3;
+#endif
+			  }
+			}
+//			cerr << "string = " << string << NEWL;
+// 			int	num = atoi( string );
+// 		if ( num < GetSoot()->GetNSootMoments() ) {
+// 			variable = num + GetSoot()->GetOffsetSootMoments();
+// 		}
+// 		else {
+// 				string += strlen(string) + 1;
+// 				continue;
+// 			}
+ 		}
+		else if ( strncmp( string, "massfraction-", 13 ) == 0 ){
+			string += 13;
+			UpperString( string );
+			if ( ( speciesIndex = inp->FindSpecies( string ) ) >= 0 ) {
+				if ( speciesIndex < nSpeciesInSystem ) {
+					variable = fFirstSpecies + speciesIndex;
+				}
+				else {
+					string += strlen(string) + 1;
+					continue;
+				}
+			}
+			else {
+				cerr << "warning: no match for species " << string << NEWL;
+				string += strlen(string) + 1;
+				continue;
+			}
+		}
+		else if ( strncmp( string, "prograt", 7 ) == 0 ){
+		  variable = fProg;
+		  prog_found = 1;
+		}
+		else if (strncmp( string, "enthloss", 8 ) == 0 ){
+		  variable = fEnth;
+		}
+		else {
+			string += strlen(string) + 1;
+			continue;
+		}
+
+		string += strlen(string) + 1;
+		if ( chooseInputGrid ) {
+			if ( oxidizerSide == kRight ) { // turn vector
+				for ( k = 0; k < gridPointsIn-2; ++k ) {
+				  if (variable == fEnth)
+				    y[k][variable] = yInFloat[(i+1)*gridPointsIn - k-2]; // / 1.0e20;	// copy workspace to vector of solution
+				  else
+					y[k][variable] = yInFloat[(i+1)*gridPointsIn - k-2];	// copy workspace to vector of solution
+				}
+			}
+			else {
+				for ( k = 0; k < gridPointsIn-2; ++k ) {
+				  if (variable == fEnth)
+				    y[k][variable] = yInFloat[i*gridPointsIn + k+1];// / 1.0e20;	// copy workspace to vector of solution
+				  else
+					y[k][variable] = yInFloat[i*gridPointsIn + k+1];	// copy workspace to vector of solution
+				}
+			}
+		}
+		else {
+			for ( k = 0; k < gridPointsIn; ++k ) {	// store vector in workspace
+				yIn[k] = yInFloat[i * gridPointsIn + k];	// implicit cast from float to Double
+			}
+		
+			leftSlope = ( yIn[1] - yIn[0] ) / ( xIn[1] - xIn[0] );
+			rightSlope = ( yIn[gridPointsIn-1] - yIn[gridPointsIn-2] ) / ( xIn[gridPointsIn-1] - xIn[gridPointsIn-2] );
+			theSpline = ComputeSimpleSpline( xIn, yIn, gridPointsIn, FALSE, leftSlope, FALSE, rightSlope, NULL, TRUE );
+			SplineInterpolate( theSpline, locX, yWork, nGridPoints );
+			if ( oxidizerSide == kRight ) { // turn vector
+				for ( k = 0; k < nGridPoints; ++k ) {
+				  if (variable == fEnth)
+				    y[k][variable] = yWork[nGridPoints-k-1];// / 1.0e20;	// copy workspace to vector of solution
+				  else
+					y[k][variable] = yWork[nGridPoints-k-1];	// copy workspace to vector of solution
+				}
+			}
+			else {
+				for ( k = 0; k < nGridPoints; ++k ) {
+				  if (variable == fEnth)
+				    y[k][variable] = yWork[k];// / 1.0e20;	// copy workspace to vector of solution
+				  else
+					y[k][variable] = yWork[k];	// copy workspace to vector of solution
+				}
+			}
+		}
+		//	set bc
+		if ( oxidizerSide == kLeft ) {
+			if ( variable == fTemperature ) {
+				if ( yLeft[fTemperature] <= 0.0 ) {
+					yLeft[fTemperature] = yInFloat[i*gridPointsIn];
+				}
+				if ( yRight[fTemperature] <= 0.0 ) {
+					yRight[fTemperature] = yInFloat[(i+1)*gridPointsIn-1];
+				}
+			}
+		}
+		else {
+			if ( variable == fTemperature ) {
+				if ( yLeft[fTemperature] <= 0.0 ) {
+					yLeft[fTemperature] = yInFloat[(i+1)*gridPointsIn-1];
+				}
+				if ( yRight[fTemperature] <= 0.0 ) {
+					yRight[fTemperature] = yInFloat[i*gridPointsIn];
+				}
+			}
+		}
+	}
+
+// set left to zero
+
+	if ( GetPressure() <= 0.0 ) {
+		param = GetParameter( "pressure" );
+		Double	thePressure;
+		if ( param ) {
+			thePressure = (Double)param->what.quantity.value;
+			if ( strcmp( param->what.quantity.unit, "bar" ) == 0 ) {
+				thePressure *= 1.0e5;
+			}
+			SetPressure( thePressure );
+			fprintf( stderr, "%s%g%s\n", "initial pressure is ", GetPressure()/1.0e5, " bar"  );
+		}
+		else { // exit
+			cerr << "#error: no value for 'pressure' in inputfile" << NEWL;
+			exit(2);
+		}
+	}
+
+	// Convert M_i to log(M_i/rho)
+	if (GetSoot())
+	{
+	  double mixMolarMass;
+	  double rho;
+	  double minval, ii, jj;
+
+	  for (k = 0; k < nGridPoints; ++k)
+	  {
+	    fProperties->ComputeMixtureMolarMass(mixMolarMass, &y[k][fFirstSpecies], fSpecies->GetMolarMass()->vec, fSpecies->GetNSpeciesInSystem());
+	    rho = GetPressure() * mixMolarMass / (RGAS * y[k][fTemperature]);
+	    for (i = 0; i < fSoot->GetNSootMoments(); ++i)
+	    {
+	      // Make sure the incoming moments make sense
+	      ii = double(GetSoot()->Geti(i))/6.0;
+	      jj = double(GetSoot()->Getj(i))/6.0;
+	      minval = pow(2.0*GetSoot()->nucl_nbrC2, ii+(2.0/3.0)*jj) * 1.0e-20;
+	      if (i == fSoot->GetNSootMoments()-1) minval = 1.0e-20;
+	      //y[k][fSootMoments+i] /= rho;
+	      y[k][fSootMoments+i] = log(MAX(y[k][fSootMoments+i], minval) / rho);
+	    }
+	  }
+	}
+
+/*	if (  oxidizerSide == kRight ) {
+		for ( k = 0; k < nGridPoints; ++k ) {
+			locX[k] -= bt->GetLeft();
+		}
+		bt->SetRight( bt->GetRight() - bt->GetLeft() );
+		bt->SetLeft( 0.0 );
+	}
+	else {
+		for ( k = 0; k < nGridPoints; ++k ) {
+			yWork[k] = bt->GetRight() - locX[nGridPoints-k-1]; 	// turn sign and sort for ascending values
+		}
+		for ( k = 0; k < nGridPoints; ++k ) {
+			locX[k] = yWork[k];					// copy workspace to x
+		}
+		bt->SetRight( bt->GetRight() - bt->GetLeft() );
+		bt->SetLeft( 0.0 );
+	}*/
+	
+	// set initial Boundary values
+//	UpdateThermoProps();
+	UpdateSolution( yMat, yLeftVec, yRightVec );
+	CompLewisNumbers( GetSpecies()->GetLewisNumberFile() );
+
+	for ( i = 0; i < nGridPoints; ++i ) {
+		y[i][fLnChi] = log( fDissRate->vec[0] );
+	}
+	yLeft[fLnChi] = yRight[fLnChi] = log( fDissRate->vec[0] );
+
+	if (prog_found != 1){
+	  for ( i = 0; i < nGridPoints; ++i ) {
+	    y[i][fProg] = 1.0;
+	  }
+	  yLeft[fProg] = 0.0; 
+	  yRight[fProg] = 0.0;
+	}
+
+//	fprintf(stderr, "bef Tst = %g Z = %g\n", y[37][fTemperature], locX[37] );
+
+	CountDiffMixPostIter( this );
+
+	FreeSpline( theSpline );
+	delete yIn;
+	delete xIn;
+
+	adapGrid->SetSolutionScaler();
+	
+	fp = GetOutfile( "initialguess", TFlame::kData );
+	bt->PrintSolution( locX, y, GetVariableNames(), fp );
+	fclose(fp);
+	
+//	WriteRoggFiles( bt );
+}
+
+int CountDiffMixPostIter(void *object)
+{
+  TCountDiffFlameMixPtr flame = (TCountDiffFlameMixPtr)object;
+  int nSpeciesInSystem = flame->GetSpecies()->GetNSpeciesInSystem();
+  int fTemperature = flame->GetOffsetTemperature();
+  int fFirstSpecies = flame->GetOffsetFirstSpecies();
+  TNewtonPtr bt = flame->GetSolver()->bt;
+  TGridPtr currGrid = bt->GetGrid()->GetCurrentGrid();
+  int nGridPoints = currGrid->GetNGridPoints();
+  MatrixPtr yMat = currGrid->GetY();
+  VectorPtr yLeftVec = currGrid->GetYLeft();
+  VectorPtr yRightVec = currGrid->GetYRight();
+  double ** y = yMat->mat;
+	
+  for (int i = 0; i < nGridPoints; ++i)
+  {
+    if (flame->CheckSolution(y[i][fTemperature], &y[i][fFirstSpecies], nSpeciesInSystem))
+    {
+      return 1;
+    }
+  }
+
+#ifdef V
+  if (flame->GetSoot())
+    flame->GetSoot()->PostIter(flame);
+#endif
+#ifdef VS
+  if (flame->GetSoot())
+    flame->GetSoot()->PostIter(flame, 0); //Mueller
+#endif
+
+  flame->UpdateSolution(yMat, yLeftVec, yRightVec);
+	
+  flame->SetTMaxLoc(flame->GetZRefLoc(currGrid->GetX()));
+
+  flame->UpdateThermoProps();
+
+#ifdef V
+  if (flame->GetSoot())
+    flame->GetSoot()->PostIter(flame);
+#endif
+#ifdef VS
+  if (flame->GetSoot())
+    flame->GetSoot()->PostIter(flame, 1);
+#endif
+
+	flame->fRhoInf = flame->GetProperties()->GetDensity()->vec[kPrev];
+	flame->fRhoRef = InterpolOne( flame->GetZRef(), currGrid->GetX()->vec
+			, flame->GetProperties()->GetDensity()->vec, nGridPoints );
+
+//	fprintf(stderr, "s = %g Tst = %g chist = %g\n", flame->GetDeltaArcLength(), y[flame->GetTMaxLoc()][fTemperature], flame->GetDissRate() );
+	return 0;
+}
+
+Double TCountDiffFlameMix::GetZRef( void )
+{
+#ifdef CONSTZREF
+	return CONSTZREF;
+#else
+	return GetZStoich();
+#endif
+}
+
+void TCountDiffFlameMix::UpdateDimensions( int len )
+{
+	T1DFlame::UpdateDimensions( len );
+}
+
+int TCountDiffFlameMix::GetZRefLoc( VectorPtr xVec )
+{
+	int		k = 0, nGridPoints = xVec->len;
+	Double	*x = xVec->vec;
+	Double	zRef = GetZRef();
+
+	while ( x[k] <= zRef ) {
+		++k;
+	};
+
+//	fprintf(stderr, "maxloc = %d\tZst = %g\n", k-1, x[k-1] );
+	return k - 1; // return the location equal or left of zstoich
+}
+
+void TCountDiffFlameMix::UpdateSolution( MatrixPtr yMat, VectorPtr yLeftVec, VectorPtr yRightVec )
+{
+	int		nGridPoints = yMat->cols;
+	Double	*lnChi = fSolLnChi->vec;
+	Double	*prog = fSolProg->vec;
+	Double	*enth = fSolEnth->vec;
+	Double	**y = yMat->mat;
+	Double	*yLeft = yLeftVec->vec;
+	Double	*yRight = yRightVec->vec;
+
+	UpdateDimensions( nGridPoints );
+
+	T1DFlame::UpdateSolution( yMat, yLeftVec, yRightVec );
+
+	lnChi[kPrev] = yLeft[fLnChi];
+	for ( int k = 0; k < nGridPoints; ++k ) {
+		lnChi[k] = y[k][fLnChi];
+	}
+	lnChi[nGridPoints] = yRight[fLnChi];
+
+	prog[kPrev] = yLeft[fProg];
+	for ( int k = 0; k < nGridPoints; ++k ) {
+		prog[k] = y[k][fProg];
+	}
+	prog[nGridPoints] = yRight[fProg];
+
+	enth[kPrev] = yLeft[fEnth];
+	for ( int k = 0; k < nGridPoints; ++k ) {
+		enth[k] = y[k][fEnth];
+	}
+	enth[nGridPoints] = yRight[fEnth];
+}
+
+int TCountDiffFlameMix::GetOffsetVVelocity( void )
+{
+  //cerr << "#error: class has no member fVVelocity" << NEWL;
+  //exit( 2 );
+  return -1; 
+}
+
+int	TCountDiffFlameMix::GetOffsetUVelocity( void )
+{
+	cerr << "#error: class has no member fUVelocity" << NEWL;
+	exit( 2 );
+	return 0; 
+}
+
+int TCountDiffFlameMix::GetOffsetMixFrac( void )
+{
+	cerr << "#error: class has no member fMixFrac" << NEWL;
+	exit( 2 );
+	return 0; 
+}
+
+int	TCountDiffFlameMix::GetOffsetFirstSpecies( void ) 
+{
+	return fFirstSpecies;
+}
+
+int	TCountDiffFlameMix::GetOffsetTemperature( void )
+{
+	return fTemperature; 
+}
+
+int	TCountDiffFlameMix::GetOffsetLnChi( void )
+{
+	return fLnChi; 
+}
+
+int TCountDiffFlameMix::GetOffsetProg( void )
+{
+	return fProg; 
+}
+
+int TCountDiffFlameMix::GetOffsetEnth( void )
+{
+	return fEnth; 
+}
+
+ConstStringArray TCountDiffFlameMix::GetVariableNames( void )
+{
+	return (ConstStringArray)fVariableNames;
+}
+
+int TCountDiffFlameMix::GetVariablesWithoutSpecies( void )
+{
+	return fVariablesWithoutSpecies;
+}
+
+FILE *TCountDiffFlameMix::GetOutputFile( char *head, char *tail, FileType type )
+{
+	int				fuelIndex = GetFuelIndex();
+	char			*name = new char[64];
+	FILE			*fp;
+	char			**speciesNames = fSpecies->GetNames();
+	int				tFuel = ( int ) fSolTemp->vec[fSolTemp->len];
+	int				tOxidizer = ( int ) fSolTemp->vec[kPrev];
+	Double			press = GetPressure() * 1.0e-5;
+		
+#ifdef UQ
+	sprintf( name, "%s%s%.8s_p%.2d_%.1dchi%05gtf%.4dto%.4d_%s%s"
+					, ( head ) ? head : "", ( head ) ? "_" : ""
+					, speciesNames[fuelIndex]
+					, ( int ) floor( press )	// in [bar]
+					, ( int ) ( ( press - ( floor( press ) ) ) * 10 + 0.5 )
+					, ( GetDissRate() )					// in [1/s]
+					, ( int )( tFuel )							// in [K]
+					, ( int )( tOxidizer ) 						// in [K]
+		                        , fReaction->GetRandomReactionFile()
+					, ( tail ) ? tail : "" );
+#else
+	sprintf( name, "%s%s%.8s_p%.2d_%.1dchi%05gtf%.4dto%.4d%s"
+					, ( head ) ? head : "", ( head ) ? "_" : ""
+					, speciesNames[fuelIndex]
+					, ( int ) floor( press )	// in [bar]
+					, ( int ) ( ( press - ( floor( press ) ) ) * 10 + 0.5 )
+					, ( GetDissRate() )					// in [1/s]
+					, ( int )( tFuel )							// in [K]
+					, ( int )( tOxidizer ) 						// in [K]
+					, ( tail ) ? tail : "" );
+#endif
+
+	fp = GetOutfile( name, type );
+	delete name;
+
+	return fp;
+}
+
+void TCountDiffFlameMix::SetInitialBC( TGridPtr grid, TInputDataPtr inp )
+{
+	int					i;
+	Double				mixMolarMass;
+	int					nSpeciesInSystem = fSpecies->GetNSpeciesInSystem();
+	SpeciesPtr			species = inp->GetSpecies();
+// change left and right boundary conditions
+	BoundaryInputPtr	right = inp->leftBoundary;
+	BoundaryInputPtr	left = inp->rightBoundary;
+	int					inpTOffset = inp->fTemperatureOffset;
+	int					*speciesIndexLeft = NULL;
+	int					*speciesIndexRight = NULL;
+	int					leftSpecifiedSpecies = left->fSpecifiedSpeciesBCs;
+	int					rightSpecifiedSpecies = right->fSpecifiedSpeciesBCs;
+	int					*bcFlagLeft = grid->GetBcFlagLeft();
+	int					*bcFlagRight = grid->GetBcFlagRight();
+	Double				*yleft = grid->GetYLeft()->vec;
+	Double				*yright = grid->GetYRight()->vec;
+	Double				*bcLeft = grid->GetBcLeft()->vec;
+	Double				*bcRight = grid->GetBcRight()->vec;
+
+	speciesIndexLeft = new int[left->fSpecifiedSpeciesBCs];
+	if ( !speciesIndexLeft ) FatalError( "memory allocation of TCountDiffFlamePhys failed" );
+	speciesIndexRight = new int[right->fSpecifiedSpeciesBCs];
+	if ( !speciesIndexRight ) FatalError( "memory allocation of TCountDiffFlamePhys failed" );
+
+	//	set speciesIndex
+	for ( i = 0; i < leftSpecifiedSpecies; ++i ) {
+		speciesIndexLeft[i] = inp->FindSpecies( left->speciesName[i] );
+	}
+	for ( i = 0; i < rightSpecifiedSpecies; ++i ) {
+		speciesIndexRight[i] = inp->FindSpecies( right->speciesName[i] );
+	}
+	
+	// set fMixtureSpecification
+	SetMixtureSpecificationLeft( left->fMixtureSpecification );
+	SetMixtureSpecificationRight( right->fMixtureSpecification );
+	
+	// set BCFlags
+	bcFlagLeft[fTemperature] = left->fBcFlag[inpTOffset];
+	bcFlagRight[fTemperature] = right->fBcFlag[inpTOffset];
+	for ( i = fFirstSpecies; i < nSpeciesInSystem+fFirstSpecies; ++i ) {
+		bcFlagLeft[i] = left->fBcFlagSpecies;
+		bcFlagRight[i] = right->fBcFlagSpecies;
+	}
+
+	// set value
+	yleft[fTemperature] = left->fValue[inpTOffset];
+	yright[fTemperature] = right->fValue[inpTOffset];
+
+	bcLeft[fTemperature] = left->fValue[inpTOffset];
+	bcRight[fTemperature] = right->fValue[inpTOffset];
+
+	// Progress Variable
+	yleft[fProg] = 0.0;
+	yright[fProg] = 0.0;
+	bcLeft[fProg] = 0.0;
+	bcRight[fProg] = 0.0;
+
+	for ( i = 0; i < leftSpecifiedSpecies; ++i ) {
+		yleft[speciesIndexLeft[i]+fFirstSpecies] = left->fValueSpecies[i];
+		bcLeft[speciesIndexLeft[i]+fFirstSpecies] = left->fValueSpecies[i];
+	}
+	if ( left->fMixtureSpecification == kMolarFraction ) {
+		// first compute molar mass of mixture
+		for ( i = 0, mixMolarMass = 0; i < nSpeciesInSystem; ++i ) {
+			mixMolarMass += species[i].molarMass * yleft[i+fFirstSpecies];
+		}
+		// compute massfractions
+		for ( i = 0; i < nSpeciesInSystem; ++i ) {
+			yleft[i+fFirstSpecies] *= species[i].molarMass / mixMolarMass;
+			bcLeft[i+fFirstSpecies] = yleft[i+fFirstSpecies];
+		}
+		for ( i = fFirstSpecies; i < nSpeciesInSystem+fFirstSpecies; ++i ) {
+			bcFlagLeft[i] = kMassFraction;
+		}
+	}
+
+	for ( i = 0; i < rightSpecifiedSpecies; ++i ) {
+		yright[speciesIndexRight[i]+fFirstSpecies] = right->fValueSpecies[i];
+		bcRight[speciesIndexRight[i]+fFirstSpecies] = right->fValueSpecies[i];
+	}
+	if ( right->fMixtureSpecification == kMolarFraction ) {
+		// first compute molar mass of mixture
+		for ( i = 0, mixMolarMass = 0; i < nSpeciesInSystem; ++i ) {
+			mixMolarMass += species[i].molarMass * yright[i+fFirstSpecies];
+		}
+		for ( i = 0; i < nSpeciesInSystem; ++i ) {
+			yright[i+fFirstSpecies] *= species[i].molarMass / mixMolarMass;
+			bcRight[i+fFirstSpecies] = yright[i+fFirstSpecies];
+		}
+		for ( i = fFirstSpecies; i < nSpeciesInSystem+fFirstSpecies; ++i ) {
+			bcFlagRight[i] = kMassFraction;
+		}
+	}
+
+	delete speciesIndexRight;
+	delete speciesIndexLeft;
+
+	// Enthalpy
+// 	double h_i, r_over_m, temp, hTot;
+// 	double * hCoeff;
+
+// 	hTot = 0.0;
+// 	temp = yleft[fTemperature];
+// 	for (i = 0; i < nSpeciesInSystem; ++i)
+// 	{
+// 	  if (temp > 1000.0)
+// 	    hCoeff = fSpecies->GetHCoeffHigh()->mat[i];
+// 	  else
+// 	    hCoeff = fSpecies->GetHCoeffLow()->mat[i];
+
+// 	  r_over_m = RGAS / species[i].molarMass;
+// 	  h_i = r_over_m * (temp*(hCoeff[0]+temp*(hCoeff[1]+temp*(hCoeff[2]+temp*(hCoeff[3]+temp*hCoeff[4]))))+hCoeff[5]);
+// 	  hTot += yleft[i+fFirstSpecies] * h_i;
+// 	}
+// 	yleft[fEnth] = hTot / 1.0e20;
+// 	bcLeft[fEnth] = hTot / 1.0e20;
+
+// 	hTot = 0.0;
+// 	temp = yright[fTemperature];
+// 	for (i = 0; i < nSpeciesInSystem; ++i)
+// 	{
+// 	  if (temp > 1000.0)
+// 	    hCoeff = fSpecies->GetHCoeffHigh()->mat[i];
+// 	  else
+// 	    hCoeff = fSpecies->GetHCoeffLow()->mat[i];
+
+// 	  r_over_m = RGAS / species[i].molarMass;
+// 	  h_i = r_over_m * (temp*(hCoeff[0]+temp*(hCoeff[1]+temp*(hCoeff[2]+temp*(hCoeff[3]+temp*hCoeff[4]))))+hCoeff[5]);
+// 	  hTot += yright[i+fFirstSpecies] * h_i;
+// 	}
+// 	yright[fEnth] = hTot / 1.0e20;
+// 	bcRight[fEnth] = hTot / 1.0e20;
+	yleft[fEnth] = 0.0;
+	yright[fEnth] = 0.0;
+	bcLeft[fEnth] = 0.0;
+	bcRight[fEnth] = 0.0;
+}
+
+ConstStringArray GetCountDiffMixVarNames( void *object )
+{
+	TCountDiffFlameMixPtr	flame = ( TCountDiffFlameMixPtr )object;
+	
+	return flame->GetVariableNames();
+}
+
+void SetCountDiffMixNodeInfo( int k, void *object )
+{
+	TCountDiffFlameMixPtr	flame = ( TCountDiffFlameMixPtr )object;
+	
+	flame->SetFlameNode( k );
+}
+
+void CountDiffMixPostConv( void *object )
+{
+	TCountDiffFlameMixPtr	flame = ( TCountDiffFlameMixPtr )object;
+	VectorPtr				dissRate = flame->GetDissRateVector();
+	static Double			chiConv = -1.0;	//means not set
+	static Double			chiNotConv = -1.0;	//means not set
+	TNewtonPtr				bt = flame->GetSolver()->bt;
+	TAdaptiveGridPtr		grid = bt->GetGrid();
+	int						isConverged = bt->GetConvergeNewton();
+//	Double					coeffSpecies = 1.0 / flame->GetStrainRate();
+//	Double					coeffTemp = 1.0 / flame->GetStrainRate();
+	
+	Double			*temp = flame->GetTemperature()->vec;
+	TGridPtr		currentGrid = bt->GetGrid()->GetCurrentGrid();
+	Double			*x = currentGrid->GetX()->vec;
+	int				gridPoints = currentGrid->GetNGridPoints();
+
+	fprintf( stderr, "Tmax = %g @ Z = %g and Chi_ref = %g\n"
+			, temp[LocationOfMax( gridPoints+2, &temp[kPrev] ) - 1]
+			, x[LocationOfMax( gridPoints+2, &temp[kPrev] ) - 1], flame->GetDissRate() );
+	if ( isConverged ) {
+		flame->SaveSolution();
+		if ( flame->fReactionFluxes ) {
+			flame->ReactionFluxes( kPhysical );
+			flame->GetReaction()->PrintReactionRates( flame );
+			flame->fReaction->PrintRateCoeffs( flame );
+			flame->fReaction->PrintDetailedHeatRelease( flame );
+		}
+		for ( int i = 0; i < flame->fNSensObj; ++i ) {
+			if ( flame->fSpecies->FindSpecies( flame->fSensObj[i] ) >= 0 ) {
+				flame->GetSpecies()->PrintProdRateTerms( flame->fSensObj[i], flame );
+			}
+		}
+		if ( flame->fSensAnal ) {
+			flame->SensitivityAnalysis( -1.0, -1.0, kPhysical );
+		}
+#ifdef NOXPRODRATES
+		flame->fReaction->PrintProdRateGlobalReac( flame );
+#endif
+
+		if ( flame->GetArcLengthCont() ) {
+			char	tail[28];
+			sprintf( tail, "Tst%04.0f", temp[flame->GetZRefLoc( currentGrid->GetX() )] );
+			bt->WriteOutput( object, NULL, tail );
+			
+			flame->IncNFlameletCount();
+			if ( flame->GetDeltaArcLength() == 0.0 ) {
+				flame->SetdlnChids( 1.0 );
+				flame->SetdTds( 0.0 );
+				flame->SetDeltaArcLength( flame->GetArcUp() ? flame->GetdlnChids() : -flame->GetdlnChids() );
+			}
+			else {
+				Double dlnChids = ( log( flame->GetDissRate() ) - flame->GetChiContStart() ) 
+										/ ( flame->GetDeltaChiref() * flame->GetDeltaArcLength() );
+				Double dTds = ( temp[flame->GetZRefLoc( currentGrid->GetX() )] - flame->GetTempContStart() ) 
+										/ ( flame->GetDeltaTref() * flame->GetDeltaArcLength() );
+//				fprintf( stderr, "TNew = %g\tTOld = %g\tDeltaTRef = %g\tds = %g\n"
+//					, temp[flame->GetZRefLoc( currentGrid->GetX() )], flame->GetTempContStart()
+//					, flame->GetDeltaTref(), flame->GetDeltaArcLength() );
+//				fprintf( stderr, "chiNew/chi = %g\n", flame->GetDissRate() / exp( flame->GetChiContStart()) );
+//				Double dsdT = flame->GetTempContStart() * flame->GetDeltaArcLength()
+//						/ ( temp[flame->GetZRefLoc( currentGrid->GetX() )] - flame->GetTempContStart() );
+				flame->SetdlnChids( dlnChids );
+				flame->SetdTds( dTds );
+				Double ds = 0;
+				Double absdlnChids = abs( dlnChids );
+				Double absdTds = abs( dTds );
+				ds = absdTds + absdlnChids;
+/* 				if (  absdlnChids > absdTds ) { */
+/* 					if ( absdlnChids == 0.0 ) { */
+/* 						fprintf( stderr, "WARNING: dlnChids = 0 This should not happen!\n" ); */
+/* 					} */
+/* 					else { */
+/* 						ds = absdlnChids; */
+/* 					} */
+/* 				} */
+/* 				else { */
+/* 					if ( absdTds == 0.0 ) { */
+/* 						fprintf( stderr, "WARNING: absdTds = 0 This should not happen!\n" ); */
+/* 					} */
+/* 					else { */
+/* 						ds = absdTds; */
+/* 					} */
+/* 				} */
+				flame->SetDeltaArcLength( (flame->GetArcUp()) ? ds : -ds );
+//				fprintf( stderr, "ds = %g\n", flame->GetDeltaArcLength() );
+			}
+			flame->SetTempContStart( temp[flame->GetZRefLoc( currentGrid->GetX() )] );
+			flame->SetChiContStart( log( flame->GetDissRate() ) );
+//			flame->IncTempContStart( -20.0 );
+			if ( flame->GetNFlameletsCount() < flame->GetMaxFlamelets() ) {
+				flame->fSolver->ReInit();
+				fprintf( stderr, "\n\nFlamelet #%d: Tst is now %g chi_st is now %g\n", flame->GetNFlameletsCount()+1, flame->GetTempContStart(), exp(flame->GetChiContStart()) );
+			}
+			else{
+				fprintf( stderr, "\n\n%d flamelets have been computed.\n", flame->GetMaxFlamelets() );
+				fprintf( stderr, "The computation is stopped here. Increase the value of the\n" );
+				fprintf( stderr, "variable fMaxFlamelets in file $FlameManSource/TCountDiffFlameMix.C\n" );
+				fprintf( stderr, "if you want to compute more flamelets. You can also\n" );
+				fprintf( stderr, "just start from one of the last solutions if it is not at a turning point in chi_st\n" );
+			}
+//			fprintf( stderr, "dsdT is now %g dsFact is now %g ds is now %g\n", flame->GetdTds(), (-20.0/temp[flame->GetZRefLoc( currentGrid->GetX() )]), flame->GetDeltaArcLength() );
+//			fprintf( stderr, "dlnChids %g\t dTds %g\n\n", flame->GetdlnChids(), flame->GetdTds() );
+		}
+		else {
+			bt->WriteOutput( object, NULL, "" );
+			if ( dissRate && ( dissRate->len < dissRate->phys_len - 1 || chiNotConv > 0.0 ) ) {
+				flame->fSolver->ReInit();
+				chiConv = flame->GetDissRate();
+				if ( chiNotConv < 0.0 ) {
+					++dissRate->len;
+				}
+				else {
+					dissRate->vec[dissRate->len] = chiNotConv;
+					chiNotConv = -1.0;
+				}
+				flame->SetChiContStart( log( dissRate->vec[dissRate->len] ) );
+				fprintf( stderr, "%s%g\n", "scalar dissipation rate is now ", flame->GetDissRate()  );
+			}
+			else {
+				flame->PostConvergence( object );
+				CountDiffMixPostIter( flame );
+			}
+		}
+	}
+	else {
+		flame->RestoreSolution();
+		if ( flame->GetArcLengthCont() ) {
+			flame->SetDeltaArcLength( 0.5 * flame->GetDeltaArcLength() );
+			
+			if ( abs( flame->GetDeltaArcLength() ) > 0.1 * ( abs( flame->GetdlnChids() ) + abs(flame->GetdTds() ) ) ) {		
+				fprintf( stderr, "ds = %g\n", flame->GetDeltaArcLength() );
+				flame->fSolver->ReInit();
+			}
+			else{
+				flame->ReInitArcLengthCont();
+				flame->PostConvergence( object );
+				CountDiffMixPostIter( flame );
+			}
+		}
+		else if ( dissRate && dissRate->len < dissRate->phys_len ) {
+			Double	interDissRate = chiConv + ( flame->GetDissRate() - chiConv ) * 0.25;
+			if ( chiConv >= 0.0 && fabs( interDissRate - chiConv ) / chiConv >= 0.000001 ) {
+				chiNotConv = dissRate->vec[dissRate->len];
+				dissRate->vec[dissRate->len] = interDissRate;
+				flame->SetChiContStart( log( dissRate->vec[dissRate->len] ) );
+				flame->fSolver->ReInit();
+				fprintf( stderr, "%s%g\n", "scalar dissipation rate is now ", flame->GetDissRate()  );
+			}
+		}
+		else {
+			flame->PostConvergence( object );
+			CountDiffMixPostIter( flame );
+		}
+	}
+}
+
+void TCountDiffFlameMix::SaveSolution( void )
+{
+	int		k;
+	int		len = fSavedTemp->len;
+	Double	*lnChi = fSolLnChi->vec;
+	Double	*saveLnChi = fSavedLnChi->vec;
+	Double	*prog = fSolProg->vec;
+	Double	*saveProg = fSavedProg->vec;
+	Double	*enth = fSolEnth->vec;
+	Double	*saveEnth = fSavedEnth->vec;
+
+	T1DFlame::SaveSolution();
+	fSavedLnChi->len = fSolLnChi->len;
+	fSavedProg->len = fSolProg->len;
+	fSavedEnth->len = fSolEnth->len;
+
+	for ( k = -1; k <= len; ++k ) {
+		saveLnChi[k] = lnChi[k];
+		saveProg[k] = prog[k];
+		saveEnth[k] = enth[k];
+	}
+	
+	fSavedTempContStart = fTempContStart;
+	fSavedLnChiContStart = fLnChiContStart;
+}
+
+void TCountDiffFlameMix::RestoreSolution( void )
+{
+	int		len = fSavedTemp->len;
+	int		k;
+	Double	*lnChi = fSolLnChi->vec;
+	Double	*saveLnChi = fSavedLnChi->vec;
+	Double	*prog = fSolProg->vec;
+	Double	*saveProg = fSavedProg->vec;
+	Double	*enth = fSolEnth->vec;
+	Double	*saveEnth = fSavedEnth->vec;
+
+	UpdateDimensions( len );
+
+	T1DFlame::RestoreSolution();
+
+	for ( k = -1; k <= len; ++k ) {
+		lnChi[k] = saveLnChi[k];
+		prog[k] = saveProg[k];
+		enth[k] = saveEnth[k];
+	}
+
+	fTempContStart = fSavedTempContStart;
+	fLnChiContStart = fSavedLnChiContStart;
+
+	SolutionToSolver();
+}
+
+void TCountDiffFlameMix::SolutionToSolver( void )
+{
+	TNewtonPtr	bt = fSolver->bt;
+	TGridPtr	grid = bt->GetGrid()->GetFine();
+	int		nGridPoints = fSolLnChi->len;
+	Double	*lnChi = fSolLnChi->vec;
+	Double	*prog = fSolProg->vec;
+	Double	*enth = fSolEnth->vec;
+	Double	**y = grid->GetY()->mat;
+
+	T1DFlame::SolutionToSolver();
+	
+	for ( int k = 0; k < nGridPoints; ++k ) {
+		y[k][fLnChi] = lnChi[k];
+		y[k][fProg] = prog[k];
+		y[k][fEnth] = enth[k];
+	}
+	
+	CountDiffMixPostIter( this );
+}
+
+void CountDiffMixOutput( void *object, FILE *fp, char* tail )
+{
+  TCountDiffFlameMixPtr flame = ( TCountDiffFlameMixPtr )object;
+  TNewtonPtr bt = flame->GetSolver()->bt;
+  T1DPropertiesPtr props = flame->GetProperties();
+  TSpeciesPtr species = flame->GetSpecies();
+  NodeInfoPtr nodeInfo = bt->GetNodeInfo();
+  TFlameNodePtr flameNode = flame->fFlameNode;
+  double * rho = props->GetDensity()->vec;
+  double * mixMolarMass = props->GetMolarMass()->vec;
+  double * molarMass = species->GetMolarMass()->vec;
+  TGridPtr currentGrid = bt->GetGrid()->GetCurrentGrid();
+  double * x = currentGrid->GetX()->vec;
+  double ** massFracs = flame->GetMassFracs()->mat;
+  double ** prod = flame->GetSpecies()->GetProductionRate()->mat;
+  double * temp = flame->GetTemperature()->vec;
+  double * prog = flame->GetProg()->vec;
+  double * enth = flame->GetEnth()->vec;
+  double ** y = currentGrid->GetY()->mat;
+  double * yLeft = currentGrid->GetYLeft()->vec;
+  double * yRight = currentGrid->GetYRight()->vec;
+  double * nrhodot;
+  if (flame->GetSoot()) nrhodot = flame->GetSoot()->GetRhoDot()->vec;
+
+  int i, k;
+  int gridPoints = currentGrid->GetNGridPoints();
+  int nOfSpecies = species->GetNOfSpecies();
+  int nOfVariables = bt->GetNVariables();
+  int nOfEquations = bt->GetNEquations();
+  int firstSpecies = flame->GetOffsetFirstSpecies();
+  int tempOffset = flame->GetOffsetTemperature();
+  time_t theDate;
+  char buffer[80];
+  ConstStringArray varNames = flame->GetVariableNames();
+  char ** names = species->GetNames();
+  Flag fpOpen = FALSE;
+
+  VectorPtr ZBilgerVec = NewVector(gridPoints+2);
+  double * ZBilger = &ZBilgerVec->vec[kNext];
+
+  VectorPtr ZBilgerSrcVec = NewVector(gridPoints+2);
+  double * ZBilgerSrc = &ZBilgerSrcVec->vec[kNext];
+
+  VectorPtr HCRatVec = NewVector(gridPoints+2);
+  double * HCRat = &HCRatVec->vec[kNext];
+
+  VectorPtr ProgSrcVec = NewVector(gridPoints+2);
+  double * ProgSrc = &ProgSrcVec->vec[kNext];
+
+//   VectorPtr EnthFluxVec = NewVector(gridPoints+2);
+//   double * EnthFlux = &EnthFluxVec->vec[kNext];
+	
+  if (!fp)
+  {
+    fpOpen = TRUE;
+    fp = flame->GetOutputFile( NULL, tail, TFlame::kNone );
+  }
+
+  ZBilger[kPrev] = bt->GetLeft();
+  ZBilger[gridPoints] = bt->GetRight();
+  for (k = 0; k < gridPoints; ++k)
+  {
+    ZBilger[k] = flame->ComputeZBilger(massFracs[k], massFracs[gridPoints], massFracs[-1]);
+  }
+
+  ZBilgerSrc[kPrev] = 0.0;
+  ZBilgerSrc[gridPoints] = 0.0;
+  for (k = 0; k < gridPoints; ++k)
+  {
+    if (flame->GetSoot())
+      ZBilgerSrc[k] = flame->ComputeZBilgerSource(prod[k], massFracs[gridPoints], massFracs[-1], nrhodot[k]);
+    else
+      ZBilgerSrc[k] = flame->ComputeZBilgerSource(prod[k], massFracs[gridPoints], massFracs[-1], 0.0);
+  }
+
+  HCRat[kPrev] = 0.0;
+  for (k = 0; k <= gridPoints; ++k)
+  {
+    HCRat[k] = flame->ComputeHC(massFracs[k], massFracs[gridPoints], massFracs[-1]);
+  }
+
+  int f_CO2 = flame->GetSpecies()->FindSpecies("CO2");
+  int f_CO = flame->GetSpecies()->FindSpecies("CO");
+  int f_H2O = flame->GetSpecies()->FindSpecies("H2O");
+  int f_H2 = flame->GetSpecies()->FindSpecies("H2");
+  double C_MAX;
+  ProgSrc[kPrev] = 0.0;
+  ProgSrc[gridPoints] = 0.0;
+  for (k = 0; k < gridPoints; ++k)
+  {
+    C_MAX = flame->ComputeCMAX(massFracs[k], massFracs[gridPoints], massFracs[-1]);
+    ProgSrc[k] = (prod[k][f_CO2] + prod[k][f_CO] + prod[k][f_H2O] + prod[k][f_H2]) / C_MAX;
+  }
+
+//   // Compute the enthalpy flux term (assumes unity Lewis number for all species and zero dissipation rate and Z=0,1)
+//   EnthFlux[kPrev] = 0.0;
+//   EnthFlux[gridPoints] = 0.0;
+//   for (k = 0; k < gridPoints; ++k)
+//   {
+//     bt->SetNodeInfo(flame, k);
+//     flame->SetFlameNode(k);
+//     EnthFlux[k] = 0.0;
+//     for (i = 0; i < nOfSpecies; ++i)
+//     {
+//       EnthFlux[k] += rho[k]*flame->GetDissRate(x[k],rho[k]) / 2.0 * flameNode->enthalpy[i] *  
+// 	SecondDeriv(massFracs[k-1][i], massFracs[k][i], massFracs[k+1][i], nodeInfo->hm, nodeInfo->h);
+//       EnthFlux[k] += rho[k]*flame->GetDissRate(x[k],rho[k]) / 2.0 * (flameNode->mixHeatCapacity[kCurr]/flameNode->mixConductivity[kCurr]) * 
+// 	FirstDeriv(flameNode->mixConductivity[kPrev]/flameNode->mixHeatCapacity[kPrev]*flame->GetSpecies()->GetEnthalpy()->mat[k-1][i], 
+// 		   flameNode->mixConductivity[kCurr]/flameNode->mixHeatCapacity[kCurr]*flame->GetSpecies()->GetEnthalpy()->mat[k][i], 
+// 		   flameNode->mixConductivity[kNext]/flameNode->mixHeatCapacity[kNext]*flame->GetSpecies()->GetEnthalpy()->mat[k+1][i], nodeInfo->hm, nodeInfo->h) * 
+// 	FirstDeriv(massFracs[k-1][i], massFracs[k][i], massFracs[k+1][i], nodeInfo->hm, nodeInfo->h);
+//     }
+//   }
+
+  // write header
+  fprintf(fp, "header\n\n");
+
+  fprintf( fp, "title = \"planar counterflow diffusion flame\"\n" );
+  fprintf( fp, "mechanism = \"%s\"\n", flame->GetInputData()->fReactionFile );
+  fprintf( fp, "author = \"%s\"\n", flame->GetAuthor() );
+  time( &theDate );
+  strcpy( buffer, ctime( &theDate ) );
+  if ( buffer[strlen(buffer)-1] == '\n' )
+    buffer[strlen(buffer)-1] = '\0';
+  fprintf( fp, "date = \"%s\"\n\n", buffer );
+  for ( i = 0; i < flame->GetNFuels(); ++i )
+  {
+    fprintf( fp, "fuel = \"%s\"\n", varNames[firstSpecies+flame->GetFuelIndex( i )] );
+  }
+  fprintf( fp, "pressure = %g [bar]\n", flame->GetPressure() / 1.0e5 );
+//	fprintf( fp, "chi = %g [1/s]\n", flame->GetChi() );
+  fprintf( fp, "chi_st = %g [1/s]\n", flame->GetDissRate() );
+
+  if ( species->IsConstantLewisNumber() )
+  {
+    fprintf( fp, "ConstantLewisNumbers = \"True\"\n" );
+  }
+	
+  if ( flame->GetSolver()->bt->GetParameter() != 1.0 )
+  {
+    fprintf( fp, "Parameter = %g\n", flame->GetSolver()->bt->GetParameter() );
+  }
+	
+  fprintf( fp, "FlameLoc = %g\n", x[LocationOfMax( gridPoints+2, &temp[kPrev] ) - 1] );
+  fprintf( fp, "Tmax = %g [K]\n", temp[LocationOfMax( gridPoints+2, &temp[kPrev] ) - 1] );
+
+  double EIFuel = 0.0;
+  for ( i = 0; i < flame->GetNFuels(); ++i )
+  {
+    EIFuel += flame->ComputeEmissionIndex( flame->GetFuelIndex( i ), x );
+  }
+
+  int indNO = species->FindSpecies( "NO" );
+  if ( indNO > -1 )
+  {
+    fprintf( fp, "EmissionIndexNO = %g [g/kg]\n", -1000.0 * flame->ComputeEmissionIndex( indNO, x ) / EIFuel );
+  }
+	
+  int indNO2 = species->FindSpecies( "NO2" );
+  if ( indNO2 > -1 )
+  {
+    fprintf( fp, "EmissionIndexNO2 = %g [g/kg]\n", -1000.0 * flame->ComputeEmissionIndex( indNO2, x ) / EIFuel );
+  }
+
+  int indN2O = species->FindSpecies( "N2O" );
+  if ( indN2O > -1 )
+  {
+    fprintf( fp, "EmissionIndexN2O = %g [g/kg]\n", -1000.0 * flame->ComputeEmissionIndex( indN2O, x ) / EIFuel );
+  }
+
+  fprintf( fp, "\nFuelSide\n" );
+  fprintf( fp, "begin\n" );
+  fprintf( fp, "\tTemperature = %g [K]\n", yRight[tempOffset] );
+  for ( i = 0; i < nOfSpecies; ++i )
+  {
+    if ( fabs( massFracs[gridPoints][i] ) > 1.0e-20 )
+    {
+      fprintf( fp, "\tMassfraction-%s = %g\n", names[i], massFracs[gridPoints][i] );
+    }
+  }
+  fprintf( fp, "end\n\n" );
+
+  fprintf( fp, "OxidizerSide\n" );
+  fprintf( fp, "begin\n" );
+  fprintf( fp, "\tTemperature = %g [K]\n", yLeft[tempOffset] );
+  for ( i = 0; i < nOfSpecies; ++i )
+  {
+    if ( fabs( massFracs[kPrev][i] ) > 1.0e-20 )
+    {
+      fprintf( fp, "\tMassfraction-%s = %g\n", names[i], massFracs[kPrev][i] );
+    }
+  }
+  fprintf( fp, "end\n\n" );
+
+  fprintf( fp, "numOfSpecies = %d\n", nOfSpecies );
+  fprintf( fp, "gridPoints = %d\n\n", gridPoints+2 );
+
+  fprintf( fp, "body\n" );
+
+  // write independent coordinate
+  fprintf( fp, "Z\n" );
+  fprintf( fp, "\t%-.6e", bt->GetLeft() );
+  for ( k = 0; k < gridPoints; ++k )
+  {
+    fprintf( fp, "\t%-.6e", x[k] );
+    if ( (k+2) % 5 == 0 )
+    {
+      fprintf( fp, "\n" );
+    }
+  }
+  fprintf( fp, "\t%-.6e\n", bt->GetRight() );
+	
+  // write solution
+    // write temperature
+    flame->PrintFlameletVector( gridPoints+2, &temp[kPrev], "temperature [K]", fp );
+
+    // write massfractions of species
+    for ( i = 0; i < nOfSpecies; ++i )
+    {
+      fprintf( fp, "massfraction-%s\n", names[i] );
+      for ( k = 0; k < gridPoints+2; ++k )
+      {
+	fprintf( fp, "\t%-.6e", massFracs[k-1][i] );
+	if ( (k+1) % 5 == 0 )
+	{
+	  fprintf( fp, "\n" );
+	}
+      }
+      if ( k % 5 )
+      {
+	fprintf( fp, "\n" );
+      }
+    }
+
+    if ( flame->fSoot )
+    {
+      flame->GetSoot()->PrintFlameletFile( gridPoints, flame, fp );
+    }
+
+    // Write Progress Variable Ratio and Source Term
+    flame->PrintFlameletVector(gridPoints+2, &prog[kPrev], "ProgRat", fp);
+    flame->PrintFlameletVector(gridPoints+2, &ProgSrc[kPrev], "ProgSrc", fp);
+
+    // Write Unity Lewis Number Enthalpy
+//     for ( int k = 0; k < gridPoints+2; ++k )
+//       enth[k-1] = enth[k-1] * 1.0e20;
+    flame->PrintFlameletVector(gridPoints+2, &enth[kPrev], "EnthLoss", fp);
+//     for ( int k = 0; k < gridPoints+2; ++k )
+//       enth[k-1] = enth[k-1] / 1.0e20;
+
+    if ( flame->fPrintMolarFractions )
+    {
+	  // Print Mole Fractions
+	  double locMolarMass;
+	  for (i = 0; i < nOfSpecies; ++i)
+	  {
+	    locMolarMass = molarMass[i];
+	    fprintf(fp, "molarfraction-%s\n", names[i]);
+	    fprintf(fp, "\t%-.6e", massFracs[kPrev][i] * mixMolarMass[-1] / locMolarMass);
+	    for (k = 0; k < gridPoints; ++k)
+	    {
+	      fprintf(fp, "\t%-.6e", massFracs[k][i] * mixMolarMass[k] / locMolarMass);
+	      if ((k+2) % 5 == 0)
+	      {
+		fprintf(fp, "\n");
+	      }
+	    }
+	    fprintf(fp, "\t%-.6e\n", massFracs[gridPoints][i] * mixMolarMass[gridPoints] / locMolarMass);
+	  }
+
+	  // Print Concentrations
+	  for (i = 0; i < nOfSpecies; ++i)
+	  {
+	    locMolarMass = molarMass[i];
+	    fprintf(fp, "concentration-%s\n", names[i]);
+	    fprintf(fp, "\t%-.6e", massFracs[kPrev][i] * rho[-1] / locMolarMass);
+	    for (k = 0; k < gridPoints; ++k)
+	    {
+	      fprintf(fp, "\t%-.6e", massFracs[k][i] * rho[k] / locMolarMass);
+	      if ((k+2) % 5 == 0)
+	      {
+		fprintf(fp, "\n");
+	      }
+	    }
+	    fprintf(fp, "\t%-.6e\n", massFracs[gridPoints][i] * rho[gridPoints] / locMolarMass);
+	  }
+    }
+	
+    flame->PrintFlameletVector( gridPoints+2, &mixMolarMass[kPrev], "W", fp );
+    flame->PrintFlameletVector( gridPoints+2, &ZBilger[kPrev], "ZBilger", fp );
+    flame->PrintFlameletVector( gridPoints+2, &ZBilgerSrc[kPrev], "ZBilgerSrc", fp );
+    flame->PrintFlameletVector( gridPoints+2, &HCRat[kPrev], "H_C", fp );
+
+/*//	write convection terms*/
+/*	TFlameNodePtr	flameNode = flame->GetFlameNode();*/
+/*	int		nSpeciesInSystem = flame->GetSpecies()->GetNSpeciesInSystem();*/
+/*	int		lastSpeciesEq = flame->fFirstSpecies + nSpeciesInSystem;*/
+/*	int		speciesInd, speciesEq;*/
+/*	Double	*lewis = flame->GetSpecies()->GetLewisNumber()->vec;*/
+/*	Double	*lewisPrev = New1DArray( nSpeciesInSystem );*/
+/*	Double	*lewisNext = New1DArray( nSpeciesInSystem );*/
+/*	Double	*diffTerm = New1DArray( gridPoints+2 );*/
+/*	Double	*compDiff = New1DArray( gridPoints+2 );*/
+/*	Double	*diffXTerm = New1DArray( gridPoints+2 );*/
+/*	Double	*corrDiffTerm = New1DArray( gridPoints+2 );*/
+/*	Double	*corrDiffTermX = New1DArray( gridPoints+2 );*/
+/*	Double	*convVelo1Y = New1DArray( gridPoints+2 );*/
+/*	Double	*convVelo2Y = New1DArray( gridPoints+2 );*/
+/*	Double	*convVeloY = New1DArray( gridPoints+2 );*/
+/*	Double	*convVelo1X = New1DArray( gridPoints+2 );*/
+/*	Double	*convVelo2X = New1DArray( gridPoints+2 );*/
+/*	Double	*convVeloX = New1DArray( gridPoints+2 );*/
+/*	Double	*convVelo1YCorr = New1DArray( gridPoints+2 );*/
+/*	Double	*convVelo2YCorr = New1DArray( gridPoints+2 );*/
+/*	Double	*convVeloYCorr = New1DArray( gridPoints+2 );*/
+/*	Double	*convVelo1XCorr = New1DArray( gridPoints+2 );*/
+/*	Double	*convVelo2XCorr = New1DArray( gridPoints+2 );*/
+/*	Double	*convVeloXCorr = New1DArray( gridPoints+2 );*/
+/*	Double	*convVeloComp = New1DArray( gridPoints+2 );*/
+/**/
+/*	diffTerm[0] = diffTerm[gridPoints+1] = 0.0;*/
+/*	diffXTerm[0] = diffXTerm[gridPoints+1] = 0.0;*/
+/*	corrDiffTerm[0] = corrDiffTerm[gridPoints+1] = 0.0;*/
+/*	corrDiffTermX[0] = corrDiffTermX[gridPoints+1] = 0.0;*/
+/*	convVelo1Y[0] = convVelo2Y[0] = convVeloY[0] = convVelo1Y[gridPoints+1] = convVelo2Y[gridPoints+1] = convVeloY[gridPoints+1] = 0.0;*/
+/*	convVelo1X[0] = convVelo2X[0] = convVeloX[0] = convVelo1X[gridPoints+1] = convVelo2X[gridPoints+1] = convVeloX[gridPoints+1] = 0.0;*/
+/*	convVelo1YCorr[0] = convVelo2YCorr[0] = convVeloYCorr[0] = convVelo1YCorr[gridPoints+1] = convVelo2YCorr[gridPoints+1] = convVeloYCorr[gridPoints+1] = 0.0;*/
+/*	convVelo1XCorr[0] = convVelo2XCorr[0] = convVeloXCorr[0] = convVelo1XCorr[gridPoints+1] = convVelo2XCorr[gridPoints+1] = convVeloXCorr[gridPoints+1] = 0.0;*/
+/*	compDiff[0] = convVeloComp[0] = compDiff[gridPoints+1] = convVeloComp[gridPoints+1] = 0.0;*/
+/*	int		ind = flame->GetFuelIndex();*/
+/*	for ( k = 0; k < gridPoints; ++k ) {*/
+/*		bt->SetNodeInfo( flame, k );*/
+/*		flame->SetFlameNode( k );*/
+/*		Double	h = nodeInfo->h;*/
+/*		Double	hm = nodeInfo->hm;*/
+/*		Double	chiPrev = ( k == 0 ) ? flame->GetDissRate( flame->GetSolver()->bt->GetLeft(), flameNode->mixDensity[kPrev] ) : flame->GetDissRate( nodeInfo->x[kPrev], flameNode->mixDensity[kPrev] );*/
+/*		Double	chiCurr = flame->GetDissRate( nodeInfo->x[kCurr], flameNode->mixDensity[kCurr] );*/
+/*		Double	chiNext = ( k == gridPoints-1 ) ? flame->GetDissRate( flame->GetSolver()->bt->GetRight(), flameNode->mixDensity[kNext] ) : flame->GetDissRate( nodeInfo->x[kNext], flameNode->mixDensity[kNext] );*/
+/*		Double	lambdaOverCpCurr = flameNode->mixConductivity[kCurr] / flameNode->mixHeatCapacity[kCurr];*/
+/*		Double	lambdaOverCpPrev = flameNode->mixConductivity[kPrev] / flameNode->mixHeatCapacity[kPrev];*/
+/*		Double	lambdaOverCpNext = flameNode->mixConductivity[kNext] / flameNode->mixHeatCapacity[kNext];*/
+/*		Double	speciesCoeff = 0.5 * rho[k] * chiCurr;*/
+/*		Double	MMPrev = flameNode->mixMolarMass[kPrev];*/
+/*		Double	MM = flameNode->mixMolarMass[kCurr];*/
+/*		Double	MMNext = flameNode->mixMolarMass[kNext];*/
+/*		Double	rhoChiPrev = rho[k-1] * chiPrev;*/
+/*		Double	rhoChi = rho[k] * chiCurr;*/
+/*		Double	rhoChiNext = rho[k+1] * chiNext;*/
+/*		Double	dY_idZ = FirstDeriv( massFracs[k-1][ind], massFracs[k][ind], massFracs[k+1][ind], hm, h );*/
+/*		Double	dY_kdZ = 0.0;*/
+/*		*/
+/*		Double	sum1 = 0.0, sum2 = 0.0, sum4 = 0.0;*/
+/*		for ( speciesEq = flame->fFirstSpecies; speciesEq < lastSpeciesEq; ++speciesEq ) {*/
+/*			speciesInd = speciesEq-flame->fFirstSpecies;*/
+/*			dY_kdZ = FirstDeriv( massFracs[k-1][speciesInd], massFracs[k][speciesInd], massFracs[k+1][speciesInd], hm, h );*/
+/*			sum1 += SecondDeriv( massFracs[k-1][speciesInd], massFracs[k][speciesInd]*/
+/*						, massFracs[k+1][speciesInd], hm, h ) / lewis[speciesInd];*/
+/*			sum2 += massFracs[k][speciesInd] / lewis[speciesInd];*/
+/*			sum4 += dY_kdZ / lewis[speciesInd];*/
+/*		}*/
+/*		*/
+/*		diffTerm[k+1] = -speciesCoeff / lewis[ind]*/
+/*				* SecondDeriv( massFracs[k-1][ind], massFracs[k][ind], massFracs[k+1][ind], hm, h );*/
+/*		diffXTerm[k+1] = -speciesCoeff / lewis[ind]*/
+/*				* massFracs[k][ind] / MM * SecondDeriv( MMPrev, MM, MMNext, hm, h );*/
+/*		corrDiffTerm[k+1] = speciesCoeff * massFracs[k][ind] * sum1;*/
+/*		corrDiffTermX[k+1] = speciesCoeff * massFracs[k][ind] / MM * sum2 */
+/*								* SecondDeriv( MMPrev, MM, MMNext, hm, h );*/
+/*		convVelo1Y[k+1] = 0.25 * ( 1.0 - 1.0 / lewis[ind] ) */
+/*				* FirstDeriv( rhoChiPrev, rhoChi, rhoChiNext, hm, h )*/
+/*				* dY_idZ;*/
+/*		convVelo2Y[k+1] = 0.25 * ( 1.0 - 1.0 / lewis[ind] ) * ( */
+/*			rhoChi / lambdaOverCpCurr*/
+/*			* FirstDeriv( lambdaOverCpPrev, lambdaOverCpCurr, lambdaOverCpNext, hm, h ) )*/
+/*			* dY_idZ;*/
+/*		convVelo1X[k+1] = -0.25 / lewis[ind]*/
+/*				* FirstDeriv( massFracs[k-1][ind] / MMPrev * rhoChiPrev*/
+/*							, massFracs[k][ind] / MM * rhoChi*/
+/*							, massFracs[k+1][ind] / MMNext * rhoChiNext, hm, h )*/
+/*				* FirstDeriv( MMPrev, MM, MMNext, hm, h );*/
+/*		convVelo2X[k+1] = -0.25 / lewis[ind] * rhoChi / lambdaOverCpCurr */
+/*				* FirstDeriv( massFracs[k-1][ind] / MMPrev * lambdaOverCpPrev*/
+/*							, massFracs[k][ind] / MM * lambdaOverCpCurr*/
+/*							, massFracs[k+1][ind] / MMNext * lambdaOverCpNext, hm, h )*/
+/*				* FirstDeriv( MMPrev, MM, MMNext, hm, h );*/
+/*		convVelo1YCorr[k+1] = 0.25 * sum4 **/
+/*				FirstDeriv( massFracs[k-1][ind] * rhoChiPrev*/
+/*							, massFracs[k][ind] * rhoChi*/
+/*							, massFracs[k+1][ind] * rhoChiNext, hm, h );*/
+/*		convVelo2YCorr[k+1] = 0.25 * sum4 **/
+/*				rhoChi / lambdaOverCpCurr */
+/*					* FirstDeriv( massFracs[k-1][ind] * lambdaOverCpPrev*/
+/*							, massFracs[k][ind] * lambdaOverCpCurr*/
+/*							, massFracs[k+1][ind] * lambdaOverCpNext, hm, h );*/
+/*		convVelo1XCorr[k+1] = 0.0;*/
+/*		convVelo2XCorr[k+1] = 0.0;*/
+/*		Double	dMdZ = FirstDeriv( MMPrev, MM, MMNext, hm, h );*/
+/**/
+/*		for ( int kc = flame->fFirstSpecies; kc < lastSpeciesEq; ++kc ) {*/
+/*			convVelo1XCorr[k+1] += 0.25 / lewis[kc-flame->fFirstSpecies] */
+/*				* FirstDeriv( massFracs[k-1][ind] / MMPrev * massFracs[k-1][kc] * rhoChiPrev*/
+/*							, massFracs[k][ind] / MM * massFracs[k][kc] * rhoChi*/
+/*							, massFracs[k+1][ind] / MMNext * massFracs[k+1][kc] * rhoChiNext, hm, h ); */
+/**/
+/*			convVelo2XCorr[k+1] += 0.25 / lewis[kc-flame->fFirstSpecies] */
+/*				* rhoChi / lambdaOverCpCurr */
+/*					* FirstDeriv( massFracs[k-1][ind] / MMPrev * massFracs[k-1][kc] * lambdaOverCpPrev*/
+/*							, massFracs[k][ind] / MM * massFracs[k][kc] * lambdaOverCpCurr*/
+/*							, massFracs[k+1][ind] / MMNext * massFracs[k+1][kc] * lambdaOverCpNext, hm, h );*/
+/*		}*/
+/*		convVelo1XCorr[k+1] *= dMdZ;*/
+/*		convVelo2XCorr[k+1] *= dMdZ;*/
+/**/
+/*		compDiff[k+1] = diffTerm[k+1] + diffXTerm[k+1] + corrDiffTerm[k+1] + corrDiffTermX[k+1];*/
+/*		convVeloY[k+1] = convVelo1Y[k+1] + convVelo2Y[k+1];*/
+/*		convVeloX[k+1] = convVelo1X[k+1] + convVelo2X[k+1];*/
+/*		convVeloYCorr[k+1] = convVelo1YCorr[k+1] + convVelo2YCorr[k+1];*/
+/*		convVeloXCorr[k+1] = convVelo1XCorr[k+1] + convVelo2XCorr[k+1];*/
+/*		convVeloComp[k+1] = convVeloY[k+1] + convVeloX[k+1] + convVeloYCorr[k+1] + convVeloXCorr[k+1];*/
+/*	}*/
+/*	*/
+/*	flame->PrintFlameletVector( gridPoints+2, diffTerm, "diffusion", fp );*/
+/*	flame->PrintFlameletVector( gridPoints+2, diffXTerm, "diffusionX", fp );*/
+/*	flame->PrintFlameletVector( gridPoints+2, corrDiffTerm, "corrDiffTerm", fp );*/
+/*	flame->PrintFlameletVector( gridPoints+2, corrDiffTermX, "corrDiffTermX", fp );*/
+/*	flame->PrintFlameletVector( gridPoints+2, compDiff, "compDiff", fp );*/
+/*	flame->PrintFlameletVector( gridPoints+2, convVelo1Y, "convVelo1Y", fp );*/
+/*	flame->PrintFlameletVector( gridPoints+2, convVelo2Y, "convVelo2Y", fp );*/
+/*	flame->PrintFlameletVector( gridPoints+2, convVeloY, "convVeloY", fp );*/
+/*	flame->PrintFlameletVector( gridPoints+2, convVelo1X, "convVelo1X", fp );*/
+/*	flame->PrintFlameletVector( gridPoints+2, convVelo2X, "convVelo2X", fp );*/
+/*	flame->PrintFlameletVector( gridPoints+2, convVeloX, "convVeloX", fp );*/
+/*	flame->PrintFlameletVector( gridPoints+2, convVelo1YCorr, "convVelo1YCorr", fp );*/
+/*	flame->PrintFlameletVector( gridPoints+2, convVelo2YCorr, "convVelo2YCorr", fp );*/
+/*	flame->PrintFlameletVector( gridPoints+2, convVeloYCorr, "convVeloYCorr", fp );*/
+/*	flame->PrintFlameletVector( gridPoints+2, convVelo1XCorr, "convVelo1XCorr", fp );*/
+/*	flame->PrintFlameletVector( gridPoints+2, convVelo2XCorr, "convVelo2XCorr", fp );*/
+/*	flame->PrintFlameletVector( gridPoints+2, convVeloXCorr, "convVeloXCorr", fp );*/
+/*	flame->PrintFlameletVector( gridPoints+2, convVeloComp, "convVeloComp", fp );*/
+/**/
+/*	Free1DArray( corrDiffTermX );*/
+/*	Free1DArray( corrDiffTerm );*/
+/*	Free1DArray( diffXTerm );*/
+/*	Free1DArray( compDiff );*/
+/*	Free1DArray( diffTerm );*/
+/*	Free1DArray( convVeloComp );*/
+/*	Free1DArray( convVeloXCorr );*/
+/*	Free1DArray( convVelo2XCorr );*/
+/*	Free1DArray( convVelo1XCorr );*/
+/*	Free1DArray( convVeloYCorr );*/
+/*	Free1DArray( convVelo2YCorr );*/
+/*	Free1DArray( convVelo1YCorr );*/
+/*	Free1DArray( convVeloX );*/
+/*	Free1DArray( convVelo2X );*/
+/*	Free1DArray( convVelo1X );*/
+/*	Free1DArray( convVeloY );*/
+/*	Free1DArray( convVelo2Y );*/
+/*	Free1DArray( convVelo1Y );*/
+/*	Free1DArray( lewisNext );*/
+/*	Free1DArray( lewisPrev );*/
+	
+    // write chi
+    fprintf( fp, "chi [1/s]\n" );
+    fprintf( fp, "\t%-.6e", flame->GetDissRate( bt->GetLeft(), rho[kPrev] ) );
+    for ( k = 0; k < gridPoints; ++k )
+    {
+      fprintf( fp, "\t%-.6e", flame->GetDissRate( x[k], rho[k] ) );
+      if ( (k+2) % 5 == 0 )
+      {
+	fprintf( fp, "\n" );
+      }
+    }
+    fprintf( fp, "\t%-.6e\n", flame->GetDissRate( bt->GetRight(), rho[gridPoints] ) );
+	
+    // write chiKW
+    fprintf( fp, "chiKW [1/s]\n" );
+    fprintf( fp, "\t%-.6e", flame->GetDissRate( bt->GetLeft(), rho[-1] ) );
+    for ( k = 0; k < gridPoints; ++k )
+    {
+      fprintf( fp, "\t%-.6e", flame->GetDissRate( x[k], rho[k] ) );
+      if ( (k+2) % 5 == 0 )
+      {
+	fprintf( fp, "\n" );
+      }
+    }
+    fprintf( fp, "\t%-.6e\n", flame->GetDissRate( bt->GetRight(), rho[gridPoints] ) );
+	
+    // write density
+    fprintf( fp, "density\n" );
+    for ( k = 0; k < gridPoints+2; ++k )
+    {
+      fprintf( fp, "\t%-.6e", rho[k-1] );
+      if ( (k+1) % 5 == 0 )
+      {
+	fprintf( fp, "\n" );
+      }
+    }
+    if ( k % 5 )
+    {
+      fprintf( fp, "\n" );
+    }
+
+    // write molar mass //MM
+    fprintf( fp, "molarmass\n" );
+    for ( k = 0; k < gridPoints+2; ++k )
+    {
+      fprintf( fp, "\t%-.6e", mixMolarMass[k-1] );
+      if ( (k+1) % 5 == 0 )
+      {
+	fprintf( fp, "\n" );
+      }
+    }
+    if ( k % 5 )
+    {
+      fprintf( fp, "\n" );
+    }
+    
+    // write heat conductivity
+    flame->PrintFlameletVector( gridPoints+2, &props->GetConductivity()->vec[kPrev], "lambda [W/m K]", fp );
+
+    // write heat capacity
+    flame->PrintFlameletVector( gridPoints+2, &props->GetHeatCapacity()->vec[kPrev], "cp [J/kg K]", fp );
+
+    // write viscosity
+    flame->PrintFlameletVector( gridPoints+2, &props->GetViscosity()->vec[kPrev], "mu [kg/sm]", fp );
+
+    //  write source term CO2
+    int indspec = species->FindSpecies( "CO2" );
+    fprintf( fp, "ProdRateCO2 [kg/m^3s]\n" );
+    fprintf( fp, "\t%-.6e", 0.0 );
+    for ( k = 0; k < gridPoints; ++k )
+    {
+      fprintf( fp, "\t%-.6e", prod[k][indspec] );
+      if ( (k+2) % 5 == 0 )
+      {
+	fprintf( fp, "\n" );
+      }
+    }
+    fprintf( fp, "\t%-.6e\n", 0.0 );
+
+    // write source term H2O
+    indspec = species->FindSpecies( "H2O" );
+    fprintf( fp, "ProdRateH2O [kg/m^3s]\n" );
+    fprintf( fp, "\t%-.6e", 0.0 );
+    for ( k = 0; k < gridPoints; ++k )
+    {
+      fprintf( fp, "\t%-.6e", prod[k][indspec] );
+      if ( (k+2) % 5 == 0 )
+      {
+	fprintf( fp, "\n" );
+      }
+    }
+    fprintf( fp, "\t%-.6e\n", 0.0 );
+
+    // write source term CO
+    indspec = species->FindSpecies( "CO" );
+    fprintf( fp, "ProdRateCO [kg/m^3s]\n" );
+    fprintf( fp, "\t%-.6e", 0.0 );
+    for ( k = 0; k < gridPoints; ++k )
+    {
+      fprintf( fp, "\t%-.6e", prod[k][indspec] );
+      if ( (k+2) % 5 == 0 )
+      {
+	fprintf( fp, "\n" );
+      }
+    }
+    fprintf( fp, "\t%-.6e\n", 0.0 );
+
+    // write source term H2
+    indspec = species->FindSpecies( "H2" );
+    fprintf( fp, "ProdRateH2 [kg/m^3s]\n" );
+    fprintf( fp, "\t%-.6e", 0.0 );
+    for ( k = 0; k < gridPoints; ++k )
+    {
+      fprintf( fp, "\t%-.6e", prod[k][indspec] );
+      if ( (k+2) % 5 == 0 )
+      {
+	fprintf( fp, "\n" );
+      }
+    }
+    fprintf( fp, "\t%-.6e\n", 0.0 );
+
+    // write source term NO
+    indspec = species->FindSpecies( "NO" );
+    if ( indspec > -1 )
+    {
+      flame->PrintProdRate( indspec, fp );
+    }
+
+    // write source term for PAH
+   if (flame->fSoot)
+     flame->PrintProdRatePAH(fp);
+      
+
+    // write enthalpy
+    fprintf( fp, "TotalEnthalpy [J/kg]\n" );
+    int nSpeciesIn = flame->GetSpecies()->GetNSpeciesInSystem();
+    double hTot = 0.0;
+    double ** ent = flame->GetSpecies()->GetEnthalpy()->mat;
+    for ( k = 0; k < gridPoints+2; ++k )
+    {
+      hTot = 0.0;
+      for ( i = 0; i < nSpeciesIn; ++i )
+      {
+	hTot += massFracs[k-1][i] * ent[k-1][i];
+      }
+      fprintf( fp, "\t%-.6e", hTot );
+      if ( (k+1) % 5 == 0 )
+      {
+	fprintf( fp, "\n" );
+      }
+    }
+    if ( k % 5 )
+    {
+      fprintf( fp, "\n" );
+    }
+
+    // write heat release
+    fprintf( fp, "HeatRelease [J/m^3 s]\n" );
+    double heatrel = 0.0;
+    fprintf( fp, "\t%-.6e", 0.0 );
+    for ( k = 0; k < gridPoints; ++k )
+    {
+      heatrel = 0.0;
+      for ( i = 0; i < nSpeciesIn; ++i )
+      {
+	heatrel += ent[k][i] * prod[k][i];
+      }
+      fprintf( fp, "\t%-.6e", -heatrel );
+      if ( (k+2) % 5 == 0 )
+      {
+	fprintf( fp, "\n" );
+      }
+    }
+    fprintf( fp, "\t%-.6e\n", 0.0 );
+
+    // write radiation source 
+    if ( flame->fProperties->GetRadiation() )
+    {  
+      double * rad = props->GetRadiation()->GetRadiation()->vec;  
+      fprintf( fp, "RadiationSource [J/m^3 s]\n" ); 
+      fprintf( fp, "\t%-.6e", 0.0 ); 
+      for ( k = 0; k < gridPoints; ++k )
+      { 
+        fprintf( fp, "\t%-.6e", -rad[k] ); 
+        if ( (k+2) % 5 == 0 )
+	{ 
+          fprintf( fp, "\n" ); 
+        } 
+      } 
+      fprintf( fp, "\t%-.6e\n", 0.0 ); 
+    }
+    else
+    {
+      TRadiationPtr fRadiation = new TRadiation(flame->GetInputData());
+      Double rad;
+      fprintf( fp, "RadiationSource [J/m^3 s]\n" );
+      fprintf( fp, "\t%-.6e", 0.0 );
+      for ( k = 0; k < gridPoints; ++k )
+      {
+	fRadiation->ComputeRadiationOnePoint(&rad, temp[k], massFracs[k], molarMass, rho[k]);
+	fprintf( fp, "\t%-.6e", -rad );
+	if ( (k+2) % 5 == 0 )
+	{
+	  fprintf( fp, "\n" );
+	}
+      }
+      fprintf( fp, "\t%-.6e\n", 0.0 );
+    }
+
+    // write soot ratiation coefficient (source / volfrac)
+    if ( flame->GetSoot() )
+    {
+      double rad;
+      fprintf( fp, "SootRadCoeff [J/m^3 s]\n" );
+      fprintf( fp, "\t%-.6e", 0.0 );
+      for ( k = 0; k < gridPoints; ++k )
+      {
+	fprintf( fp, "\t%-.6e", flame->GetSoot()->GetSootRadiationCoeff(temp[k]) );
+	if ( (k+2) % 5 == 0 )
+	{
+	  fprintf( fp, "\n" );
+	}
+      }
+      fprintf( fp, "\t%-.6e\n", 0.0 );
+    }
+
+//     flame->PrintFlameletVector( gridPoints+2, &EnthFlux[kPrev], "EnthFlux [J/m^3 s]", fp );
+
+    fprintf( fp, "trailer\n" );
+	
+    double * Le = species->GetLewisNumber()->vec;
+    for ( i = 0; i < nOfSpecies; ++i )
+    {
+      fprintf( fp, "%s\t%g\n", names[i], Le[i] );
+    }
+
+    if ( nOfEquations < nOfVariables)
+    {
+      fprintf( fp, "number of converged equations is %d\n", nOfEquations );
+    }
+    
+    if ( fpOpen )
+    {
+      fclose( fp );
+    }
+
+    DisposeVector( ZBilgerVec );
+    DisposeVector( ZBilgerSrcVec );
+    DisposeVector( ProgSrcVec );
+    DisposeVector( HCRatVec );
+}
+
+void CountDiffMixUpdateBoundary(void  * object)
+{
+  TCountDiffFlameMixPtr flame = (TCountDiffFlameMixPtr)object;
+
+  if (flame->GetSoot())
+  {
+    TNewtonPtr bt = flame->GetSolver()->bt;
+    TGridPtr currGrid = bt->GetGrid()->GetCurrentGrid();
+    int nGridPoints = currGrid->GetNGridPoints();
+    double * yLeft = currGrid->GetYLeft()->vec;
+    double * yRight = currGrid->GetYRight()->vec;
+    double * density = flame->GetProperties()->GetDensity()->vec;
+    double ** ent = flame->GetSpecies()->GetEnthalpy()->mat;
+
+    int nSootMoments = flame->GetSoot()->GetNSootMoments();
+    int sootOff = flame->GetSoot()->GetOffsetSootMoments();
+    double i, j;
+
+    int nSpeciesIn = flame->GetSpecies()->GetNSpeciesInSystem();
+
+    for (int k = 0; k < nSootMoments-1; ++k)
+    {
+      i = double(flame->GetSoot()->Geti(k))/6.0;
+      j = double(flame->GetSoot()->Getj(k))/6.0;
+
+      if (k==0)
+      {
+	//yLeft[sootOff] = 1.0e-20 / density[kPrev];
+	//yRight[sootOff] = 1.0e-20 / density[nGridPoints];
+	yLeft[sootOff] = log(1.0e-20 / density[kPrev]);
+	yRight[sootOff] = log(1.0e-20 / density[nGridPoints]);
+      }
+      else
+      {
+	//yLeft[k+sootOff] = pow(2.0*flame->GetSoot()->nucl_nbrC2, i+j*(2.0/3.0)) * yLeft[sootOff];
+	//yRight[k+sootOff] = pow(2.0*flame->GetSoot()->nucl_nbrC2, i+j*(2.0/3.0)) * yRight[sootOff];
+	yLeft[k+sootOff] = log(pow(2.0*flame->GetSoot()->nucl_nbrC2, i+j*(2.0/3.0))) + yLeft[sootOff];
+	yRight[k+sootOff] = log(pow(2.0*flame->GetSoot()->nucl_nbrC2, i+j*(2.0/3.0))) + yRight[sootOff];
+      }
+    }
+
+    //yLeft[sootOff+nSootMoments-1] = 1.0e-20 / density[kPrev];
+    //yRight[sootOff+nSootMoments-1] = 1.0e-20 / density[nGridPoints];
+    yLeft[sootOff+nSootMoments-1] = log(1.0e-20 / density[kPrev]);
+    yRight[sootOff+nSootMoments-1] = log(1.0e-20 / density[nGridPoints]);
+
+    // Progress Variable Boundary Conditions -- Think about this!!!
+    int progOff = flame->GetOffsetProg();
+    int specOff = flame->GetOffsetFirstSpecies();
+
+    int f_CO2 = flame->GetSpecies()->FindSpecies("CO2");
+    int f_CO = flame->GetSpecies()->FindSpecies("CO");
+    int f_H2O = flame->GetSpecies()->FindSpecies("H2O");
+    int f_H2 = flame->GetSpecies()->FindSpecies("H2");
+
+    //yLeft[progOff] = yLeft[specOff+f_CO2] + yLeft[specOff+f_CO] + yLeft[specOff+f_H2O] + yLeft[specOff+f_H2];
+    yLeft[progOff] = 0.0;
+    //yRight[progOff] = yRight[specOff+f_CO2] + yRight[specOff+f_CO] + yRight[specOff+f_H2O] + yRight[specOff+f_H2];
+    yRight[progOff] = 0.0;
+
+    // Enthalpy Boundary Conditions
+    int enthOff = flame->GetOffsetEnth();
+//     double hTot = 0.0;
+
+//     hTot = 0.0;
+//     for (int i = 0; i < nSpeciesIn; ++i)
+//       hTot += yLeft[specOff+i] * ent[-1][i];
+//     yLeft[enthOff] = hTot / 1.0e20;
+
+//     hTot = 0.0;
+//     for (int i = 0; i < nSpeciesIn; ++i)
+//       hTot += yRight[specOff+i] * ent[nGridPoints][i];
+//     yRight[enthOff] = hTot / 1.0e20;
+    yLeft[enthOff] = 0.0;
+    yRight[enthOff] = 0.0;
+ 
+
+    flame->UpdateSolutionOnePoint(yLeft, kPrev);
+    flame->UpdateSolutionOnePoint(yRight, nGridPoints);
+  }
+}
+
+void TCountDiffFlameMix::UpdateSolutionOnePoint( Double *y, int gridPoint )
+{
+	T1DFlame::UpdateSolution( y, gridPoint );
+
+	fSolLnChi->vec[gridPoint] = y[fLnChi];
+	fSolProg->vec[gridPoint] = y[fProg];
+	fSolEnth->vec[gridPoint] = y[fEnth];
+}
+
+
+void TCountDiffFlameMix::PrintProdRate( int speciesIndex, FILE *fp )
+{
+  int             k;
+  TGridPtr        currentGrid = fSolver->bt->GetGrid()->GetCurrentGrid();
+  int             fNGridPoints = currentGrid->GetNGridPoints();
+  Double          *prodOfZ = New1DArray( fNGridPoints+2 );
+  Double          *prodPlusOfZ = New1DArray( fNGridPoints+2 );
+  Double          *prodMinusOfZ = New1DArray( fNGridPoints+2 );
+  Double          *prodMinusOverYOfZ = New1DArray( fNGridPoints+2 );
+  Double          **massFracs = GetMassFracs()->mat;
+  Double          **reactionRate = fReaction->GetReactionRate()->mat;
+  Double          **prodRate = fSpecies->GetProductionRate()->mat;
+  char            buffer[128];
+  sprintf( buffer, "ProdRate-%s [kg/m^3s]", fSpecies->GetNames()[speciesIndex] );
+
+  prodOfZ[0] = prodOfZ[fNGridPoints+1] = 0.0;
+  prodPlusOfZ[0] = prodPlusOfZ[fNGridPoints+1] = 0.0;
+  prodMinusOfZ[0] = prodMinusOfZ[fNGridPoints+1] = 0.0;
+  prodMinusOverYOfZ[0] = prodMinusOverYOfZ[fNGridPoints+1] = 0.0;
+  for ( k = 0; k < fNGridPoints; ++k )
+    {
+      prodOfZ[k+1] = prodRate[k][speciesIndex];
+      prodPlusOfZ[k+1] = fSpecies->GetPosNegProductionRate( speciesIndex, reactionRate[k], TRUE );
+      prodMinusOfZ[k+1] = fSpecies->GetPosNegProductionRate( speciesIndex, reactionRate[k], FALSE );
+      prodMinusOverYOfZ[k+1] = prodMinusOfZ[k+1] / MAX(1.0e-10, massFracs[k][speciesIndex] );
+    }
+  PrintFlameletVector( fNGridPoints+2, prodOfZ, buffer, fp );
+  sprintf( buffer, "ProdRatePos-%s [kg/m^3s]", fSpecies->GetNames()[speciesIndex] );
+  PrintFlameletVector( fNGridPoints+2, prodPlusOfZ, buffer, fp );
+  sprintf( buffer, "ProdRateNeg-%s [kg/m^3s]", fSpecies->GetNames()[speciesIndex] );
+  PrintFlameletVector( fNGridPoints+2, prodMinusOfZ, buffer, fp );
+  sprintf( buffer, "ProdRateNegOverYNO-%s [kg/m^3s]", fSpecies->GetNames()[speciesIndex] );
+  PrintFlameletVector( fNGridPoints+2, prodMinusOverYOfZ, buffer, fp );
+
+  Free1DArray( prodMinusOverYOfZ );
+  Free1DArray( prodPlusOfZ );
+  Free1DArray( prodMinusOfZ );
+  Free1DArray( prodOfZ );
+}
+
+void TCountDiffFlameMix::PrintProdRatePAH(FILE *fp )
+{
+  int k, s;
+  int nPAH = 8;
+  int * aromIndex = New1DIntArray(nPAH);
+  TGridPtr currentGrid = fSolver->bt->GetGrid()->GetCurrentGrid();
+  int fNGridPoints = currentGrid->GetNGridPoints();
+  double * Y_PAH = New1DArray(fNGridPoints+2);
+  double * prodOfZ = New1DArray(fNGridPoints+2);
+  double * prodPlusOfZ = New1DArray(fNGridPoints+2);
+  double * prodMinusOfZ = New1DArray(fNGridPoints+2);
+  double * prodMinusOverYOfZ = New1DArray(fNGridPoints+2);
+  double ** massFracs = GetMassFracs()->mat;
+  double ** reactionRate = fReaction->GetReactionRate()->mat;
+  double ** prodRate = fSpecies->GetProductionRate()->mat;
+  char buffer[128];
+
+  Y_PAH[0] = Y_PAH[fNGridPoints+1] = 0.0;
+  prodOfZ[0] = prodOfZ[fNGridPoints+1] = 0.0;
+  prodPlusOfZ[0] = prodPlusOfZ[fNGridPoints+1] = 0.0;
+  prodMinusOfZ[0] = prodMinusOfZ[fNGridPoints+1] = 0.0;
+  prodMinusOverYOfZ[0] = prodMinusOverYOfZ[fNGridPoints+1] = 0.0;
+
+  aromIndex[0] = fSpecies->FindSpecies("A2-C10H8");
+  aromIndex[1] = fSpecies->FindSpecies("A2R5-C12H8");
+  aromIndex[2] = fSpecies->FindSpecies("P2-C12H10");
+  aromIndex[3] = fSpecies->FindSpecies("A3-C14H10");
+  aromIndex[4] = fSpecies->FindSpecies("A3R5-C16H10");
+  aromIndex[5] = fSpecies->FindSpecies("A4-C16H10");
+  aromIndex[6] = fSpecies->FindSpecies("FLTN-C16H10");
+  aromIndex[7] = fSpecies->FindSpecies("A4R5-C18H10");
+
+  for (s = 0; s < nPAH; ++s)
+  {
+    Y_PAH[0] += MAX(massFracs[-1][aromIndex[s]],1.0e-60);
+    Y_PAH[fNGridPoints+1] += MAX(massFracs[fNGridPoints][aromIndex[s]],1.0e-60); //Mueller
+  }
+
+  for (k = 0; k < fNGridPoints; ++k)
+  {
+    Y_PAH[k+1] = 0.0;
+    for (s = 0; s < nPAH; ++s)
+    {
+      if (aromIndex[s] > -1)
+      {
+	prodOfZ[k+1] += prodRate[k][aromIndex[s]];
+	prodPlusOfZ[k+1] += fSpecies->GetPosNegProductionRate(aromIndex[s], reactionRate[k], TRUE);
+	prodMinusOfZ[k+1] += fSpecies->GetPosNegProductionRate(aromIndex[s], reactionRate[k], FALSE);
+	Y_PAH[k+1] += MAX(massFracs[k][aromIndex[s]],1.0e-60); //Mueller
+      }
+    }
+    prodMinusOverYOfZ[k+1] = prodMinusOfZ[k+1] / MAX(1.0e-60, Y_PAH[k+1]);
+  }
+
+  sprintf(buffer, "Y-PAH");
+  PrintFlameletVector(fNGridPoints+2, Y_PAH, buffer, fp);
+  sprintf(buffer, "ProdRate-PAH [kg/m^3s]");
+  PrintFlameletVector(fNGridPoints+2, prodOfZ, buffer, fp);
+  sprintf(buffer, "ProdRatePos-PAH [kg/m^3s]");
+  PrintFlameletVector(fNGridPoints+2, prodPlusOfZ, buffer, fp);
+  sprintf(buffer, "ProdRateNeg-PAH [kg/m^3s]");
+  PrintFlameletVector(fNGridPoints+2, prodMinusOfZ, buffer, fp);
+  sprintf(buffer, "ProdRateNegOverY-PAH [kg/m^3s]");
+  PrintFlameletVector(fNGridPoints+2, prodMinusOverYOfZ, buffer, fp);
+
+  Free1DArray(prodMinusOverYOfZ);
+  Free1DArray(prodPlusOfZ);
+  Free1DArray(prodMinusOfZ);
+  Free1DArray(prodOfZ);
+  Free1DArray(Y_PAH);
+}

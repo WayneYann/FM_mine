@@ -1,0 +1,433 @@
+Install FlameMan to /home/silideng/FlameMaster/FlameManLibs
+
+### Installation instructions are given in the Readme file.
+### 
+### This installation script always ensures a full build of all
+### libraries and programs. This can be helpful in case you make
+### mistakes or have to experiment with the settings in the file
+### ~/.FlameManExports
+### If you are sure that the installation of a particular part was 
+### correct, full build can be prevented by commenting the respective
+### 'rm *.o' or 'make touch' statements.
+
+start installing DasslLib
+rm: cannot remove ‘*.o’: No such file or directory
+g77  -O3 -c ddassl.f
+make: g77: Command not found
+make: *** [ddassl.o] Error 127
+
+start installing Alligator
+gcc  -ansi -O3 -c -DLINUXGXX alligator.c
+ar cr alligator.a alligator.o
+ranlib alligator.a
+mv alligator.a /home/silideng/FlameMaster/FlameManLibs
+cp alligator.h /home/silideng/FlameMaster/FlameManLibs
+
+start installing ArrayMan
+gcc  -ansi -O3 -c -I/home/silideng/FlameMaster/FlameManLibs -DLINUXGXX AM_alloc.c
+gcc  -ansi -O3 -c -I/home/silideng/FlameMaster/FlameManLibs -DLINUXGXX ArrayManager.c
+gcc  -ansi -O3 -c -I/home/silideng/FlameMaster/FlameManLibs -DLINUXGXX AM_blas.c
+gcc  -ansi -O3 -c -I/home/silideng/FlameMaster/FlameManLibs -DLINUXGXX AM_Printing.c
+gcc  -ansi -O3 -c -I/home/silideng/FlameMaster/FlameManLibs -DLINUXGXX AM_Gauss.c
+gcc  -ansi -O3 -c -I/home/silideng/FlameMaster/FlameManLibs -DLINUXGXX AM_BlockTriDiagSolver.c
+ar cr libAM.a AM_alloc.o ArrayManager.o AM_blas.o AM_Printing.o AM_Gauss.o AM_BlockTriDiagSolver.o
+ranlib libAM.a
+mv libAM.a /home/silideng/FlameMaster/FlameManLibs
+cp ArrayManager.h jgTypes.h /home/silideng/FlameMaster/FlameManLibs
+
+start installing FMLibs
+gcc  -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs   -c -o Interrupt.o Interrupt.c
+gcc  -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs   -c -o LTBody.o LTBody.c
+gcc  -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs   -c -o LTHeader.o LTHeader.c
+gcc  -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs   -c -o LTUtilities.o LTUtilities.c
+gcc  -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs   -c -o ReadStartProfile.o ReadStartProfile.c
+gcc  -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs   -c -o Spline.o Spline.c
+g++  -x c++ -O3 -I/home/silideng/FlameMaster/FlameManLibs -DLINUXGXX -c MapMan.C
+gcc  -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs   -c -o TofZ.o TofZ.c
+gcc  -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs   -c -o SmallNewton.o SmallNewton.c
+gcc  -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs   -c -o NonlinearSystems.o NonlinearSystems.c
+NonlinearSystems.c: In function ‘myludcmp’:
+NonlinearSystems.c:40:2: warning: incompatible implicit declaration of built-in function ‘memset’ [enabled by default]
+  memset (vv, 0, n);
+  ^
+g77  -O3 -c Adiab_flam.f
+make: g77: Command not found
+make: *** [Adiab_flam.o] Error 127
+
+start installing NewtonLib
+g++  -x c++ -O3 -I/home/silideng/FlameMaster/FlameManLibs -DLINUXGXX -c Newton.C
+Newton.C: In member function ‘int TBVPSolver::Solve(void*)’:
+Newton.C:150:59: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+     bt->GetUTFuncs()->WriteOutput( object, NULL, "grid" );
+                                                           ^
+Newton.C:207:43: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+    bt->WriteOutput( object, NULL, "noC" );
+                                           ^
+Newton.C: In member function ‘int TNewton::Newton_step(TDampPtr, TTimePtr, void*)’:
+Newton.C:418:16: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+    prnt.format = "%12.4E";
+                ^
+Newton.C:420:15: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+    prnt.title = "\nTensor a, GridPoint no. 10";
+               ^
+Newton.C:425:15: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+    prnt.title = "\nTensor b, GridPoint no. 10";
+               ^
+Newton.C:430:15: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+    prnt.title = "\nTensor c, GridPoint no. 10";
+               ^
+Newton.C:435:15: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+    prnt.title = "\nMatrix RHS";
+               ^
+Newton.C:471:15: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+    prnt.title = "\nMatrix yBeforeUpdate";
+               ^
+Newton.C:506:14: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+   prnt.title = "\nMatrix dy";
+              ^
+Newton.C:511:14: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+   prnt.title = "\nMatrix y";
+              ^
+g++  -x c++ -O3 -I/home/silideng/FlameMaster/FlameManLibs -DLINUXGXX -c NewtonUt.C
+NewtonUt.C: In member function ‘void TTime::AdjustTimeStep(TBVPSolverPtr, Flag, void*)’:
+NewtonUt.C:189:43: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+   bt->WriteOutput( object, NULL, "_old" );
+                                           ^
+NewtonUt.C:222:41: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+   bt->WriteOutput( object, NULL, "_t" );
+                                         ^
+NewtonUt.C: In function ‘void Test_convergence(TBVPSolverPtr, void*)’:
+NewtonUt.C:1077:17: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+   gPrnt->format = "%12.3E";
+                 ^
+NewtonUt.C:1078:16: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+   gPrnt->title = "\nMatrix Scaled dy";
+                ^
+NewtonUt.C: In function ‘void DoExit(TNewtonPtr, void*)’:
+NewtonUt.C:1226:34: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+  bt->WriteOutput( object, fp, "" );
+                                  ^
+g++  -x c++ -O3 -I/home/silideng/FlameMaster/FlameManLibs -DLINUXGXX -c AdaptiveGrid.C
+ar cr NewtonLib.a Newton.o NewtonUt.o AdaptiveGrid.o
+ranlib NewtonLib.a
+
+
+start installing FlameMan
+g++ -g  -x c++ -O3 -I/home/silideng/FlameMaster/FlameManLibs -DLINUXGXX -D -I -c BroadeningFactors.C
+<command-line>:0:1: error: macro names must be identifiers
+make: *** [BroadeningFactors.o] Error 1
+
+start installing CreateBinFile
+gcc -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs    -c -o CreateBinFile.o CreateBinFile.c
+gcc -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs    -c -o ThermoProperties.o ThermoProperties.c
+Linking CreateBinFile ...
+cp CreateBinFile /home/silideng/FlameMaster/FlameManLibs
+done
+
+start installing ListTool package
+
+start installing WSS
+rm: cannot remove ‘*.o’: No such file or directory
+gcc -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs   -c -o WSS.o WSS.c
+WSS.c: In function ‘_WSSPush’:
+WSS.c:109:23: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  wss->cur[kWSSLast] = (address)save;
+                       ^
+WSS.c:110:23: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  wss->cur[kWSSFile] = (address)file;
+                       ^
+WSS.c: In function ‘WSSPop’:
+WSS.c:129:14: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+   wss->cur = (address *)wss->cur[kWSSLast];
+              ^
+WSS.c: In function ‘WSSTrace’:
+WSS.c:161:12: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+     (ptr - (address *)ptr[kWSSLast]) * sizeof(address), 
+            ^
+WSS.c:164:9: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+   ptr = (address *)ptr[kWSSLast];
+         ^
+WSS.c: In function ‘WSSRemove’:
+WSS.c:181:8: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+   if ( (address *)ptr[kWSSLast] == to_be_freed ) {
+        ^
+WSS.c:182:15: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+    wss->cur = (address *)ptr[kWSSLast];
+               ^
+WSS.c:185:9: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+   ptr = (address *)ptr[kWSSLast];
+         ^
+ar cru WSSLib.a WSS.o
+ranlib WSSLib.a
+mv WSSLib.a /home/silideng/FlameMaster/FlameManLibs
+cp WSS.h /home/silideng/FlameMaster/FlameManLibs
+rm WSS.o
+
+start installing List
+gcc -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs   -c -o List.o List.c
+ar cr list.a List.o
+ranlib list.a
+ranlib list.a
+cp List.h /home/silideng/FlameMaster/FlameManLibs
+mv list.a /home/silideng/FlameMaster/FlameManLibs
+
+start installing FLReader
+rm: cannot remove ‘*.o’: No such file or directory
+yacc -p fl -dl -b FLScan FLScan.y
+sed -n -e '/#define	yy/p' FLScan.tab.c > tmp
+sed -n -e '/extern/!p' FLScan.tab.h >> tmp
+sed -n -e '/extern/p' FLScan.tab.h >> tmp
+mv tmp FLScan.tab.h
+gcc -c FLScan.tab.c -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs -UqMemDebug
+gcc -c FLScan.main.c -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs -UqMemDebug
+flex -s -Pfl -t FLScan.l > lex.fl.c
+gcc -c lex.fl.c -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs -UqMemDebug
+gcc -c Stack.c -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs -UqMemDebug
+Stack.c: In function ‘FLRStackSearch’:
+Stack.c:86:1953: warning: function returns address of local variable [-Wreturn-local-addr]
+   if( strcmp(x,v) == 0 )  return &x;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^
+gcc -c regex.c -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs -UqMemDebug
+regex.c:88:7: warning: conflicting types for built-in function ‘malloc’ [enabled by default]
+ char *malloc ();
+       ^
+regex.c:89:7: warning: conflicting types for built-in function ‘realloc’ [enabled by default]
+ char *realloc ();
+       ^
+regex.c: In function ‘regex_compile’:
+regex.c:1983:66: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+       if (!bufp->buffer) FREE_STACK_RETURN (REG_ESPACE);
+                                                                  ^
+regex.c:1983:112: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+       if (!bufp->buffer) FREE_STACK_RETURN (REG_ESPACE);
+                                                                                                                ^
+regex.c:2038:43: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+   FREE_STACK_RETURN (REG_BADRPT);
+                                           ^
+regex.c:2038:89: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+   FREE_STACK_RETURN (REG_BADRPT);
+                                                                                         ^
+regex.c:2071:62: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+       if (p == pend) FREE_STACK_RETURN (REG_EESCAPE);
+                                                              ^
+regex.c:2071:108: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+       if (p == pend) FREE_STACK_RETURN (REG_EESCAPE);
+                                                                                                            ^
+regex.c:2171:61: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+      if (p == pend) FREE_STACK_RETURN (REG_EBRACK);
+                                                             ^
+regex.c:2171:107: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+      if (p == pend) FREE_STACK_RETURN (REG_EBRACK);
+                                                                                                           ^
+regex.c:2205:58: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+   if (p == pend) FREE_STACK_RETURN (REG_EBRACK);
+                                                          ^
+regex.c:2205:104: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+   if (p == pend) FREE_STACK_RETURN (REG_EBRACK);
+                                                                                                        ^
+regex.c:2212:62: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+       if (p == pend) FREE_STACK_RETURN (REG_EESCAPE);
+                                                              ^
+regex.c:2212:108: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+       if (p == pend) FREE_STACK_RETURN (REG_EESCAPE);
+                                                                                                            ^
+regex.c:2252:62: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+       if (p == pend) FREE_STACK_RETURN (REG_EBRACK);
+                                                              ^
+regex.c:2252:108: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+       if (p == pend) FREE_STACK_RETURN (REG_EBRACK);
+                                                                                                            ^
+regex.c:2285:46: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+      FREE_STACK_RETURN (REG_ECTYPE);
+                                              ^
+regex.c:2285:92: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+      FREE_STACK_RETURN (REG_ECTYPE);
+                                                                                            ^
+regex.c:2291:59: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+    if (p == pend) FREE_STACK_RETURN (REG_EBRACK);
+                                                           ^
+regex.c:2291:105: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+    if (p == pend) FREE_STACK_RETURN (REG_EBRACK);
+                                                                                                         ^
+regex.c:2355:455: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+    SET_RANGE_TABLE_WORK_AREA (range_table_work, c, c1);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ^
+regex.c:2355:501: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+    SET_RANGE_TABLE_WORK_AREA (range_table_work, c, c1);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^
+regex.c:2359:49: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+         FREE_STACK_RETURN (REG_ERANGE);
+                                                 ^
+regex.c:2359:95: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+         FREE_STACK_RETURN (REG_ERANGE);
+                                                                                               ^
+regex.c:2376:46: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+      FREE_STACK_RETURN (REG_ERANGE);
+                                              ^
+regex.c:2376:92: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+      FREE_STACK_RETURN (REG_ERANGE);
+                                                                                            ^
+regex.c:2388:456: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+     SET_RANGE_TABLE_WORK_AREA (range_table_work, c, c1);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ^
+regex.c:2388:502: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+     SET_RANGE_TABLE_WORK_AREA (range_table_work, c, c1);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^
+regex.c:2455:59: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+    if (p == pend) FREE_STACK_RETURN (REG_EESCAPE);
+                                                           ^
+regex.c:2455:105: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+    if (p == pend) FREE_STACK_RETURN (REG_EESCAPE);
+                                                                                                         ^
+regex.c:2520:45: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+     FREE_STACK_RETURN (REG_ERPAREN);
+                                             ^
+regex.c:2520:91: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+     FREE_STACK_RETURN (REG_ERPAREN);
+                                                                                           ^
+regex.c:2540:45: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+     FREE_STACK_RETURN (REG_ERPAREN);
+                                             ^
+regex.c:2540:91: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+     FREE_STACK_RETURN (REG_ERPAREN);
+                                                                                           ^
+regex.c:2647:49: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+         FREE_STACK_RETURN (REG_EBRACE);
+                                                 ^
+regex.c:2647:95: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+         FREE_STACK_RETURN (REG_EBRACE);
+                                                                                               ^
+regex.c:2667:49: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+         FREE_STACK_RETURN (REG_BADBR);
+                                                 ^
+regex.c:2667:95: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+         FREE_STACK_RETURN (REG_BADBR);
+                                                                                               ^
+regex.c:2672:62: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+       if (c != '\\') FREE_STACK_RETURN (REG_EBRACE);
+                                                              ^
+regex.c:2672:108: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+       if (c != '\\') FREE_STACK_RETURN (REG_EBRACE);
+                                                                                                            ^
+regex.c:2682:49: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+         FREE_STACK_RETURN (REG_BADBR);
+                                                 ^
+regex.c:2682:95: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+         FREE_STACK_RETURN (REG_BADBR);
+                                                                                               ^
+regex.c:2691:49: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+         FREE_STACK_RETURN (REG_BADRPT);
+                                                 ^
+regex.c:2691:95: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+         FREE_STACK_RETURN (REG_BADRPT);
+                                                                                               ^
+regex.c:2870:43: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+   FREE_STACK_RETURN (REG_ESUBREG);
+                                           ^
+regex.c:2870:89: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+   FREE_STACK_RETURN (REG_ESUBREG);
+                                                                                         ^
+regex.c:2968:45: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+     FREE_STACK_RETURN (REG_EPAREN);
+                                             ^
+regex.c:2968:91: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+     FREE_STACK_RETURN (REG_EPAREN);
+                                                                                           ^
+regex.c:2975:3: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+   free (compile_stack.stack);
+   ^
+regex.c: In function ‘re_compile_fastmap’:
+regex.c:3595:4: warning: incompatible implicit declaration of built-in function ‘abort’ [enabled by default]
+    abort (); /* We have listed all the cases.  */
+    ^
+regex.c: In function ‘re_match_2_internal’:
+regex.c:5683:11: warning: incompatible implicit declaration of built-in function ‘abort’ [enabled by default]
+           abort ();
+           ^
+regex.c: In function ‘regcomp’:
+regex.c:6226:33: warning: incompatible implicit declaration of built-in function ‘strlen’ [enabled by default]
+   ret = regex_compile (pattern, strlen (pattern), syntax, preg);
+                                 ^
+regex.c: In function ‘regexec’:
+regex.c:6261:13: warning: incompatible implicit declaration of built-in function ‘strlen’ [enabled by default]
+   int len = strlen (string);
+             ^
+regex.c:6303:7: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+       free (regs.start);
+       ^
+regex.c: In function ‘regerror’:
+regex.c:6331:5: warning: incompatible implicit declaration of built-in function ‘abort’ [enabled by default]
+     abort ();
+     ^
+regex.c:6335:14: warning: incompatible implicit declaration of built-in function ‘strlen’ [enabled by default]
+   msg_size = strlen (msg) + 1; /* Includes the null.  */
+              ^
+regex.c:6341:11: warning: incompatible implicit declaration of built-in function ‘strncpy’ [enabled by default]
+           strncpy (errbuf, msg, errbuf_size - 1);
+           ^
+regex.c:6345:9: warning: incompatible implicit declaration of built-in function ‘strcpy’ [enabled by default]
+         strcpy (errbuf, msg);
+         ^
+regex.c: In function ‘regfree’:
+regex.c:6359:5: warning: incompatible implicit declaration of built-in function ‘free’ [enabled by default]
+     free (preg->buffer);
+     ^
+gcc -c xmalloc.c -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs -UqMemDebug
+gcc -c alloca.c -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs -UqMemDebug
+ar cru FLReader.a FLScan.tab.o FLScan.main.o lex.fl.o Stack.o regex.o xmalloc.o alloca.o  
+ranlib FLReader.a
+mv FLReader.a /home/silideng/FlameMaster/FlameManLibs
+cp FLReader.h /home/silideng/FlameMaster/FlameManLibs
+rm *.o lex.fl.c *.tab.[ch]
+
+start installing ListTool
+gcc -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs   -c -o ListTool.o ListTool.c
+gcc  -lm ListTool.o  /home/silideng/FlameMaster/FlameManLibs/FLReader.a /home/silideng/FlameMaster/FlameManLibs/list.a /home/silideng/FlameMaster/FlameManLibs/libAM.a /home/silideng/FlameMaster/FlameManLibs/alligator.a -o ListTool
+mv ListTool /home/silideng/FlameMaster/FlameManLibs
+chmod 755 /home/silideng/FlameMaster/FlameManLibs/ListTool
+
+start installing ScanMan
+gcc -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs    -c -o CheckUtilities.o CheckUtilities.c
+gcc -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs    -c -o ListMan.o ListMan.c
+ListMan.c: In function ‘PrintLinks’:
+ListMan.c:133:53: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   fprintf(stdout, "firstItem = %d lastItem = %d\n", (int)list->firstItem, (int)list->lastItem );
+                                                     ^
+ListMan.c:133:75: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   fprintf(stdout, "firstItem = %d lastItem = %d\n", (int)list->firstItem, (int)list->lastItem );
+                                                                           ^
+ListMan.c:135:66: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  fprintf( stdout, "link->last = %d link = %d link->next = %d\n", (int)link->last, (int)link, (int)link->next );
+                                                                  ^
+ListMan.c:135:83: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  fprintf( stdout, "link->last = %d link = %d link->next = %d\n", (int)link->last, (int)link, (int)link->next );
+                                                                                   ^
+ListMan.c:135:94: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  fprintf( stdout, "link->last = %d link = %d link->next = %d\n", (int)link->last, (int)link, (int)link->next );
+                                                                                              ^
+ListMan.c: In function ‘PrintInt’:
+ListMan.c:233:28: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   fprintf( stdout, "%d, ", (int)link->item );
+                            ^
+ListMan.c:236:31: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   fprintf( stdout, "%d.\n\n", (int)link->item );
+                               ^
+gcc -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs    -c -o ListUtilities1.o ListUtilities1.c
+gcc -ansi -O3 -c -DLINUXGXX -I/home/silideng/FlameMaster/FlameManLibs    -c -o ListUtilities2.o ListUtilities2.c
+dt ReactionScan.y
+make: dt: Command not found
+make: [ReactionScan.tab.c] Error 127 (ignored)
+mv y.tab.c ReactionScan.tab.c
+mv: cannot stat ‘y.tab.c’: No such file or directory
+make: *** [ReactionScan.tab.c] Error 1
+chmod: cannot access ‘ScanMan.script’: No such file or directory
+./Install.bash: line 110: ./ScanMan.script: No such file or directory
+./Install.bash: line 111: ./ScanMan.script: No such file or directory
+./Install.bash: line 112: ./ScanMan.script: No such file or directory
+./Install.bash: line 113: ./ScanMan.script: No such file or directory
+./Install.bash: line 114: cd: HeptaneShort: No such file or directory
+### Couldn't open input data file "nHeptane.allstarnew_oks.thermo".
+### Unable to open mechanism file "nHeptane.allstarnew_oks.mech".
+mv: cannot stat ‘nHeptane.allstarnew_oks.pre’: No such file or directory
+
+done

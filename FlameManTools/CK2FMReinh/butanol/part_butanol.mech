@@ -1,0 +1,145 @@
+let allowed atoms be  C, H, O, N, AR.
+let additional species be N2, AR.
+let temperature exponent be n_k.
+let order of reaction be n.
+let units for A be [ cm^(3(n-1)) / ( s * mole^(n-1) * K^n_k ) ].
+let units for E be [ kJ / mole ].
+
+1f: 	C4H9OH + M1 -> C4H8 + H2O + M1	{ ai = 2.790E+13 ni = 0.090 Ei = 276.713 
+			 a = 2.570E+83 n = -18.850 E = 361.707 
+
+	fca = 3.000E-01 fcta = 3.500E+02 fcb = 7.000E-01 fctb = 8.000E+02 fcc = 1 fctc = 3.800E+03 
+} 
+2: 	C4H9OH -> H + C4H9O	{ a = 6.300E+13 n = 0.000 E = 431.931 } 
+3: 	C4H9OH -> N-C3H7 + CH2OH	{ a = 2.400E+16 n = 0.000 E = 358.866 } 
+4: 	C4H9OH -> C2H5 + C2H4OH	{ a = 5.000E+16 n = 0.000 E = 360.749 } 
+5: 	C4H9OH -> CH3 + C-C3H6OH	{ a = 7.100E+16 n = 0.000 E = 360.749 } 
+6f: 	A-C4H8OH -> C-C4H8OH	{ a = 3.300E+09 n = 1.000 E = 179.912 } 
+7f: 	A-C4H8OH -> D-C4H8OH	{ a = 8.600E+08 n = 1.000 E = 108.784 } 
+8f: 	D-C4H8OH -> B-C4H8OH	{ a = 3.300E+09 n = 1.000 E = 154.808 } 
+9: 	A-C4H8OH -> H + C4H7OHZ-C4H8O	{ a = 3.000E+13 n = 0.000 E = 158.992 } 
+10: 	C4H9O -> H + C3H7CHO	{ a = 8.890E+10 n = 0.750 E =  88.115 } 
+11: 	C4H9O -> CH2O + N-C3H7	{ a = 3.000E+13 n = 0.000 E = 158.992 } 
+12: 	D-C4H8OH -> H + C4H7OHZ-C4H8O	{ a = 3.000E+13 n = 0.000 E = 158.992 } 
+13: 	D-C4H8OH -> C2H4 + C2H4OH	{ a = 3.000E+13 n = 0.000 E = 158.992 } 
+14: 	C-C4H8OH -> CH2OH + C3H6	{ a = 2.000E+13 n = 0.000 E = 120.081 } 
+15: 	C-C4H8OH -> H + C4H7OHZ-C4H8O	{ a = 6.000E+13 n = 0.000 E = 158.992 } 
+16: 	B-C4H8OH -> H + C4H7OHZ-C4H8O	{ a = 6.000E+13 n = 0.000 E = 158.992 } 
+17: 	B-C4H8OH -> CH3 + C3H5OHZ-C3H6O	{ a = 2.000E+13 n = 0.000 E = 129.704 } 
+18f: 	C4H8 + OH -> B-C4H8OH	{ a = 1.290E+12 n = 0.000 E =  -3.418 } 
+19: 	C-C3H6OH -> CH2OH + C2H4	{ a = 2.000E+13 n = 0.000 E = 120.081 } 
+20: 	C-C3H6OH -> H + C3H5OHZ-C3H6O	{ a = 3.000E+13 n = 0.000 E = 158.992 } 
+21: 	A-C4H8OH -> CH3HCO + C2H5	{ a = 2.000E+13 n = 0.000 E = 120.081 } 
+22: 	A-C4H8OH + O2 -> C4H7OHZ-C4H8O + HO2	{ a = 1.300E+12 n = 0.000 E =  25.104 } 
+23: 	A-C4H8OH + O2 -> C3H7CHO + HO2	{ a = 4.400E+11 n = 0.000 E =  25.104 } 
+24: 	C4H9O + O2 -> C3H7CHO + HO2	{ a = 1.300E+12 n = 0.000 E =  25.104 } 
+25: 	D-C4H8OH + O2 -> C4H7OHZ-C4H8O + HO2	{ a = 1.300E+12 n = 0.000 E =  25.104 } 
+26: 	C-C4H8OH + O2 -> C4H7OHZ-C4H8O + HO2	{ a = 1.300E+12 n = 0.000 E =  25.104 } 
+27: 	B-C4H8OH + O2 -> C4H7OHZ-C4H8O + HO2	{ a = 1.300E+12 n = 0.000 E =  25.104 } 
+28: 	C4H9OH + O -> OH + A-C4H8OH	{ a = 2.600E+13 n = 0.000 E =  21.757 } 
+29: 	C4H9OH + O -> OH + C4H9O	{ a = 1.580E+07 n = 2.000 E =  18.610 } 
+30: 	C4H9OH + O -> OH + D-C4H8OH	{ a = 5.100E+13 n = 0.000 E =  32.844 } 
+31: 	C4H9OH + O -> OH + C-C4H8OH	{ a = 2.600E+13 n = 0.000 E =  21.757 } 
+32: 	C4H9OH + O -> OH + B-C4H8OH	{ a = 2.600E+13 n = 0.000 E =  21.757 } 
+33: 	C4H9OH + H -> H2 + A-C4H8OH	{ a = 2.580E+07 n = 1.650 E =  11.828 } 
+34: 	C4H9OH + H -> H2 + C4H9O	{ a = 5.360E+04 n = 2.530 E =  36.627 } 
+35: 	C4H9OH + H -> H2 + D-C4H8OH	{ a = 2.900E+07 n = 2.000 E =  32.217 } 
+36: 	C4H9OH + H -> H2 + C-C4H8OH	{ a = 9.000E+06 n = 2.000 E =  20.920 } 
+37: 	C4H9OH + H -> H2 + B-C4H8OH	{ a = 9.000E+06 n = 2.000 E =  20.920 } 
+38: 	C4H9OH + OH -> H2O + A-C4H8OH	{ a = 4.640E+11 n = 0.150 E =   0.000 } 
+39: 	C4H9OH + OH -> H2O + C4H9O	{ a = 7.460E+11 n = 0.300 E =   6.837 } 
+40: 	C4H9OH + OH -> H2O + D-C4H8OH	{ a = 2.700E+06 n = 2.000 E =   1.883 } 
+41: 	C4H9OH + OH -> H2O + C-C4H8OH	{ a = 2.600E+06 n = 2.000 E =  -3.201 } 
+42: 	C4H9OH + OH -> H2O + B-C4H8OH	{ a = 2.600E+06 n = 2.000 E =  -3.201 } 
+43: 	C4H9OH + HO2 -> H2O2 + A-C4H8OH	{ a = 4.000E+11 n = 0.000 E =  66.944 } 
+44: 	C4H9OH + HO2 -> H2O2 + C4H9O	{ a = 2.500E+12 n = 0.000 E = 100.416 } 
+45: 	C4H9OH + HO2 -> H2O2 + D-C4H8OH	{ a = 1.230E+04 n = 2.550 E =  65.898 } 
+46: 	C4H9OH + HO2 -> H2O2 + C-C4H8OH	{ a = 4.000E+11 n = 0.000 E =  66.944 } 
+47: 	C4H9OH + HO2 -> H2O2 + B-C4H8OH	{ a = 4.000E+11 n = 0.000 E =  66.944 } 
+48: 	C4H9OH + CH3 -> CH4 + A-C4H8OH	{ a = 2.000E+11 n = 0.000 E =  40.166 } 
+49: 	C4H9OH + CH3 -> CH4 + C4H9O	{ a = 1.000E+11 n = 0.000 E =  33.054 } 
+50: 	C4H9OH + CH3 -> CH4 + D-C4H8OH	{ a = 3.000E-01 n = 4.000 E =  34.309 } 
+51: 	C4H9OH + CH3 -> CH4 + C-C4H8OH	{ a = 2.000E+11 n = 0.000 E =  40.166 } 
+52: 	C4H9OH + CH3 -> CH4 + B-C4H8OH	{ a = 2.000E+11 n = 0.000 E =  40.166 } 
+53: 	C4H9OH + HCO -> CH2O + A-C4H8OH	{ a = 1.000E+07 n = 1.900 E =  71.128 } 
+54: 	C4H9OH + HCO -> CH2O + C4H9O	{ a = 3.400E+04 n = 2.500 E =  56.484 } 
+55: 	C4H9OH + HCO -> CH2O + D-C4H8OH	{ a = 1.000E+05 n = 2.500 E =  77.404 } 
+56: 	C4H9OH + HCO -> CH2O + C-C4H8OH	{ a = 1.000E+07 n = 1.900 E =  71.128 } 
+57: 	C4H9OH + HCO -> CH2O + B-C4H8OH	{ a = 1.000E+07 n = 1.900 E =  71.128 } 
+58: 	C4H9OH + CH2OH -> CH3OH + A-C4H8OH	{ a = 6.000E+01 n = 2.950 E =  50.208 } 
+59: 	C4H9OH + CH2OH -> CH3OH + C4H9O	{ a = 1.200E+02 n = 2.760 E =  45.187 } 
+60: 	C4H9OH + CH2OH -> CH3OH + D-C4H8OH	{ a = 9.900E+01 n = 2.950 E =  58.576 } 
+61: 	C4H9OH + CH2OH -> CH3OH + C-C4H8OH	{ a = 6.000E+01 n = 2.950 E =  50.208 } 
+62: 	C4H9OH + CH2OH -> CH3OH + B-C4H8OH	{ a = 6.000E+01 n = 2.950 E =  50.208 } 
+63: 	C4H9OH + CH3O -> CH3OH + A-C4H8OH	{ a = 1.500E+11 n = 0.000 E =  18.828 } 
+64: 	C4H9OH + CH3O -> CH3OH + C4H9O	{ a = 2.300E+10 n = 0.000 E =  12.134 } 
+65: 	C4H9OH + CH3O -> CH3OH + D-C4H8OH	{ a = 1.600E+11 n = 0.000 E =  30.543 } 
+66: 	C4H9OH + CH3O -> CH3OH + C-C4H8OH	{ a = 1.500E+11 n = 0.000 E =  18.828 } 
+67: 	C4H9OH + CH3O -> CH3OH + B-C4H8OH	{ a = 1.500E+11 n = 0.000 E =  18.828 } 
+68: 	C4H9OH + C2H5 -> C2H6 + A-C4H8OH	{ a = 2.000E+11 n = 0.000 E =  46.024 } 
+69: 	C4H9OH + C2H5 -> C2H6 + C4H9O	{ a = 1.000E+11 n = 0.000 E =  38.493 } 
+70: 	C4H9OH + C2H5 -> C2H6 + D-C4H8OH	{ a = 3.000E+11 n = 0.000 E =  56.484 } 
+71: 	C4H9OH + C2H5 -> C2H6 + C-C4H8OH	{ a = 2.000E+11 n = 0.000 E =  46.024 } 
+72: 	C4H9OH + C2H5 -> C2H6 + B-C4H8OH	{ a = 2.000E+11 n = 0.000 E =  46.024 } 
+73: 	C4H9OH + C2H3 -> C2H4 + A-C4H8OH	{ a = 2.000E+11 n = 0.000 E =  40.166 } 
+74: 	C4H9OH + C2H3 -> C2H4 + C4H9O	{ a = 1.000E+11 n = 0.000 E =  33.054 } 
+75: 	C4H9OH + C2H3 -> C2H4 + D-C4H8OH	{ a = 3.000E-01 n = 4.000 E =  34.309 } 
+76: 	C4H9OH + C2H3 -> C2H4 + C-C4H8OH	{ a = 2.000E+11 n = 0.000 E =  40.166 } 
+77: 	C4H9OH + C2H3 -> C2H4 + B-C4H8OH	{ a = 2.000E+11 n = 0.000 E =  40.166 } 
+78: 	C4H9OH + MEALL-C4H7 -> C4H8 + A-C4H8OH	{ a = 2.000E+11 n = 0.000 E =  46.024 } 
+79: 	C4H9OH + MEALL-C4H7 -> C4H8 + C4H9O	{ a = 1.000E+11 n = 0.000 E =  38.493 } 
+80: 	C4H9OH + MEALL-C4H7 -> C4H8 + D-C4H8OH	{ a = 3.000E+11 n = 0.000 E =  56.484 } 
+81: 	C4H9OH + MEALL-C4H7 -> C4H8 + C-C4H8OH	{ a = 2.000E+11 n = 0.000 E =  46.024 } 
+82: 	C4H9OH + MEALL-C4H7 -> C4H8 + B-C4H8OH	{ a = 2.000E+11 n = 0.000 E =  46.024 } 
+83: 	C4H9OH + A-C3H5 -> C3H6 + A-C4H8OH	{ a = 2.000E+11 n = 0.000 E =  46.024 } 
+84: 	C4H9OH + A-C3H5 -> C3H6 + C4H9O	{ a = 1.000E+11 n = 0.000 E =  38.493 } 
+85: 	C4H9OH + A-C3H5 -> C3H6 + D-C4H8OH	{ a = 3.000E+11 n = 0.000 E =  56.484 } 
+86: 	C4H9OH + A-C3H5 -> C3H6 + C-C4H8OH	{ a = 2.000E+11 n = 0.000 E =  46.024 } 
+87: 	C4H9OH + A-C3H5 -> C3H6 + B-C4H8OH	{ a = 2.000E+11 n = 0.000 E =  46.024 } 
+88: 	ACROL-C3H4O + H -> H2 + COC2H3Z-C3H3O	{ a = 4.000E+13 n = 0.000 E =  17.573 } 
+89: 	ACROL-C3H4O + OH -> H2O + COC2H3Z-C3H3O	{ a = 4.200E+12 n = 0.000 E =   2.092 } 
+90: 	ACROL-C3H4O + HO2 -> H2O2 + COC2H3Z-C3H3O	{ a = 1.000E+12 n = 0.000 E =  41.840 } 
+91: 	ACROL-C3H4O + CH3 -> CH4 + COC2H3Z-C3H3O	{ a = 2.000E-06 n = 5.600 E =  10.460 } 
+92: 	ACROL-C3H4O + C2H5 -> C2H6 + COC2H3Z-C3H3O	{ a = 1.300E+12 n = 0.000 E =  35.564 } 
+93: 	C3H7CHO + H -> H2 + COC3H7	{ a = 4.000E+13 n = 0.000 E =  17.573 } 
+94: 	C3H7CHO + OH -> H2O + COC3H7	{ a = 4.200E+12 n = 0.000 E =   2.092 } 
+95: 	C3H7CHO + HO2 -> H2O2 + COC3H7	{ a = 1.000E+12 n = 0.000 E =  41.840 } 
+96: 	C3H7CHO + CH3 -> CH4 + COC3H7	{ a = 2.000E-06 n = 5.600 E =  10.460 } 
+97: 	C3H7CHO + C2H3 -> C2H4 + COC3H7	{ a = 2.000E-06 n = 5.600 E =  10.460 } 
+98: 	C3H7CHO + C2H5 -> C2H6 + COC3H7	{ a = 1.300E+12 n = 0.000 E =  35.564 } 
+99: 	COC3H7 -> CO + N-C3H7	{ a = 8.640E+15 n = 0.000 E =  60.250 } 
+100: 	C4H7OHZ-C4H8O -> OH + MEALL-C4H7	{ a = 1.000E+16 n = 0.000 E = 265.157 } 
+101: 	C3H5OHZ-C3H6O -> OH + A-C3H5	{ a = 1.000E+16 n = 0.000 E = 265.157 } 
+102f: 	C3H7CHO -> N-C3H7 + HCO	{ a = 2.400E+16 n = 0.000 E = 351.992 } 
+103f: 	C3H7CHO + O2 -> N-C3H6CHO + HO2	{ a = 4.000E+13 n = 0.000 E = 198.740 } 
+104f: 	C3H7CHO + O2 -> I-C3H6CHO + HO2	{ a = 4.000E+13 n = 0.000 E = 198.740 } 
+105f: 	C3H7CHO + HO2 -> N-C3H6CHO + H2O2	{ a = 4.760E+04 n = 2.550 E =  69.011 } 
+106f: 	C3H7CHO + HO2 -> I-C3H6CHO + H2O2	{ a = 9.640E+03 n = 2.600 E =  58.199 } 
+107f: 	C3H7CHO + OH -> N-C3H6CHO + H2O	{ a = 3.160E+07 n = 1.800 E =   3.908 } 
+108f: 	C3H7CHO + OH -> I-C3H6CHO + H2O	{ a = 7.060E+06 n = 1.900 E =  -0.665 } 
+109f: 	C3H7CHO + O -> N-C3H6CHO + OH	{ a = 3.715E+06 n = 2.400 E =  23.033 } 
+110f: 	C3H7CHO + O -> I-C3H6CHO + OH	{ a = 5.495E+05 n = 2.500 E =  13.138 } 
+111f: 	C3H7CHO + H -> N-C3H6CHO + H2	{ a = 6.500E+05 n = 2.540 E =  28.267 } 
+112f: 	C3H7CHO + H -> I-C3H6CHO + H2	{ a = 5.000E+03 n = 2.880 E =  12.263 } 
+113f: 	C3H7CHO + CH3 -> N-C3H6CHO + CH4	{ a = 3.000E+12 n = 0.000 E =  48.995 } 
+114f: 	C3H7CHO + CH3 -> I-C3H6CHO + CH4	{ a = 8.070E+11 n = 0.000 E =  42.300 } 
+115f: 	C3H7CHO + C2H5 -> N-C3H6CHO + C2H6	{ a = 3.160E+11 n = 0.000 E =  51.463 } 
+116f: 	C3H7CHO + C2H5 -> I-C3H6CHO + C2H6	{ a = 5.010E+10 n = 0.000 E =  43.514 } 
+117f: 	C3H7CHO + C2H3 -> N-C3H6CHO + C2H4	{ a = 6.000E+02 n = 3.300 E =  43.940 } 
+118f: 	C3H7CHO + C2H3 -> I-C3H6CHO + C2H4	{ a = 1.000E+03 n = 3.100 E =  36.941 } 
+119f: 	C3H7CHO + A-C3H5 -> N-C3H6CHO + C3H6	{ a = 7.940E+11 n = 0.000 E =  85.772 } 
+120f: 	C3H7CHO + A-C3H5 -> I-C3H6CHO + C3H6	{ a = 7.940E+11 n = 0.000 E =  67.781 } 
+121f: 	C3H7CHO + CH3O -> N-C3H6CHO + CH3OH	{ a = 3.180E+11 n = 0.000 E =  29.497 } 
+122f: 	C3H7CHO + CH3O -> I-C3H6CHO + CH3OH	{ a = 7.200E+10 n = 0.000 E =  18.702 } 
+123f: 	C3H7CHO + HCO -> N-C3H6CHO + CH2O	{ a = 2.050E+05 n = 2.500 E =  77.115 } 
+124f: 	C3H7CHO + HCO -> I-C3H6CHO + CH2O	{ a = 1.080E+07 n = 1.900 E =  71.153 } 
+125f: 	N-C3H6CHO + M2 -> C2H4 + CH2HCO + M2	{ ai = 1.230E+13 ni = -0.100 Ei = 126.365 
+			 a = 5.545E+49 n = -10.000 E = 149.662 
+
+	fca = -1.170E+00 fcta = 1.000E-15 fcb = 2.170E+00 fctb = 2.510E+02 fcc = 1 fctc = 1.185E+03 
+} 
+126f: 	I-C3H6CHO -> C3H6 + HCO	{ a = 2.500E+13 n = 0.000 E = 171.544 } 
+127f: 	C2H4 + OH -> C2H4OH	{ a = 1.290E+12 n = 0.000 E =  -3.418 } 
+let M = 1.0[OTHER].
+let M1 = 5.00 [H2O] + 1.0 [OTHER]. 
+let M2 = 5.00 [H2O] + 2.00 [H2] + 3.00 [CO2] + 2.00 [CO] + 1.0 [OTHER]. 
